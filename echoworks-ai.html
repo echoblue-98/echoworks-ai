@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoWorks AI — Intelligence That Works</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-glow: rgba(59, 130, 246, 0.4);
+            --accent: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --bg-dark: #030712;
+            --bg-card: rgba(15, 23, 42, 0.8);
+            --bg-card-hover: rgba(30, 41, 59, 0.9);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --text-dim: rgba(248, 250, 252, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated gradient background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
+            animation: pulse 12s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Grid pattern overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            z-index: 1;
+        }
+
+        /* Floating orbs */
+        .orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(59, 130, 246, 0.15);
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(139, 92, 246, 0.12);
+            top: 60%;
+            right: 10%;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 250px;
+            height: 250px;
+            background: rgba(16, 185, 129, 0.1);
+            bottom: 20%;
+            left: 30%;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -30px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(20px, 30px) scale(1.02); }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 60px;
+        }
+
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 0 100px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--primary-light);
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+        }
+
+        .hero-title .gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--success) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            box-shadow: 0 4px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Philosophy Section */
+        .philosophy {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            color: var(--primary-light);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -1px;
+        }
+
+        .section-desc {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            max-width: 700px;
+            margin: 0 auto 60px;
+            line-height: 1.8;
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .philosophy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .philosophy-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .philosophy-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-4px);
+        }
+
+        .philosophy-icon {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .philosophy-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .philosophy-card p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Intelligences Section */
+        .intelligences {
+            padding: 100px 0;
+        }
+
+        .intelligence-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .intelligence-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .intelligence-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .intelligence-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .intelligence-card:hover {
+            background: var(--bg-card-hover);
+            transform: translateY(-6px);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .intelligence-card:hover::before {
+            opacity: 1;
+        }
+
+        .intelligence-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .intelligence-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .intelligence-icon.creator { background: rgba(245, 158, 11, 0.15); }
+        .intelligence-icon.realestate { background: rgba(16, 185, 129, 0.15); }
+        .intelligence-icon.anomaly { background: rgba(239, 68, 68, 0.15); }
+        .intelligence-icon.enterprise { background: rgba(139, 92, 246, 0.15); }
+
+        .intelligence-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .intelligence-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        .intelligence-desc {
+            color: var(--text-dim);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .intelligence-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .feature-tag {
+            padding: 6px 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: var(--primary-light);
+            font-weight: 500;
+        }
+
+        .intelligence-card.featured {
+            grid-column: span 2;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        @media (max-width: 900px) {
+            .intelligence-card.featured {
+                grid-column: span 1;
+            }
+        }
+
+        /* Venture Statement */
+        .venture {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .venture-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 32px;
+            padding: 80px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .venture-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .venture-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .venture-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .venture-desc {
+            font-size: 1.15rem;
+            color: var(--text-dim);
+            max-width: 600px;
+            margin: 0 auto 32px;
+            line-height: 1.8;
+        }
+
+        .venture-parent {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-top: 40px;
+        }
+
+        .venture-parent strong {
+            color: var(--text);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 0 40px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .footer-tagline {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .footer-links a {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-light);
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 40px 0 60px;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .philosophy, .intelligences, .venture {
+                padding: 60px 0;
+            }
+
+            .venture-box {
+                padding: 40px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="grid-overlay"></div>
+    <div class="orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="nav fade-in">
+            <div class="nav-logo">EchoWorks AI</div>
+            <ul class="nav-links">
+                <li><a href="#philosophy">Philosophy</a></li>
+                <li><a href="#intelligences">Intelligences</a></li>
+                <li><a href="#venture">About</a></li>
+                <li><a href="mailto:hello@echoworks.ai">Contact</a></li>
+            </ul>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero fade-in delay-1">
+            <div class="hero-badge">An EchoBlue Holdings Venture</div>
+            <h1 class="hero-title">
+                <span class="gradient">Intelligence</span><br>
+                That Works
+            </h1>
+            <p class="hero-subtitle">
+                We build AI that doesn't just think—it ships. From creation to detection 
+                to enterprise scale, our intelligences deploy into the real world.
+            </p>
+            <div class="hero-cta">
+                <a href="#intelligences" class="btn btn-primary">Explore Intelligences</a>
+                <a href="mailto:hello@echoworks.ai" class="btn btn-secondary">Get in Touch</a>
+            </div>
+        </section>
+
+        <!-- Philosophy -->
+        <section class="philosophy fade-in delay-2" id="philosophy">
+            <div class="section-label">Our Philosophy</div>
+            <h2 class="section-title">Build. Deploy. Iterate.</h2>
+            <p class="section-desc">
+                We believe AI should work in the world, not just in research papers. 
+                Every intelligence we create is built to be deployed, measured, and improved.
+            </p>
+            <div class="philosophy-grid">
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">🔨</div>
+                    <h3>Practical First</h3>
+                    <p>No theoretical vapor. Every system we build solves real problems for real users today.</p>
+                </div>
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">🚀</div>
+                    <h3>Ship Fast</h3>
+                    <p>Velocity matters. We iterate in weeks, not years. The market teaches faster than research.</p>
+                </div>
+                <div class="philosophy-card">
+                    <div class="philosophy-icon">🎯</div>
+                    <h3>Domain Focused</h3>
+                    <p>General AI is a race to the bottom. We build vertical intelligences that own their space.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Intelligences -->
+        <section class="intelligences fade-in delay-3" id="intelligences">
+            <div class="section-label">What We're Building</div>
+            <h2 class="section-title" style="text-align: center; margin-bottom: 60px;">Our Intelligences</h2>
+            
+            <div class="intelligence-grid">
+                <!-- Anomaly Intelligence (AION OS) - Featured -->
+                <div class="intelligence-card featured">
+                    <div class="intelligence-header">
+                        <div class="intelligence-icon anomaly">🛡️</div>
+                        <div>
+                            <div class="intelligence-title">Anomaly Intelligence</div>
+                            <div class="intelligence-subtitle">AION OS • Security & Threat Detection</div>
+                        </div>
+                    </div>
+                    <p class="intelligence-desc">
+                        Adversarial intelligence that detects what others miss. 100% detection rate across 54 attack 
+                        scenarios. Sub-millisecond response. Built for law firms and enterprises where security isn't optional.
+                    </p>
+                    <div class="intelligence-features">
+                        <span class="feature-tag">100% Detection</span>
+                        <span class="feature-tag">0.07ms Latency</span>
+                        <span class="feature-tag">Privacy-First</span>
+                        <span class="feature-tag">Law Firm Security</span>
+                        <span class="feature-tag">Insider Threats</span>
+                        <span class="feature-tag">Real-Time</span>
+                    </div>
+                </div>
+
+                <!-- Creator Intelligence -->
+                <div class="intelligence-card">
+                    <div class="intelligence-header">
+                        <div class="intelligence-icon creator">✨</div>
+                        <div>
+                            <div class="intelligence-title">Creator Intelligence</div>
+                            <div class="intelligence-subtitle">Content & Creative AI</div>
+                        </div>
+                    </div>
+                    <p class="intelligence-desc">
+                        AI that amplifies human creativity. From ideation to execution, 
+                        tools that help creators ship faster without losing their voice.
+                    </p>
+                    <div class="intelligence-features">
+                        <span class="feature-tag">Content Generation</span>
+                        <span class="feature-tag">Creative Tools</span>
+                        <span class="feature-tag">Voice Preservation</span>
+                    </div>
+                </div>
+
+                <!-- Real Estate Intelligence -->
+                <div class="intelligence-card">
+                    <div class="intelligence-header">
+                        <div class="intelligence-icon realestate">🏠</div>
+                        <div>
+                            <div class="intelligence-title">Real Estate Intelligence</div>
+                            <div class="intelligence-subtitle">Property & Market Analysis</div>
+                        </div>
+                    </div>
+                    <p class="intelligence-desc">
+                        Intelligence that sees real estate differently. Market patterns, 
+                        property analysis, and investment insights that traditional tools miss.
+                    </p>
+                    <div class="intelligence-features">
+                        <span class="feature-tag">Market Analysis</span>
+                        <span class="feature-tag">Property Insights</span>
+                        <span class="feature-tag">Investment Signals</span>
+                    </div>
+                </div>
+
+                <!-- Enterprise Grade Intelligence -->
+                <div class="intelligence-card">
+                    <div class="intelligence-header">
+                        <div class="intelligence-icon enterprise">🏢</div>
+                        <div>
+                            <div class="intelligence-title">Enterprise Intelligence</div>
+                            <div class="intelligence-subtitle">Scale & Integration</div>
+                        </div>
+                    </div>
+                    <p class="intelligence-desc">
+                        Production-grade AI infrastructure. SSO, compliance, audit trails, 
+                        and the reliability enterprises demand. Intelligence at scale.
+                    </p>
+                    <div class="intelligence-features">
+                        <span class="feature-tag">SOC2 Ready</span>
+                        <span class="feature-tag">SSO/SAML</span>
+                        <span class="feature-tag">Audit Logs</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Venture Statement -->
+        <section class="venture fade-in delay-4" id="venture">
+            <div class="venture-box">
+                <div class="venture-content">
+                    <h2 class="venture-title">A Different Kind of Venture</h2>
+                    <p class="venture-desc">
+                        We're not building a company. We're building intelligences that deploy into the world 
+                        through focused subsidiaries. Each intelligence owns its vertical. Each deployment solves real problems.
+                    </p>
+                    <a href="mailto:hello@echoworks.ai" class="btn btn-primary">Partner With Us</a>
+                    <p class="venture-parent">
+                        EchoWorks AI is a venture of <strong>EchoBlue Holdings LLC</strong>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer fade-in delay-5">
+            <div class="footer-logo">EchoWorks AI</div>
+            <p class="footer-tagline">Intelligence That Works</p>
+            <div class="footer-links">
+                <a href="#philosophy">Philosophy</a>
+                <a href="#intelligences">Intelligences</a>
+                <a href="aion_showcase.html">AION OS</a>
+                <a href="mailto:hello@echoworks.ai">Contact</a>
+            </div>
+            <p class="footer-copyright">
+                © 2026 EchoWorks AI • An EchoBlue Holdings LLC Venture
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.philosophy-card, .intelligence-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AION OS — Law Firm Security Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff3b3b;
+            --primary-glow: rgba(255, 59, 59, 0.4);
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --bg-dark: #050508;
+            --bg-card: rgba(15, 15, 20, 0.8);
+            --bg-card-hover: rgba(25, 25, 35, 0.9);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Animated gradient background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(255, 59, 59, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 170, 0, 0.03) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Grid pattern overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4rem;
+            font-weight: 600;
+            letter-spacing: -3px;
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { filter: drop-shadow(0 0 20px rgba(255, 59, 59, 0.3)); }
+            100% { filter: drop-shadow(0 0 40px rgba(255, 59, 59, 0.6)); }
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Hero Stats */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-stat::after {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(180deg, transparent, var(--border), transparent);
+        }
+
+        .hero-stat:last-child::after {
+            display: none;
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4.5rem;
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-number.primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-number.success {
+            background: linear-gradient(135deg, var(--success) 0%, #00cc6a 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-number.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #ff8800 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Detection Matrix */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .detection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+
+        .detection-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detection-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--success), var(--success));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .detection-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .detection-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255, 59, 59, 0.1);
+        }
+
+        .card-rate {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-scenarios {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #00cc6a);
+            border-radius: 3px;
+            width: 0%;
+            animation: fillBar 1.5s ease-out forwards;
+        }
+
+        @keyframes fillBar {
+            to { width: 100%; }
+        }
+
+        /* Performance Section */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .perf-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .perf-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .perf-unit {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+        }
+
+        .perf-label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        /* Live Demo Section */
+        .demo-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .terminal {
+            background: #0a0a0f;
+            border-radius: 12px;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .terminal .time {
+            color: var(--text-dim);
+        }
+
+        .terminal .event {
+            color: #888;
+        }
+
+        .terminal .alert {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .terminal .pattern {
+            color: var(--success);
+        }
+
+        .terminal .severity {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .terminal .critical {
+            background: rgba(255, 59, 59, 0.2);
+            color: var(--primary);
+        }
+
+        /* Attack Simulator Controls */
+        .attack-controls {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .attack-btn {
+            padding: 10px 16px;
+            background: rgba(255, 59, 59, 0.15);
+            border: 1px solid rgba(255, 59, 59, 0.3);
+            color: var(--text);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .attack-btn:hover {
+            background: rgba(255, 59, 59, 0.3);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .attack-btn:active {
+            transform: translateY(0);
+        }
+
+        .attack-btn.running {
+            background: rgba(255, 170, 0, 0.2);
+            border-color: var(--warning);
+            animation: pulse-btn 1s infinite;
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .clear-btn {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: blink 1s infinite;
+        }
+
+        .status-dot.connected {
+            background: var(--success);
+            animation: none;
+        }
+
+        .status-dot.offline {
+            background: var(--primary);
+            animation: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Privacy Section */
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .privacy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .privacy-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+        }
+
+        .privacy-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .privacy-list {
+            list-style: none;
+        }
+
+        .privacy-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .privacy-list li:last-child {
+            border-bottom: none;
+        }
+
+        .check {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .cross {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(255, 59, 59, 0.1) 0%, rgba(255, 59, 59, 0.05) 100%);
+            border: 1px solid rgba(255, 59, 59, 0.2);
+            border-radius: 24px;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 48px;
+            background: var(--primary);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 24px rgba(255, 59, 59, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(255, 59, 59, 0.5);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="grid-overlay"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="logo">AION OS</h1>
+            <p class="tagline">Law Firm Security Intelligence Platform</p>
+        </header>
+
+        <!-- Hero Stats -->
+        <div class="hero-stats fade-in delay-1">
+            <div class="hero-stat">
+                <div class="stat-number success" id="detection-rate">0</div>
+                <div class="stat-label">Detection Rate</div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-number primary" id="patterns">0</div>
+                <div class="stat-label">Attack Patterns</div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-number warning" id="categories">0</div>
+                <div class="stat-label">Threat Categories</div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-number primary" id="latency">0</div>
+                <div class="stat-label">Response Time</div>
+            </div>
+        </div>
+
+        <!-- Detection Grid -->
+        <section class="fade-in delay-2">
+            <h2 class="section-title">Threat Detection Coverage</h2>
+            <div class="detection-grid">
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔐</div>
+                        <div class="card-rate">100%</div>
+                    </div>
+                    <div class="card-title">VPN Attacks</div>
+                    <div class="card-scenarios">12 scenarios • Session hijack, credential stuffing, MFA fatigue</div>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">👤</div>
+                        <div class="card-rate">100%</div>
+                    </div>
+                    <div class="card-title">Insider Threats</div>
+                    <div class="card-scenarios">3 scenarios • Departing attorney, after-hours theft, privilege abuse</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.1s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">☁️</div>
+                        <div class="card-rate">100%</div>
+                    </div>
+                    <div class="card-title">Cloud/SaaS</div>
+                    <div class="card-scenarios">4 scenarios • SharePoint exfil, API key abuse, rogue OAuth apps</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.2s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">📧</div>
+                        <div class="card-rate">100%</div>
+                    </div>
+                    <div class="card-title">Business Email Compromise</div>
+                    <div class="card-scenarios">4 scenarios • CEO fraud, wire transfer, vendor impersonation</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.3s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚖️</div>
+                        <div class="card-rate">100%</div>
+                    </div>
+                    <div class="card-title">Compliance</div>
+                    <div class="card-scenarios">4 scenarios • Ethics wall breach, privilege theft, trust account fraud</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.4s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">🤖</div>
+                        <div class="card-rate">100%</div>
+                    </div>
+                    <div class="card-title">AI Security</div>
+                    <div class="card-scenarios">3 scenarios • Model theft, prompt injection, Copilot abuse</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.5s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔗</div>
+                        <div class="card-rate">100%</div>
+                    </div>
+                    <div class="card-title">Supply Chain</div>
+                    <div class="card-scenarios">2 scenarios • Vendor compromise, package backdoor</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.6s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">💰</div>
+                        <div class="card-rate">100%</div>
+                    </div>
+                    <div class="card-title">Financial Fraud</div>
+                    <div class="card-scenarios">2 scenarios • Billing fraud, payment hijack</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.7s"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance -->
+        <section class="fade-in delay-3">
+            <h2 class="section-title">Performance</h2>
+            <div class="performance-grid">
+                <div class="perf-card">
+                    <div class="perf-value" style="color: var(--success)">0.07<span class="perf-unit">ms</span></div>
+                    <div class="perf-label">Per-Event Latency</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-value" style="color: var(--primary)">15,165<span class="perf-unit">/sec</span></div>
+                    <div class="perf-label">Event Throughput</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-value" style="color: var(--warning)">CPU<span class="perf-unit">only</span></div>
+                    <div class="perf-label">Hardware Required</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Demo -->
+        <section class="demo-section fade-in delay-4">
+            <h2 class="section-title">Live Threat Detection</h2>
+            
+            <!-- Attack Simulator Controls -->
+            <div class="attack-controls" style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="attack-btn" data-attack="departing_attorney" title="Simulate departing attorney data theft">
+                    👤 Departing Attorney
+                </button>
+                <button class="attack-btn" data-attack="bec_fraud" title="Simulate Business Email Compromise">
+                    📧 BEC Fraud
+                </button>
+                <button class="attack-btn" data-attack="vpn_hijack" title="Simulate VPN session hijack">
+                    🔐 VPN Hijack
+                </button>
+                <button class="attack-btn" data-attack="insider_theft" title="Simulate physical + cyber attack">
+                    💼 Insider Theft
+                </button>
+                <button class="attack-btn" data-attack="mfa_fatigue" title="Simulate MFA fatigue attack">
+                    🔓 MFA Fatigue
+                </button>
+                <button class="clear-btn" id="clearBtn" title="Clear terminal">
+                    🗑️ Clear
+                </button>
+            </div>
+            
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Connecting to AION OS...</span>
+            </div>
+            
+            <div class="terminal" id="terminal">
+                <!-- Terminal lines will be injected here -->
+            </div>
+        </section>
+
+        <!-- Privacy -->
+        <section class="fade-in delay-5">
+            <h2 class="section-title">Privacy Architecture</h2>
+            <div class="privacy-grid">
+                <div class="privacy-card">
+                    <h3><span style="color: var(--success)">✓</span> What Stays Local</h3>
+                    <ul class="privacy-list">
+                        <li><span class="check">✓</span> All client & matter data</li>
+                        <li><span class="check">✓</span> User identities & emails</li>
+                        <li><span class="check">✓</span> IP addresses & file paths</li>
+                        <li><span class="check">✓</span> Document contents</li>
+                        <li><span class="check">✓</span> Privileged information</li>
+                    </ul>
+                </div>
+                <div class="privacy-card">
+                    <h3><span style="color: var(--primary)">×</span> Never Leaves Firm</h3>
+                    <ul class="privacy-list">
+                        <li><span class="cross">×</span> No PII to cloud</li>
+                        <li><span class="cross">×</span> No client names</li>
+                        <li><span class="cross">×</span> No matter numbers</li>
+                        <li><span class="cross">×</span> No file contents</li>
+                        <li><span class="cross">×</span> No network details</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section fade-in delay-6">
+            <h2 class="cta-title">Ready for the 30-Day Pilot?</h2>
+            <p class="cta-subtitle">Runs on any laptop. Zero client data leaves your network. 100% detection rate.</p>
+            <a href="mailto:dan@codetyphoons.com" class="cta-button">Schedule Demo</a>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 AION OS • An <a href="echoworks-ai.html" style="color: var(--primary); text-decoration: none;">EchoWorks AI</a> Intelligence</p>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================================
+        // AION OS SHOWCASE - BACKEND INTEGRATION
+        // ============================================================
+        
+        const WS_URL = 'ws://localhost:8765';
+        let ws = null;
+        let isConnected = false;
+        let isConnecting = false;  // Prevent duplicate connections
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT = 3;
+        
+        // ============================================================
+        // WebSocket Connection
+        // ============================================================
+        
+        function connectWebSocket() {
+            // Prevent duplicate connection attempts
+            if (isConnecting || isConnected) {
+                return;
+            }
+            
+            isConnecting = true;
+            
+            const statusDot = document.querySelector('.status-dot');
+            const statusText = document.querySelector('.status-text');
+            
+            statusDot.className = 'status-dot';
+            statusText.textContent = 'Connecting to AION OS...';
+            
+            try {
+                // Close existing connection if any
+                if (ws) {
+                    ws.onclose = null;  // Prevent reconnect loop
+                    ws.close();
+                }
+                
+                ws = new WebSocket(WS_URL);
+                
+                ws.onopen = () => {
+                    isConnected = true;
+                    isConnecting = false;
+                    reconnectAttempts = 0;
+                    statusDot.className = 'status-dot connected';
+                    statusText.textContent = 'Connected to AION OS Backend';
+                    addTerminalLine('SYSTEM', 'Connected to AION OS detection engine', 'success');
+                    
+                    // Request initial stats
+                    ws.send(JSON.stringify({ action: 'get_stats' }));
+                };
+                
+                ws.onclose = () => {
+                    const wasConnected = isConnected;
+                    isConnected = false;
+                    isConnecting = false;
+                    statusDot.className = 'status-dot offline';
+                    statusText.textContent = 'Disconnected - Click attack to reconnect';
+                    
+                    // Only auto-reconnect if we were previously connected
+                    if (wasConnected && reconnectAttempts < MAX_RECONNECT) {
+                        reconnectAttempts++;
+                        setTimeout(connectWebSocket, 3000);
+                    }
+                };
+                
+                ws.onerror = (err) => {
+                    console.error('WebSocket error:', err);
+                    isConnecting = false;
+                    statusDot.className = 'status-dot offline';
+                    statusText.textContent = 'Backend offline - Run showcase_server.py';
+                };
+                
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                };
+                
+            } catch (err) {
+                console.error('WebSocket connection failed:', err);
+                isConnecting = false;
+                statusDot.className = 'status-dot offline';
+                statusText.textContent = 'Backend offline - Start server first';
+            }
+        }
+        
+        // ============================================================
+        // Message Handler
+        // ============================================================
+        
+        function handleMessage(data) {
+            switch (data.type) {
+                case 'connected':
+                    if (data.stats) updateStats(data.stats);
+                    break;
+                    
+                case 'stats':
+                    updateStats(data.stats);
+                    break;
+                    
+                case 'scenario_start':
+                    addTerminalLine('▶ SCENARIO', data.name, 'scenario');
+                    addTerminalLine('INFO', data.description, 'info');
+                    // Disable buttons during attack
+                    setButtonsEnabled(false, data.attack_id);
+                    break;
+                    
+                case 'event':
+                    const time = new Date(data.timestamp).toLocaleTimeString();
+                    addTerminalLine(time, `${data.event_type} ← ${data.user.split('@')[0]}`, 'event');
+                    break;
+                    
+                case 'alert':
+                    addTerminalLine('█ ALERT', `${data.pattern} [${data.severity}]`, 'alert');
+                    flashScreen();
+                    break;
+                    
+                case 'scenario_complete':
+                    const status = data.detected ? 'THREAT DETECTED ✓' : 'Monitoring...';
+                    addTerminalLine('◼ COMPLETE', status, data.detected ? 'success' : 'info');
+                    addTerminalLine('', '─'.repeat(50), 'divider');
+                    setButtonsEnabled(true);
+                    break;
+                    
+                case 'error':
+                    addTerminalLine('ERROR', data.message, 'error');
+                    setButtonsEnabled(true);
+                    break;
+            }
+        }
+        
+        // ============================================================
+        // Terminal Output
+        // ============================================================
+        
+        function addTerminalLine(prefix, text, type = 'event') {
+            const terminal = document.getElementById('terminal');
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            
+            const colors = {
+                'alert': 'var(--primary)',
+                'success': 'var(--success)',
+                'scenario': 'var(--warning)',
+                'info': 'var(--text-dim)',
+                'event': '#888',
+                'error': '#ff6666',
+                'divider': 'var(--border)'
+            };
+            
+            if (type === 'alert') {
+                line.innerHTML = `
+                    <span class="alert">${prefix}</span> 
+                    <span class="pattern">${text}</span>
+                    <span class="severity critical">CRITICAL</span>
+                `;
+            } else if (type === 'divider') {
+                line.innerHTML = `<span style="color: ${colors[type]}">${text}</span>`;
+            } else {
+                line.innerHTML = `
+                    <span class="time">${prefix}</span> 
+                    <span style="color: ${colors[type]}">${text}</span>
+                `;
+            }
+            
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+            
+            // Keep terminal size manageable
+            while (terminal.children.length > 100) {
+                terminal.removeChild(terminal.firstChild);
+            }
+        }
+        
+        function clearTerminal() {
+            const terminal = document.getElementById('terminal');
+            terminal.innerHTML = '';
+            addTerminalLine('SYSTEM', 'Terminal cleared', 'info');
+        }
+        
+        function flashScreen() {
+            const body = document.body;
+            body.style.boxShadow = 'inset 0 0 100px rgba(255, 59, 59, 0.3)';
+            setTimeout(() => {
+                body.style.boxShadow = 'none';
+            }, 200);
+        }
+        
+        // ============================================================
+        // Attack Buttons
+        // ============================================================
+        
+        function triggerAttack(attackId) {
+            if (isConnected && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    action: 'trigger_attack',
+                    attack_id: attackId
+                }));
+            } else if (!isConnecting) {
+                // Not connected, try to connect then fall back to simulation
+                connectWebSocket();
+                setTimeout(() => {
+                    if (isConnected) {
+                        triggerAttack(attackId);
+                    } else {
+                        fallbackSimulation(attackId);
+                    }
+                }, 1500);
+            } else {
+                // Already trying to connect, just run simulation
+                fallbackSimulation(attackId);
+            }
+        }
+        
+        function setButtonsEnabled(enabled, activeId = null) {
+            document.querySelectorAll('.attack-btn').forEach(btn => {
+                const id = btn.dataset.attack;
+                if (!enabled && id === activeId) {
+                    btn.classList.add('running');
+                } else {
+                    btn.classList.remove('running');
+                }
+                btn.disabled = !enabled;
+                btn.style.opacity = enabled ? '1' : '0.5';
+            });
+        }
+        
+        // ============================================================
+        // Stats Update
+        // ============================================================
+        
+        function updateStats(stats) {
+            if (stats.detection_rate) {
+                document.getElementById('detection-rate').textContent = stats.detection_rate + '%';
+            }
+            if (stats.patterns_loaded) {
+                document.getElementById('patterns').textContent = stats.patterns_loaded;
+            }
+            if (stats.categories) {
+                document.getElementById('categories').textContent = stats.categories;
+            }
+            if (stats.latency_ms) {
+                document.getElementById('latency').textContent = '<' + (stats.latency_ms * 10).toFixed(1) + 'ms';
+            }
+        }
+        
+        // ============================================================
+        // Fallback Simulation (when backend unavailable)
+        // ============================================================
+        
+        function fallbackSimulation(attackId = null) {
+            addTerminalLine('SYSTEM', 'Running in demo mode (backend offline)', 'info');
+            
+            const scenarios = {
+                'departing_attorney': [
+                    { prefix: '14:32:01', text: 'vpn_access ← partner_alpha', type: 'event' },
+                    { prefix: '14:32:15', text: 'file_access_bulk ← partner_alpha', type: 'event' },
+                    { prefix: '█ ALERT', text: 'pre_departure_exfil [CRITICAL]', type: 'alert' },
+                ],
+                'bec_fraud': [
+                    { prefix: '14:40:11', text: 'email_from_external ← finance_lead', type: 'event' },
+                    { prefix: '14:40:22', text: 'wire_transfer_initiated ← finance_lead', type: 'event' },
+                    { prefix: '█ ALERT', text: 'bec_wire_fraud [CRITICAL]', type: 'alert' },
+                ],
+                'vpn_hijack': [
+                    { prefix: '14:35:01', text: 'vpn_login ← user_alpha', type: 'event' },
+                    { prefix: '14:35:15', text: 'vpn_session_anomaly ← user_alpha', type: 'event' },
+                    { prefix: '█ ALERT', text: 'vpn_session_takeover [CRITICAL]', type: 'alert' },
+                ],
+                'insider_theft': [
+                    { prefix: '03:00:01', text: 'badge_access ← contractor_x', type: 'event' },
+                    { prefix: '03:00:15', text: 'usb_mount ← contractor_x', type: 'event' },
+                    { prefix: '█ ALERT', text: 'physical_cyber_exfil [CRITICAL]', type: 'alert' },
+                ],
+                'mfa_fatigue': [
+                    { prefix: '02:00:01', text: 'mfa_push_sent ← victim_user', type: 'event' },
+                    { prefix: '02:00:05', text: 'mfa_push_sent ← victim_user', type: 'event' },
+                    { prefix: '02:00:08', text: 'mfa_approved ← victim_user', type: 'event' },
+                    { prefix: '█ ALERT', text: 'mfa_fatigue_attack [CRITICAL]', type: 'alert' },
+                ]
+            };
+            
+            const sequence = attackId && scenarios[attackId] ? scenarios[attackId] : 
+                Object.values(scenarios).flat();
+            
+            let i = 0;
+            function showNext() {
+                if (i >= sequence.length) {
+                    addTerminalLine('', '─'.repeat(50), 'divider');
+                    setButtonsEnabled(true);
+                    return;
+                }
+                const item = sequence[i];
+                addTerminalLine(item.prefix, item.text, item.type);
+                if (item.type === 'alert') flashScreen();
+                i++;
+                setTimeout(showNext, item.type === 'alert' ? 1500 : 800);
+            }
+            
+            setButtonsEnabled(false, attackId);
+            showNext();
+        }
+        
+        // ============================================================
+        // Particle Animation
+        // ============================================================
+        
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Counter animation
+        function animateCounter(id, target, suffix = '', duration = 2000) {
+            const element = document.getElementById(id);
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                
+                if (typeof target === 'number') {
+                    const current = Math.floor(eased * target);
+                    element.textContent = current + suffix;
+                } else {
+                    element.textContent = progress >= 1 ? target : '...';
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        // ============================================================
+        // Initialize
+        // ============================================================
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            
+            // Animate counters
+            setTimeout(() => {
+                animateCounter('detection-rate', 100, '%');
+                animateCounter('patterns', 66, '');
+                animateCounter('categories', 15, '');
+                animateCounter('latency', '<0.1', 'ms');
+            }, 500);
+            
+            // Connect to backend
+            setTimeout(connectWebSocket, 1000);
+            
+            // Wire up attack buttons
+            document.querySelectorAll('.attack-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const attackId = btn.dataset.attack;
+                    if (attackId) triggerAttack(attackId);
+                });
+            });
+            
+            // Clear button
+            document.getElementById('clearBtn').addEventListener('click', clearTerminal);
+        });
+    </script>
+</body>
+</html>

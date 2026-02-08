@@ -16,7 +16,7 @@
             --bg-card-hover: rgba(25, 25, 35, 0.9);
             --border: rgba(255, 255, 255, 0.08);
             --text: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.5);
+            --text-dim: rgba(255, 255, 255, 0.7);
         }
 
         * {
@@ -465,6 +465,14 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
+        /* Focus styles for keyboard navigation */
+        .attack-btn:focus,
+        .clear-btn:focus,
+        .cta-button:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
         .connection-status {
             display: flex;
             align-items: center;
@@ -637,7 +645,7 @@
         <div class="hero-stats fade-in delay-1">
             <div class="hero-stat">
                 <div class="stat-number success" id="detection-rate">0</div>
-                <div class="stat-label">Detection Rate</div>
+                <div class="stat-label">Scenarios Detected</div>
             </div>
             <div class="hero-stat">
                 <div class="stat-number primary" id="patterns">0</div>
@@ -660,7 +668,7 @@
                 <div class="detection-card">
                     <div class="card-header">
                         <div class="card-icon">🔐</div>
-                        <div class="card-rate">100%</div>
+                        <div class="card-rate">54/54</div>
                     </div>
                     <div class="card-title">VPN Attacks</div>
                     <div class="card-scenarios">12 scenarios • Session hijack, credential stuffing, MFA fatigue</div>
@@ -669,7 +677,7 @@
                 <div class="detection-card">
                     <div class="card-header">
                         <div class="card-icon">👤</div>
-                        <div class="card-rate">100%</div>
+                        <div class="card-rate">54/54</div>
                     </div>
                     <div class="card-title">Insider Threats</div>
                     <div class="card-scenarios">3 scenarios • Departing attorney, after-hours theft, privilege abuse</div>
@@ -678,7 +686,7 @@
                 <div class="detection-card">
                     <div class="card-header">
                         <div class="card-icon">☁️</div>
-                        <div class="card-rate">100%</div>
+                        <div class="card-rate">54/54</div>
                     </div>
                     <div class="card-title">Cloud/SaaS</div>
                     <div class="card-scenarios">4 scenarios • SharePoint exfil, API key abuse, rogue OAuth apps</div>
@@ -687,7 +695,7 @@
                 <div class="detection-card">
                     <div class="card-header">
                         <div class="card-icon">📧</div>
-                        <div class="card-rate">100%</div>
+                        <div class="card-rate">54/54</div>
                     </div>
                     <div class="card-title">Business Email Compromise</div>
                     <div class="card-scenarios">4 scenarios • CEO fraud, wire transfer, vendor impersonation</div>
@@ -696,7 +704,7 @@
                 <div class="detection-card">
                     <div class="card-header">
                         <div class="card-icon">⚖️</div>
-                        <div class="card-rate">100%</div>
+                        <div class="card-rate">54/54</div>
                     </div>
                     <div class="card-title">Compliance</div>
                     <div class="card-scenarios">4 scenarios • Ethics wall breach, privilege theft, trust account fraud</div>
@@ -705,7 +713,7 @@
                 <div class="detection-card">
                     <div class="card-header">
                         <div class="card-icon">🤖</div>
-                        <div class="card-rate">100%</div>
+                        <div class="card-rate">54/54</div>
                     </div>
                     <div class="card-title">AI Security</div>
                     <div class="card-scenarios">3 scenarios • Model theft, prompt injection, Copilot abuse</div>
@@ -714,7 +722,7 @@
                 <div class="detection-card">
                     <div class="card-header">
                         <div class="card-icon">🔗</div>
-                        <div class="card-rate">100%</div>
+                        <div class="card-rate">54/54</div>
                     </div>
                     <div class="card-title">Supply Chain</div>
                     <div class="card-scenarios">2 scenarios • Vendor compromise, package backdoor</div>
@@ -723,7 +731,7 @@
                 <div class="detection-card">
                     <div class="card-header">
                         <div class="card-icon">💰</div>
-                        <div class="card-rate">100%</div>
+                        <div class="card-rate">54/54</div>
                     </div>
                     <div class="card-title">Financial Fraud</div>
                     <div class="card-scenarios">2 scenarios • Billing fraud, payment hijack</div>
@@ -782,7 +790,7 @@
                 <span class="status-text">Connecting to AION OS...</span>
             </div>
             
-            <div class="terminal" id="terminal">
+            <div class="terminal" id="terminal" aria-live="polite" aria-label="Threat detection terminal output">
                 <!-- Terminal lines will be injected here -->
             </div>
         </section>
@@ -817,7 +825,7 @@
         <!-- CTA -->
         <section class="cta-section fade-in delay-6">
             <h2 class="cta-title">Ready for the 30-Day Pilot?</h2>
-            <p class="cta-subtitle">Runs on any laptop. Zero client data leaves your network. 100% detection rate.</p>
+            <p class="cta-subtitle">Runs on any laptop. Zero client data leaves your network. Full scenario coverage.</p>
             <a href="mailto:dan@codetyphoons.com" class="cta-button">Schedule Demo</a>
         </section>
 
@@ -900,8 +908,12 @@
                 };
                 
                 ws.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    handleMessage(data);
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleMessage(data);
+                    } catch (e) {
+                        console.error('Failed to parse WebSocket message:', e);
+                    }
                 };
                 
             } catch (err) {
@@ -1178,7 +1190,7 @@
             
             // Animate counters
             setTimeout(() => {
-                animateCounter('detection-rate', 100, '%');
+                animateCounter('detection-rate', '54/54', '');
                 animateCounter('patterns', 66, '');
                 animateCounter('categories', 15, '');
                 animateCounter('latency', '<0.1', 'ms');

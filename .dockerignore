@@ -1,0 +1,54 @@
+# AION OS Docker Ignore
+# Keeps the image lean — only ship production code
+
+# Development & test files
+*.md
+*.bak
+*.bat
+*.ps1
+test_*.py
+benchmark_*.py
+demo_*.py
+compare_*.py
+competitive_*.py
+debug_*.py
+hunt.py
+quick_test.py
+setup.py
+review_*.py
+prepare_*.py
+enrich_*.py
+profile_*.py
+cloud_simulation.py
+case_studies.py
+dashboard_prospect.py
+red_team_*.py
+run_node.py
+firm_demo_packets.py
+pilot_outreach_email.py
+pitch_deck.py
+
+# Directories not needed in container
+.git/
+.github/
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+logs/
+reports/
+research_notes/
+llm_review_package/
+examples/
+aion-sveltekit/node_modules/
+node_modules/
+
+# HTML demos
+*.html
+
+# Data (mounted as volume, not baked in)
+aion_data/
+
+# Environment
+.env
+.env.*

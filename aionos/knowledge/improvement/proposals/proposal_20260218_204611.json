@@ -1,0 +1,25 @@
+{
+  "id": "proposal_20260218_204611",
+  "description": "1 proposed change(s):\n  - Raise confidence threshold to reduce noise (threshold_adjustment)",
+  "changes": [
+    {
+      "id": "mock_reduce_noise_1",
+      "change_type": "threshold_adjustment",
+      "target": "thresholds.baseline_confidence_threshold",
+      "description": "Raise confidence threshold to reduce noise",
+      "reasoning": "Current noise ratio is inf%, too high",
+      "old_value": 0.5,
+      "new_value": 0.6,
+      "confidence": 0.75,
+      "evidence": [],
+      "created_at": "2026-02-18T20:46:11.771748",
+      "status": "proposed"
+    }
+  ],
+  "metrics_context": {
+    "noise_ratio": Infinity
+  },
+  "created_at": "2026-02-18T20:46:11.771801",
+  "status": "proposed",
+  "target_policy_version": null
+}

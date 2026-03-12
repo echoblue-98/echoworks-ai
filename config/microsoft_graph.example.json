@@ -1,0 +1,35 @@
+{
+    "_comment": "AION OS - Microsoft Graph Connector Configuration",
+    "_instructions": [
+        "1. Create an App Registration in Azure AD",
+        "2. Grant the required API permissions (see below)",
+        "3. Create a client secret",
+        "4. Fill in the values below",
+        "5. Store this file securely - it contains credentials"
+    ],
+    
+    "tenant_id": "YOUR_AZURE_AD_TENANT_ID",
+    "client_id": "YOUR_APP_REGISTRATION_CLIENT_ID", 
+    "client_secret": "YOUR_CLIENT_SECRET",
+    
+    "_required_permissions": [
+        "User.Read.All (Application)",
+        "AuditLog.Read.All (Application)", 
+        "MailboxSettings.Read (Application)",
+        "Sites.Read.All (Application)",
+        "Directory.Read.All (Application)"
+    ],
+    
+    "_optional_permissions": [
+        "Mail.Read (Application) - for email content analysis",
+        "Files.Read.All (Application) - for document tracking"
+    ],
+    
+    "monitoring": {
+        "scan_interval_seconds": 300,
+        "business_hours_start": 7,
+        "business_hours_end": 20,
+        "bulk_download_threshold": 50,
+        "after_hours_alert_percentage": 30
+    }
+}

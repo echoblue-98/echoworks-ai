@@ -1,0 +1,115 @@
+# =============================================================================
+# AION OS - Docker Compose (Development + Production)
+# =============================================================================
+# Usage:
+#   Development:  docker compose up
+#   Production:   docker compose --profile production up
+#   With Redis:   docker compose --profile redis up
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # AION OS API Server
+  # ---------------------------------------------------------------------------
+  aion-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aion-api
+    ports:
+      - "8000:8000"
+    environment:
+      - AION_LOG_LEVEL=INFO
+      - AION_DATA_DIR=/app/aion_data
+      # Encryption (set in .env or override)
+      - AION_ENCRYPTION_PASSPHRASE=${AION_ENCRYPTION_PASSPHRASE:-}
+      - AION_ENCRYPTION_KEY=${AION_ENCRYPTION_KEY:-}
+      # RBAC API keys (set in .env or override)
+      - AION_ADMIN_KEY=${AION_ADMIN_KEY:-}
+      - AION_ANALYST_KEY=${AION_ANALYST_KEY:-}
+      - AION_VIEWER_KEY=${AION_VIEWER_KEY:-}
+      # IdP (optional — set for SSO)
+      - AION_IDP_PROVIDER=${AION_IDP_PROVIDER:-none}
+      - AION_IDP_ISSUER=${AION_IDP_ISSUER:-}
+      - AION_IDP_AUDIENCE=${AION_IDP_AUDIENCE:-}
+    volumes:
+      - aion-data:/app/aion_data
+      - aion-logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ---------------------------------------------------------------------------
+  # Redis (optional — for production persistence + pub/sub)
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: aion-redis
+    profiles:
+      - redis
+      - production
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # Prometheus (optional — scrapes /metrics endpoint)
+  # ---------------------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: aion-prometheus
+    profiles:
+      - monitoring
+      - production
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      aion-api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ---------------------------------------------------------------------------
+  # Grafana (optional — dashboards for AION metrics)
+  # ---------------------------------------------------------------------------
+  grafana:
+    image: grafana/grafana:latest
+    container_name: aion-grafana
+    profiles:
+      - monitoring
+      - production
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-aion2026}
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+volumes:
+  aion-data:
+    driver: local
+  aion-logs:
+    driver: local
+  redis-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local

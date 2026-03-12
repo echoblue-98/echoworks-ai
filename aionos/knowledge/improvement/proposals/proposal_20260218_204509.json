@@ -1,0 +1,48 @@
+{
+  "id": "proposal_20260218_204509",
+  "description": "1 proposed change(s):\n  - Adjust MFA fatigue threshold from 3 to 5 (threshold_adjustment)",
+  "changes": [
+    {
+      "id": "mock_default_1",
+      "change_type": "threshold_adjustment",
+      "target": "thresholds.mfa_fatigue_threshold",
+      "description": "Adjust MFA fatigue threshold from 3 to 5",
+      "reasoning": "Recent feedback suggests 3 is too sensitive for environments with frequent MFA",
+      "old_value": 3,
+      "new_value": 5,
+      "confidence": 0.65,
+      "evidence": [],
+      "created_at": "2026-02-18T20:45:09.767318",
+      "status": "proposed"
+    }
+  ],
+  "metrics_context": {
+    "window_start": "2026-01-19T20:45:09.696668",
+    "window_end": "2026-02-18T20:45:09.704366",
+    "policy_version": 938,
+    "total_alerts": 5000,
+    "true_positives": 983,
+    "false_positives": 1039,
+    "near_misses": 972,
+    "missed_threats": 956,
+    "mis_categorized": 1050,
+    "duplicates": 0,
+    "pending_review": 0,
+    "precision": 0.4862,
+    "recall_approx": 0.507,
+    "f1_score": 0.4963,
+    "noise_ratio": 0.2078,
+    "avg_time_to_detect_seconds": 0.0,
+    "p95_time_to_detect_seconds": 0.0,
+    "avg_analyst_time_seconds": 302.82,
+    "p95_analyst_time_seconds": 570.7,
+    "patterns_triggered": 1,
+    "unique_users_alerted": 1,
+    "categories_covered": [
+      ""
+    ]
+  },
+  "created_at": "2026-02-18T20:45:09.767354",
+  "status": "proposed",
+  "target_policy_version": null
+}

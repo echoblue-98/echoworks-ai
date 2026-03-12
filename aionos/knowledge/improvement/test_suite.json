@@ -1,0 +1,256 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-02-15T03:45:20.858876",
+  "scenarios": [
+    {
+      "id": "typhoon_insider_theft",
+      "name": "Typhoon Advertising Data Theft",
+      "description": "Classic insider threat: VPN access \u2192 database queries \u2192 bulk downloads \u2192 hard drive destruction over 4 weeks",
+      "category": "insider_threat",
+      "severity": "P0",
+      "events": [
+        {
+          "event_type": "vpn_access",
+          "user_id": "knowles",
+          "day_offset": 0,
+          "details": {
+            "location": "home"
+          }
+        },
+        {
+          "event_type": "database_query",
+          "user_id": "knowles",
+          "day_offset": 7,
+          "details": {
+            "tables": [
+              "clients",
+              "billing"
+            ]
+          }
+        },
+        {
+          "event_type": "bulk_operation",
+          "user_id": "knowles",
+          "day_offset": 14,
+          "details": {
+            "file_count": 2500
+          }
+        },
+        {
+          "event_type": "file_download",
+          "user_id": "knowles",
+          "day_offset": 20,
+          "details": {
+            "size_mb": 800
+          }
+        },
+        {
+          "event_type": "usb_activity",
+          "user_id": "knowles",
+          "day_offset": 21,
+          "details": {
+            "action": "write"
+          }
+        }
+      ],
+      "expected_alert": true,
+      "expected_pattern": "insider_data_theft",
+      "source": "synthetic",
+      "tags": [
+        "core",
+        "insider",
+        "regression"
+      ]
+    },
+    {
+      "id": "bec_wire_fraud",
+      "name": "Business Email Compromise",
+      "description": "CEO impersonation \u2192 urgent wire transfer request \u2192 modified banking details",
+      "category": "financial_fraud",
+      "severity": "P0",
+      "events": [
+        {
+          "event_type": "email_forward",
+          "user_id": "cfo_office",
+          "day_offset": 0,
+          "details": {
+            "from": "ceo_lookalike@ext.com"
+          }
+        },
+        {
+          "event_type": "email_forward",
+          "user_id": "cfo_office",
+          "day_offset": 0,
+          "details": {
+            "subject": "urgent wire"
+          }
+        }
+      ],
+      "expected_alert": true,
+      "expected_pattern": "bec_wire_fraud",
+      "source": "synthetic",
+      "tags": [
+        "core",
+        "bec",
+        "regression"
+      ]
+    },
+    {
+      "id": "attorney_departure_exfil",
+      "name": "Attorney Departure Data Exfiltration",
+      "description": "Departing partner downloads client files, forwards emails to personal account, prints sensitive documents",
+      "category": "legal_compliance",
+      "severity": "P1",
+      "events": [
+        {
+          "event_type": "file_download",
+          "user_id": "partner_smith",
+          "day_offset": 0,
+          "details": {
+            "file_type": "client_matter"
+          }
+        },
+        {
+          "event_type": "email_forward",
+          "user_id": "partner_smith",
+          "day_offset": 1,
+          "details": {
+            "to": "partner_smith@gmail.com"
+          }
+        },
+        {
+          "event_type": "print_job",
+          "user_id": "partner_smith",
+          "day_offset": 2,
+          "details": {
+            "pages": 500
+          }
+        },
+        {
+          "event_type": "cloud_sync",
+          "user_id": "partner_smith",
+          "day_offset": 3,
+          "details": {
+            "service": "dropbox"
+          }
+        }
+      ],
+      "expected_alert": true,
+      "expected_pattern": "attorney_departure_exfil",
+      "source": "synthetic",
+      "tags": [
+        "core",
+        "legal",
+        "regression"
+      ]
+    },
+    {
+      "id": "vpn_brute_force_lateral",
+      "name": "VPN Brute Force + Lateral Movement",
+      "description": "Failed VPN logins \u2192 successful login \u2192 internal scanning \u2192 privilege escalation",
+      "category": "network_attack",
+      "severity": "P1",
+      "events": [
+        {
+          "event_type": "vpn_brute_force",
+          "user_id": "external_actor",
+          "day_offset": 0,
+          "details": {
+            "attempts": 50
+          }
+        },
+        {
+          "event_type": "vpn_access",
+          "user_id": "compromised_user",
+          "day_offset": 0,
+          "details": {
+            "source": "tor_exit_node"
+          }
+        },
+        {
+          "event_type": "geographic_anomaly",
+          "user_id": "compromised_user",
+          "day_offset": 0,
+          "details": {
+            "location": "unexpected_country"
+          }
+        }
+      ],
+      "expected_alert": true,
+      "expected_pattern": "vpn_brute_force_lateral",
+      "source": "synthetic",
+      "tags": [
+        "core",
+        "network",
+        "regression"
+      ]
+    },
+    {
+      "id": "mfa_fatigue_attack",
+      "name": "MFA Fatigue / Push Bombing",
+      "description": "Attacker spams MFA prompts until user accepts",
+      "category": "identity_attack",
+      "severity": "P1",
+      "events": [
+        {
+          "event_type": "vpn_mfa_bypass",
+          "user_id": "target_user",
+          "day_offset": 0,
+          "details": {
+            "push_count": 15,
+            "accepted_after_fatigue": true
+          }
+        },
+        {
+          "event_type": "vpn_access",
+          "user_id": "target_user",
+          "day_offset": 0,
+          "details": {
+            "new_device": true
+          }
+        }
+      ],
+      "expected_alert": true,
+      "expected_pattern": "",
+      "source": "synthetic",
+      "tags": [
+        "core",
+        "identity",
+        "regression"
+      ]
+    },
+    {
+      "id": "normal_daily_work",
+      "name": "Normal Attorney Daily Work",
+      "description": "Routine file access and email during business hours",
+      "category": "baseline",
+      "severity": "P4",
+      "events": [
+        {
+          "event_type": "vpn_access",
+          "user_id": "normal_user",
+          "day_offset": 0,
+          "details": {
+            "location": "office"
+          }
+        },
+        {
+          "event_type": "file_download",
+          "user_id": "normal_user",
+          "day_offset": 0,
+          "details": {
+            "file_count": 3
+          }
+        }
+      ],
+      "expected_alert": false,
+      "expected_pattern": "",
+      "source": "synthetic",
+      "tags": [
+        "negative",
+        "baseline",
+        "regression"
+      ]
+    }
+  ]
+}

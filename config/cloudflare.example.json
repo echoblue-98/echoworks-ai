@@ -1,0 +1,37 @@
+{
+  "_comment": "Cloudflare API Configuration for AION OS",
+  "_instructions": "1. Create an API Token at https://dash.cloudflare.com/profile/api-tokens",
+  "_permissions_needed": [
+    "Account > Access: Audit Logs > Read",
+    "Account > Access: Apps and Policies > Read",
+    "Account > Gateway > Read",
+    "Account > Logs > Read"
+  ],
+  
+  "api_token": "YOUR_CLOUDFLARE_API_TOKEN_HERE",
+  "account_id": "YOUR_CLOUDFLARE_ACCOUNT_ID",
+  
+  "monitoring": {
+    "scan_interval_seconds": 300,
+    "lookback_hours": 24,
+    "enabled_detections": [
+      "impossible_travel",
+      "dns_exfiltration",
+      "post_departure_access",
+      "unusual_location",
+      "new_device",
+      "rate_limit_exceeded"
+    ]
+  },
+  
+  "terminated_users": {
+    "_comment": "List of terminated user emails to watch for unauthorized access",
+    "emails": []
+  },
+  
+  "alert_thresholds": {
+    "impossible_travel_hours": 3,
+    "dns_query_spike_percent": 500,
+    "rate_limit_multiplier": 5
+  }
+}

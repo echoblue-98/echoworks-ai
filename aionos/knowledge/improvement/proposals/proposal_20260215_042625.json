@@ -1,0 +1,52 @@
+{
+  "id": "proposal_20260215_042625",
+  "description": "1 proposed change(s):\n  - Raise confidence threshold to reduce noise (threshold_adjustment)",
+  "changes": [
+    {
+      "id": "mock_reduce_noise_1",
+      "change_type": "threshold_adjustment",
+      "target": "thresholds.baseline_confidence_threshold",
+      "description": "Raise confidence threshold to reduce noise",
+      "reasoning": "Current noise ratio is 34%, too high",
+      "old_value": 0.5,
+      "new_value": 0.6,
+      "confidence": 0.75,
+      "evidence": [
+        "soc_alert_0042",
+        "soc_alert_0008",
+        "soc_alert_0016"
+      ],
+      "created_at": "2026-02-15T04:26:25.783173",
+      "status": "proposed"
+    }
+  ],
+  "metrics_context": {
+    "window_start": "2026-01-16T04:26:25.728514",
+    "window_end": "2026-02-15T04:26:25.730692",
+    "policy_version": 470,
+    "total_alerts": 50,
+    "true_positives": 10,
+    "false_positives": 11,
+    "near_misses": 8,
+    "missed_threats": 6,
+    "mis_categorized": 9,
+    "duplicates": 6,
+    "pending_review": 0,
+    "precision": 0.4762,
+    "recall_approx": 0.625,
+    "f1_score": 0.5405,
+    "noise_ratio": 0.34,
+    "avg_time_to_detect_seconds": 0.0,
+    "p95_time_to_detect_seconds": 0.0,
+    "avg_analyst_time_seconds": 0.0,
+    "p95_analyst_time_seconds": 0.0,
+    "patterns_triggered": 1,
+    "unique_users_alerted": 1,
+    "categories_covered": [
+      ""
+    ]
+  },
+  "created_at": "2026-02-15T04:26:25.783264",
+  "status": "proposed",
+  "target_policy_version": null
+}

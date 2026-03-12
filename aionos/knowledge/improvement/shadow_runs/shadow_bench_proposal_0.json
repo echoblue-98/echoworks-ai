@@ -1,0 +1,39 @@
+{
+  "proposal_id": "bench_proposal_0",
+  "candidate_policy_version": 2,
+  "baseline_policy_version": 1,
+  "verdict": "passed",
+  "started_at": "2026-02-22T01:20:26.433082",
+  "completed_at": "2026-02-22T01:20:26.433772",
+  "duration_seconds": 0.001,
+  "baseline_score": 50,
+  "candidate_score": 55.0,
+  "score_delta": 5.0,
+  "metrics_comparison": {
+    "baseline_alerts": 46,
+    "candidate_alerts": 42,
+    "alert_delta": -4,
+    "new_detections": 37,
+    "lost_detections": 41,
+    "score_improvement": 5.0
+  },
+  "test_suite_pass_rate": 0.0,
+  "test_suite_details": {},
+  "guardrail_violations": [],
+  "coverage_check": {
+    "passed": true,
+    "baseline_patterns": [
+      "mock_alert"
+    ],
+    "candidate_patterns": [
+      "mock_alert"
+    ],
+    "lost_patterns": [],
+    "new_patterns": []
+  },
+  "new_alerts_count": 37,
+  "removed_alerts_count": 41,
+  "changed_severity_count": 0,
+  "summary": "Score improved (50.0 \u2192 55.0) but 100% of tests failed. Manual review recommended.",
+  "recommendation": "review_manually"
+}

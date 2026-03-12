@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AION OS — Proof Deck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg-primary: #0a0a0f;
+    --bg-card: #12121a;
+    --bg-card-hover: #1a1a25;
+    --accent: #00d4ff;
+    --accent-dim: rgba(0, 212, 255, 0.15);
+    --accent-glow: rgba(0, 212, 255, 0.3);
+    --green: #00ff88;
+    --green-dim: rgba(0, 255, 136, 0.15);
+    --red: #ff4466;
+    --red-dim: rgba(255, 68, 102, 0.15);
+    --amber: #ffaa00;
+    --amber-dim: rgba(255, 170, 0, 0.15);
+    --text-primary: #e8e8f0;
+    --text-secondary: #8888aa;
+    --text-dim: #555570;
+    --border: rgba(255, 255, 255, 0.06);
+    --slide-height: 100vh;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── Navigation ── */
+  .nav {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .nav a {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    display: block;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .nav a:hover,
+  .nav a.active {
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+    transform: scale(1.4);
+  }
+  .nav a .tooltip {
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .nav a:hover .tooltip { opacity: 1; }
+
+  /* ── Slide Progress ── */
+  .progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--green));
+    z-index: 200;
+    transition: width 0.3s;
+  }
+
+  /* ── Slide Counter ── */
+  .slide-counter {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    z-index: 100;
+  }
+  .slide-counter .current { color: var(--accent); font-weight: 600; }
+
+  /* ── Keyboard hint ── */
+  .kb-hint {
+    position: fixed;
+    bottom: 24px;
+    right: 60px;
+    font-size: 11px;
+    color: var(--text-dim);
+    z-index: 100;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .kb-hint kbd {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  /* ── Slides ── */
+  .slide {
+    min-height: var(--slide-height);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at 30% 50%, rgba(0, 212, 255, 0.03) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .slide + .slide {
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Slide Label ── */
+  .slide-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  /* ── Typography ── */
+  h1 {
+    font-size: 64px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  h1 .accent { color: var(--accent); }
+  h1 .green { color: var(--green); }
+
+  h2 {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .subtitle {
+    font-size: 22px;
+    color: var(--text-secondary);
+    font-weight: 300;
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  .big-number {
+    font-size: 72px;
+    font-weight: 900;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1;
+  }
+  .big-number.accent { color: var(--accent); }
+  .big-number.green { color: var(--green); }
+  .big-number.amber { color: var(--amber); }
+
+  .stat-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── Layout ── */
+  .columns {
+    display: grid;
+    gap: 32px;
+    margin-top: 32px;
+  }
+  .columns-2 { grid-template-columns: 1fr 1fr; }
+  .columns-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .columns-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    transition: all 0.3s;
+  }
+  .card:hover {
+    background: var(--bg-card-hover);
+    border-color: rgba(0, 212, 255, 0.15);
+    transform: translateY(-2px);
+  }
+  .card.accent-border { border-left: 3px solid var(--accent); }
+  .card.green-border { border-left: 3px solid var(--green); }
+  .card.red-border { border-left: 3px solid var(--red); }
+  .card.amber-border { border-left: 3px solid var(--amber); }
+
+  .card .card-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  /* ── Stat Grid ── */
+  .stat-grid {
+    display: grid;
+    gap: 24px;
+    margin-top: 32px;
+  }
+  .stat-grid.g3 { grid-template-columns: repeat(3, 1fr); }
+  .stat-grid.g4 { grid-template-columns: repeat(4, 1fr); }
+  .stat-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  /* ── Comparison Table ── */
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    font-size: 14px;
+  }
+  .comp-table th {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--border);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .comp-table th:last-child {
+    color: var(--accent);
+  }
+  .comp-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .comp-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+  .comp-table td:last-child {
+    color: var(--green);
+    font-weight: 600;
+  }
+  .comp-table .no { color: var(--red); opacity: 0.6; }
+  .comp-table .partial { color: var(--amber); }
+  .comp-table .yes { color: var(--green); }
+  .comp-table .aion-col { background: rgba(0, 212, 255, 0.04); }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge.green { background: var(--green-dim); color: var(--green); }
+  .badge.accent { background: var(--accent-dim); color: var(--accent); }
+  .badge.amber { background: var(--amber-dim); color: var(--amber); }
+  .badge.red { background: var(--red-dim); color: var(--red); }
+
+  /* ── Progress bar (inline) ── */
+  .bar-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0;
+  }
+  .bar-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    width: 160px;
+    flex-shrink: 0;
+  }
+  .bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s ease;
+  }
+  .bar-fill.green { background: linear-gradient(90deg, var(--green), #00cc66); }
+  .bar-fill.accent { background: linear-gradient(90deg, var(--accent), #0088cc); }
+  .bar-fill.amber { background: linear-gradient(90deg, var(--amber), #cc8800); }
+  .bar-fill.red { background: linear-gradient(90deg, var(--red), #cc2244); }
+  .bar-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    width: 50px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ── Terminal block ── */
+  .terminal {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-top: 24px;
+    overflow-x: auto;
+    color: var(--text-secondary);
+  }
+  .terminal .prompt { color: var(--accent); }
+  .terminal .pass { color: var(--green); }
+  .terminal .fail { color: var(--red); }
+  .terminal .num { color: var(--amber); }
+  .terminal .comment { color: var(--text-dim); }
+
+  /* ── Flow / Pipeline ── */
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .pipeline-step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    text-align: center;
+    min-width: 140px;
+    position: relative;
+  }
+  .pipeline-step .step-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .pipeline-step .step-name { font-size: 13px; font-weight: 600; }
+  .pipeline-step .step-detail { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .pipeline-arrow {
+    color: var(--accent);
+    font-size: 20px;
+    padding: 0 8px;
+    opacity: 0.5;
+  }
+
+  /* ── Quote ── */
+  .quote {
+    border-left: 3px solid var(--accent);
+    padding: 16px 24px;
+    margin: 24px 0;
+    font-size: 20px;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--text-primary);
+    background: var(--accent-dim);
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* ── Divider ── */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    margin: 24px 0;
+  }
+
+  /* ── Tag ── */
+  .tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .tag {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  /* ── List ── */
+  .check-list {
+    list-style: none;
+    margin-top: 16px;
+  }
+  .check-list li {
+    padding: 8px 0;
+    font-size: 15px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .check-list li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .check-list li.x::before {
+    content: '✗';
+    color: var(--red);
+  }
+
+  /* ── Section Header ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .section-header .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--accent);
+    opacity: 0.5;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .slide > * {
+    animation: fadeInUp 0.6s ease both;
+  }
+  .slide > *:nth-child(2) { animation-delay: 0.1s; }
+  .slide > *:nth-child(3) { animation-delay: 0.2s; }
+  .slide > *:nth-child(4) { animation-delay: 0.3s; }
+
+  /* ── Print ── */
+  @media print {
+    .nav, .progress-bar, .slide-counter, .kb-hint { display: none; }
+    .slide { min-height: auto; page-break-after: always; padding: 40px; }
+    body { background: white; color: #111; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .slide { padding: 40px 24px; }
+    h1 { font-size: 36px; }
+    h2 { font-size: 28px; }
+    .columns-2, .columns-3, .columns-4 { grid-template-columns: 1fr; }
+    .stat-grid.g3, .stat-grid.g4 { grid-template-columns: 1fr 1fr; }
+    .nav { display: none; }
+    .pipeline { flex-direction: column; }
+    .pipeline-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation Dots -->
+<nav class="nav" id="nav"></nav>
+<div class="progress-bar" id="progressBar"></div>
+<div class="slide-counter"><span class="current" id="currentSlide">01</span> / <span id="totalSlides">12</span></div>
+<div class="kb-hint"><kbd>↑</kbd><kbd>↓</kbd> Navigate &nbsp; <kbd>F</kbd> Fullscreen</div>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 1: OPENING                                -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-1" data-label="Opening">
+  <div class="slide-label">CodeTyphoons Presents</div>
+  <h1>
+    <span class="accent">AION</span> OS
+  </h1>
+  <p class="subtitle" style="font-size: 28px; font-weight: 400; margin-bottom: 32px;">
+    Insider Threat Intelligence for Law Firms
+  </p>
+  <div class="divider"></div>
+  <p class="subtitle" style="font-size: 18px; max-width: 640px;">
+    A working, tested system that detects attorney departures, data exfiltration, and behavioral anomalies — <strong style="color: var(--text-primary);">before they cost your firm millions.</strong>
+  </p>
+  <div style="margin-top: 48px; display: flex; gap: 24px;">
+    <div class="badge green" style="font-size: 14px; padding: 8px 20px;">50/50 Tests Passing</div>
+    <div class="badge accent" style="font-size: 14px; padding: 8px 20px;">69 Attack Patterns</div>
+    <div class="badge accent" style="font-size: 14px; padding: 8px 20px;">13,439 events/sec</div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 2: THE REALITY                            -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-2" data-label="The Reality">
+  <div class="slide-label">The Reality</div>
+  <h2>A senior partner leaves your firm.<br><span style="color: var(--red);">What happens next costs $2–5M.</span></h2>
+  <div class="columns columns-3" style="margin-top: 40px;">
+    <div class="card red-border">
+      <span class="card-icon">📂</span>
+      <h3>Client Files Walk Out</h3>
+      <p>3,000+ documents downloaded in the 30 days before resignation. USB drives. Personal Dropbox. You find out when the client calls their new firm.</p>
+    </div>
+    <div class="card red-border">
+      <span class="card-icon">⚖️</span>
+      <h3>Privilege Gets Violated</h3>
+      <p>Ethics wall breaches. Trust account access. Matter-level data from competing clients lands in the wrong hands. Bar complaints follow.</p>
+    </div>
+    <div class="card red-border">
+      <span class="card-icon">💰</span>
+      <h3>Revenue Disappears</h3>
+      <p>The partner takes 12 clients. $4.2M in annual billings. Recruitment cost for a replacement: $500K. Knowledge loss: immeasurable.</p>
+    </div>
+  </div>
+  <div class="quote" style="margin-top: 40px;">
+    "We knew he was leaving. We just didn't know he was taking everything with him."<br>
+    <span style="font-size: 14px; font-style: normal; color: var(--text-dim);">— Managing Partner, AmLaw 100 Firm</span>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 3: WHAT AION DOES — IN 30 SECONDS        -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-3" data-label="What We Do">
+  <div class="slide-label">What AION Does</div>
+  <h2>Sees the pattern.<br><span class="accent">Before the damage.</span></h2>
+  <p class="subtitle" style="margin-bottom: 32px;">Three detection layers running in real-time. No cloud. No data leaves your network.</p>
+
+  <div class="pipeline">
+    <div class="pipeline-step" style="border-color: rgba(0,212,255,0.2);">
+      <span class="step-icon">🔗</span>
+      <div class="step-name">Temporal Correlation</div>
+      <div class="step-detail">69 attack sequences</div>
+      <div class="step-detail">92 event types</div>
+    </div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step" style="border-color: rgba(0,255,136,0.2);">
+      <span class="step-icon">📊</span>
+      <div class="step-name">Behavioral Baseline</div>
+      <div class="step-detail">Per-user profiling</div>
+      <div class="step-detail">6 deviation types</div>
+    </div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step" style="border-color: rgba(255,170,0,0.2);">
+      <span class="step-icon">🧠</span>
+      <div class="step-name">Hybrid Detection</div>
+      <div class="step-detail">Cross-engine correlation</div>
+      <div class="step-detail">Confidence scoring</div>
+    </div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step" style="border-color: rgba(0,212,255,0.2);">
+      <span class="step-icon">🛡️</span>
+      <div class="step-name">Self-Improvement</div>
+      <div class="step-detail">Shadow-tested changes</div>
+      <div class="step-detail">Human-approved only</div>
+    </div>
+    <span class="pipeline-arrow">→</span>
+    <div class="pipeline-step" style="border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.05);">
+      <span class="step-icon">🚨</span>
+      <div class="step-name">SOC Alert</div>
+      <div class="step-detail">Prioritized, actionable</div>
+      <div class="step-detail">Forensic-ready</div>
+    </div>
+  </div>
+
+  <div class="columns columns-3" style="margin-top: 40px;">
+    <div class="card accent-border">
+      <h3 style="font-size: 16px;">🏛️ Built for Law Firms</h3>
+      <p>Attorney departure patterns, ethics wall monitoring, matter-level access, trust account surveillance, DMS/billing/email correlation.</p>
+    </div>
+    <div class="card green-border">
+      <h3 style="font-size: 16px;">🔒 Zero Data Leakage</h3>
+      <p>Runs entirely on-premise. Attorney-client privilege maintained. No event data touches the cloud. Ever.</p>
+    </div>
+    <div class="card accent-border">
+      <h3 style="font-size: 16px;">⚡ Real-Time</h3>
+      <p>13,439 events/second. 0.07ms average detection latency. Multi-day attack chains correlated across weeks of behavior.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 4: THE PROOF — LIVE NUMBERS               -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-4" data-label="The Proof">
+  <div class="slide-label">The Proof</div>
+  <h2>Not a prototype.<br><span class="green">Tested. Validated. Production-ready.</span></h2>
+
+  <div class="stat-grid g4" style="margin-top: 32px;">
+    <div class="stat-box">
+      <div class="big-number green">50/50</div>
+      <div class="stat-label">Validation Tests</div>
+    </div>
+    <div class="stat-box">
+      <div class="big-number accent">10/10</div>
+      <div class="stat-label">Benchmark Targets</div>
+    </div>
+    <div class="stat-box">
+      <div class="big-number accent">13,439</div>
+      <div class="stat-label">Events / Second</div>
+    </div>
+    <div class="stat-box">
+      <div class="big-number amber">4.3s</div>
+      <div class="stat-label">Full Test Suite</div>
+    </div>
+  </div>
+
+  <div class="terminal" style="margin-top: 32px;">
+    <span class="comment">$ python test_unproven_points.py</span><br><br>
+    <span class="pass">✓ PASS</span>&nbsp; Adversarial Poisoning &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="num">9/9</span> &nbsp; (100%)<br>
+    <span class="pass">✓ PASS</span>&nbsp; Multi-Day Drift &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="num">6/6</span> &nbsp; (100%)<br>
+    <span class="pass">✓ PASS</span>&nbsp; LLM Pipeline Quality &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="num">24/24</span> (100%)<br>
+    <span class="pass">✓ PASS</span>&nbsp; SOC Integration &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="num">11/11</span> (100%)<br><br>
+    <span class="prompt">TOTAL: 50/50 tests passed (100%)</span><br>
+    <span class="pass">STATUS: ALL VALIDATED</span>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 5: WHAT WE CATCH                          -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-5" data-label="Detection">
+  <div class="slide-label">What We Catch</div>
+  <h2>69 attack patterns.<br><span class="accent">Purpose-built for legal.</span></h2>
+
+  <div class="columns columns-4" style="margin-top: 32px;">
+    <div class="card">
+      <h3 style="font-size: 14px; color: var(--accent);">Attorney Departure</h3>
+      <ul class="check-list" style="font-size: 13px;">
+        <li>Pre-departure exfiltration</li>
+        <li>After-hours data theft</li>
+        <li>VPN + exfil correlation</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="font-size: 14px; color: var(--accent);">VPN & Network  (12)</h3>
+      <ul class="check-list" style="font-size: 13px;">
+        <li>Credential compromise</li>
+        <li>Impossible travel</li>
+        <li>MFA fatigue attacks</li>
+        <li>DNS tunneling</li>
+        <li>Session hijacking</li>
+        <li>Token replay</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="font-size: 14px; color: var(--accent);">Legal Compliance (6)</h3>
+      <ul class="check-list" style="font-size: 13px;">
+        <li>Ethics wall breaches</li>
+        <li>Trust account fraud</li>
+        <li>eDiscovery exfiltration</li>
+        <li>Privileged data theft</li>
+        <li>Case matter manipulation</li>
+        <li>Regulatory data breach</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="font-size: 14px; color: var(--accent);">Advanced Threats</h3>
+      <ul class="check-list" style="font-size: 13px;">
+        <li>BEC / wire fraud</li>
+        <li>Cloud admin takeover</li>
+        <li>AI model theft</li>
+        <li>Prompt injection chains</li>
+        <li>Supply chain attacks</li>
+        <li>Payment hijacking</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap;">
+    <span class="tag">Lateral Movement (3)</span>
+    <span class="tag">Persistence (2)</span>
+    <span class="tag">Evasion (4)</span>
+    <span class="tag">Cloud/SaaS (5)</span>
+    <span class="tag">Identity & Access (6)</span>
+    <span class="tag">Financial Fraud (2)</span>
+    <span class="tag">Physical+Cyber (4)</span>
+    <span class="tag">Endpoint/Zero Trust (3)</span>
+    <span class="tag">Supply Chain (3)</span>
+    <span class="tag">AI/ML Security (4)</span>
+    <span class="tag">Cross-User (3)</span>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 6: SPEED COMPARISON                       -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-6" data-label="Speed">
+  <div class="slide-label">Performance</div>
+  <h2>Not incrementally faster.<br><span class="accent">Categorically different.</span></h2>
+
+  <div class="columns columns-2" style="margin-top: 32px;">
+    <div>
+      <h3 style="margin-bottom: 20px;">Security Intelligence</h3>
+      <div class="bar-container">
+        <span class="bar-label">AION OS</span>
+        <div class="bar"><div class="bar-fill green" style="width: 100%;"></div></div>
+        <span class="bar-value" style="color: var(--green);">13,439/s</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">Industry Standard</span>
+        <div class="bar"><div class="bar-fill red" style="width: 3.7%;"></div></div>
+        <span class="bar-value" style="color: var(--red);">500/s</span>
+      </div>
+
+      <div style="margin-top: 32px;">
+        <h3 style="margin-bottom: 20px;">Detection Latency</h3>
+        <div class="bar-container">
+          <span class="bar-label">AION OS</span>
+          <div class="bar"><div class="bar-fill green" style="width: 0.14%;"></div></div>
+          <span class="bar-value" style="color: var(--green);">0.07ms</span>
+        </div>
+        <div class="bar-container">
+          <span class="bar-label">Industry Standard</span>
+          <div class="bar"><div class="bar-fill red" style="width: 40%;"></div></div>
+          <span class="bar-value" style="color: var(--red);">200ms</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom: 20px;">Document Intelligence</h3>
+      <div class="bar-container">
+        <span class="bar-label">AION OS</span>
+        <div class="bar"><div class="bar-fill green" style="width: 100%;"></div></div>
+        <span class="bar-value" style="color: var(--green);">134/s</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">Cloud LLMs</span>
+        <div class="bar"><div class="bar-fill red" style="width: 0.4%;"></div></div>
+        <span class="bar-value" style="color: var(--red);">0.5/s</span>
+      </div>
+
+      <div style="margin-top: 32px;">
+        <h3 style="margin-bottom: 20px;">Analysis Latency</h3>
+        <div class="bar-container">
+          <span class="bar-label">AION OS</span>
+          <div class="bar"><div class="bar-fill green" style="width: 0.25%;"></div></div>
+          <span class="bar-value" style="color: var(--green);">7.5ms</span>
+        </div>
+        <div class="bar-container">
+          <span class="bar-label">GPT-4 / Claude</span>
+          <div class="bar"><div class="bar-fill red" style="width: 100%;"></div></div>
+          <span class="bar-value" style="color: var(--red);">3,000ms</span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 32px; text-align: center;">
+        <div class="big-number accent" style="font-size: 48px;">267–667×</div>
+        <div class="stat-label">Faster Than Cloud LLMs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 7: WHAT COMPETITORS CAN'T DO              -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-7" data-label="Competition">
+  <div class="slide-label">Competitive Landscape</div>
+  <h2>They monitor employees.<br><span class="accent">We detect attack chains.</span></h2>
+
+  <table class="comp-table" style="margin-top: 32px;">
+    <thead>
+      <tr>
+        <th>Capability</th>
+        <th>Splunk</th>
+        <th>Sentinel</th>
+        <th>CrowdStrike</th>
+        <th>DTEX</th>
+        <th class="aion-col">AION OS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Multi-day attack correlation</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="partial">Partial</td>
+        <td class="yes aion-col">✓ Yes</td>
+      </tr>
+      <tr>
+        <td>Per-user behavioral baselines</td>
+        <td class="partial">Partial</td>
+        <td class="partial">Partial</td>
+        <td class="no">No</td>
+        <td class="yes">Yes</td>
+        <td class="yes aion-col">✓ Yes</td>
+      </tr>
+      <tr>
+        <td>Law-firm-specific rules</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="yes aion-col">✓ 69 patterns</td>
+      </tr>
+      <tr>
+        <td>Attorney departure detection</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="yes aion-col">✓ Yes</td>
+      </tr>
+      <tr>
+        <td>Ethics wall breach monitoring</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="yes aion-col">✓ Yes</td>
+      </tr>
+      <tr>
+        <td>Self-improving detection</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="yes aion-col">✓ RSI Engine</td>
+      </tr>
+      <tr>
+        <td>Litigation-ready output</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="no">No</td>
+        <td class="partial">Partial</td>
+        <td class="yes aion-col">✓ Yes</td>
+      </tr>
+      <tr>
+        <td>On-premise / zero data leak</td>
+        <td class="yes">Yes</td>
+        <td class="no">Cloud</td>
+        <td class="no">Cloud</td>
+        <td class="no">Cloud</td>
+        <td class="yes aion-col">✓ On-prem</td>
+      </tr>
+      <tr>
+        <td>< $100K/year</td>
+        <td class="no">$150K+</td>
+        <td class="yes">Yes</td>
+        <td class="no">$200K+</td>
+        <td class="yes">$10–20K</td>
+        <td class="yes aion-col">✓ $50K flat</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="color: var(--text-dim); font-size: 13px; margin-top: 16px;">
+    No incumbent has law-firm-specific detection, attorney departure intelligence, or self-improving patterns. AION is the only platform purpose-built for legal insider threats.
+  </p>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 8: SAFE SELF-IMPROVEMENT                  -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-8" data-label="RSI Engine">
+  <div class="slide-label">Recursive Self-Improvement</div>
+  <h2>Gets smarter every cycle.<br><span class="green">Never breaks its own rules.</span></h2>
+  <p class="subtitle" style="margin-bottom: 32px;">6-module improvement engine with immutable safety invariants. Every change is shadow-tested, guardrail-checked, and human-approved.</p>
+
+  <div class="columns columns-3">
+    <div class="card accent-border">
+      <span class="card-icon">📋</span>
+      <h3 style="font-size: 15px;">Versioned Policies</h3>
+      <p>Every detection config is versioned, diffable, and rollback-ready. Full audit trail. No silent changes.</p>
+    </div>
+    <div class="card green-border">
+      <span class="card-icon">🧪</span>
+      <h3 style="font-size: 15px;">Shadow Testing</h3>
+      <p>New policies run in shadow mode against production traffic. Only promoted if they pass guardrails AND human review.</p>
+    </div>
+    <div class="card amber-border">
+      <span class="card-icon">🔒</span>
+      <h3 style="font-size: 15px;">9 Immutable Invariants</h3>
+      <p>Hard safety bounds that no improvement cycle can violate. MFA thresholds, retention limits, baseline confidence — all locked.</p>
+    </div>
+  </div>
+
+  <div class="columns columns-2" style="margin-top: 24px;">
+    <div class="card" style="background: rgba(255, 68, 102, 0.04); border-color: rgba(255,68,102,0.15);">
+      <h3 style="color: var(--red); font-size: 15px;">🎯 Adversarial Poisoning Test</h3>
+      <p style="margin-bottom: 12px;">We threw 1,000 malicious feedback items at the system. Tried to disable all patterns. Attempted 5 invariant violations.</p>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--green); font-weight: 600;">
+        Result: 9/9 attacks blocked. Zero invariants breached.
+      </div>
+    </div>
+    <div class="card" style="background: rgba(0, 255, 136, 0.04); border-color: rgba(0,255,136,0.15);">
+      <h3 style="color: var(--green); font-size: 15px;">📈 30-Day Drift Simulation</h3>
+      <p style="margin-bottom: 12px;">Simulated 30 days of gradually shifting user behavior with Typhoon attack injection. Tested week-by-week stability.</p>
+      <div style="font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--green); font-weight: 600;">
+        Result: 6/6 weeks stable. Attacks detected through drift.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 9: ROI                                    -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-9" data-label="ROI">
+  <div class="slide-label">Return on Investment</div>
+  <h2>$20K investment.<br><span class="green">$5.12M in prevented loss.</span></h2>
+
+  <div class="stat-grid g3" style="margin-top: 40px;">
+    <div class="stat-box">
+      <div class="big-number green" style="font-size: 56px;">255.8×</div>
+      <div class="stat-label">ROI Multiple</div>
+    </div>
+    <div class="stat-box">
+      <div class="big-number accent" style="font-size: 56px;">$5.12M</div>
+      <div class="stat-label">Expected Loss Prevention</div>
+    </div>
+    <div class="stat-box">
+      <div class="big-number amber" style="font-size: 56px;">$20K</div>
+      <div class="stat-label">Annual AION Cost</div>
+    </div>
+  </div>
+
+  <div class="columns columns-2" style="margin-top: 40px;">
+    <div>
+      <h3 style="margin-bottom: 16px;">Risk Breakdown</h3>
+      <div class="bar-container">
+        <span class="bar-label">Revenue at risk</span>
+        <div class="bar"><div class="bar-fill red" style="width: 85%;"></div></div>
+        <span class="bar-value" style="color: var(--red);">$4.2M</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">Litigation costs</span>
+        <div class="bar"><div class="bar-fill amber" style="width: 30%;"></div></div>
+        <span class="bar-value" style="color: var(--amber);">$1.5M</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">Replacement cost</span>
+        <div class="bar"><div class="bar-fill amber" style="width: 12%;"></div></div>
+        <span class="bar-value" style="color: var(--amber);">$500K</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">Knowledge loss</span>
+        <div class="bar"><div class="bar-fill red" style="width: 24%;"></div></div>
+        <span class="bar-value" style="color: var(--red);">$1.2M</span>
+      </div>
+    </div>
+    <div>
+      <h3 style="margin-bottom: 16px;">vs. Alternatives</h3>
+      <div class="bar-container">
+        <span class="bar-label">Mock trial (human)</span>
+        <div class="bar"><div class="bar-fill red" style="width: 100%;"></div></div>
+        <span class="bar-value" style="color: var(--red);">$25K</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">Pen test</span>
+        <div class="bar"><div class="bar-fill amber" style="width: 60%;"></div></div>
+        <span class="bar-value" style="color: var(--amber);">$15K</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label">Red team engagement</span>
+        <div class="bar"><div class="bar-fill red" style="width: 80%;"></div></div>
+        <span class="bar-value" style="color: var(--red);">$100K</span>
+      </div>
+      <div class="bar-container">
+        <span class="bar-label" style="color: var(--green);">AION (per analysis)</span>
+        <div class="bar"><div class="bar-fill green" style="width: 0.8%;"></div></div>
+        <span class="bar-value" style="color: var(--green);">$1–$2</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 10: MOAT                                  -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-10" data-label="Moat">
+  <div class="slide-label">Competitive Moat</div>
+  <h2>They can build AI.<br><span class="accent">They can't build 
+  this in 12 months.</span></h2>
+
+  <div class="columns columns-2" style="margin-top: 32px;">
+    <div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 15px;">⏳ Category Creation</h3>
+          <span class="badge green">24+ months to copy</span>
+        </div>
+        <p>"Adversarial Intelligence for Legal" — we define the category. First-mover advantage in naming, positioning, and market education.</p>
+      </div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 15px;">🏛️ Domain Expertise</h3>
+          <span class="badge green">12–24 months</span>
+        </div>
+        <p>69 law-firm-specific attack sequences. Ethics wall patterns. Trust account fraud detection. Matter-level access analysis. No generic SIEM has this.</p>
+      </div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 15px;">🛡️ Safety-First RSI</h3>
+          <span class="badge accent">6–12 months</span>
+        </div>
+        <p>9 immutable invariants, shadow testing, human-in-the-loop approval, adversarial poisoning resistance. Nobody else has this for security AI.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 15px;">📚 Case Pattern Database</h3>
+          <span class="badge green">Proprietary</span>
+        </div>
+        <p>Historical attack patterns matched against new cases. Network effects — every client makes the system smarter. Can't be replicated, only accumulated.</p>
+      </div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 15px;">🔄 Data Flywheel</h3>
+          <span class="badge accent">12+ months</span>
+        </div>
+        <p>SOC analyst feedback → improved detection → better results → more feedback. Compounding advantage that accelerates with every deployment.</p>
+      </div>
+      <div class="card" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 15px;">💰 ROI Math Engine</h3>
+          <span class="badge accent">6 months</span>
+        </div>
+        <p>Converts qualitative risk into dollar figures. Revenue-at-risk, litigation costs, replacement costs, knowledge loss — all quantified per firm.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 11: MARKET                                -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-11" data-label="Market">
+  <div class="slide-label">Market Opportunity</div>
+  <h2>700+ firms. Purpose-built product.<br><span class="accent">No one else is here.</span></h2>
+
+  <div class="columns columns-3" style="margin-top: 32px;">
+    <div class="card accent-border">
+      <h3 style="color: var(--accent);">AmLaw 100</h3>
+      <div class="big-number accent" style="font-size: 36px; margin: 8px 0;">100 firms</div>
+      <p>Avg revenue: $1.2B. IT spend: $36–60M. Highest risk, highest urgency. Already losing partners to laterals.</p>
+      <div style="margin-top: 12px;">
+        <span class="badge accent">$480K ARR/client</span>
+      </div>
+    </div>
+    <div class="card green-border">
+      <h3 style="color: var(--green);">AmLaw 200</h3>
+      <div class="big-number green" style="font-size: 36px; margin: 8px 0;">100 firms</div>
+      <p>Avg revenue: $400M. IT spend: $12–20M. High lateral activity. Enough budget, enough pain.</p>
+      <div style="margin-top: 12px;">
+        <span class="badge green">$240K ARR/client</span>
+      </div>
+    </div>
+    <div class="card amber-border">
+      <h3 style="color: var(--amber);">Mid-Market</h3>
+      <div class="big-number amber" style="font-size: 36px; margin: 8px 0;">500+ firms</div>
+      <p>Avg revenue: $50–200M. IT spend: $1.5–10M. Scaling security needs. Underserved by enterprise tools.</p>
+      <div style="margin-top: 12px;">
+        <span class="badge amber">$120K ARR/client</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 32px; display: flex; align-items: center; gap: 40px;">
+    <div>
+      <h3 style="margin-bottom: 8px;">Initial Target List: 20 Firms</h3>
+      <p>Tier 1 (Hot): Kirkland & Ellis, Latham & Watkins, Skadden Arps, Gibson Dunn, Quinn Emanuel</p>
+      <p>Tier 2 (Warm): Paul Weiss, Wachtell Lipton, Sullivan & Cromwell, Davis Polk, Cravath</p>
+      <p style="color: var(--text-dim); font-size: 12px; margin-top: 8px;">+ 10 additional strategic and regional targets identified</p>
+    </div>
+    <div style="text-align: center; flex-shrink: 0;">
+      <div class="big-number accent" style="font-size: 48px;">$24M</div>
+      <div class="stat-label">ARR at 20 clients</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 12: PRICING                               -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-12" data-label="Pricing">
+  <div class="slide-label">Pricing</div>
+  <h2>Three tiers.<br><span class="accent">All on-premise. All flat-rate.</span></h2>
+
+  <div class="columns columns-3" style="margin-top: 40px;">
+    <div class="card" style="text-align: center; position: relative;">
+      <h3 style="color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Security Only</h3>
+      <div class="big-number accent" style="font-size: 40px; margin: 16px 0;">$5–15K</div>
+      <div class="stat-label" style="margin-bottom: 20px;">/month</div>
+      <ul class="check-list" style="text-align: left; font-size: 13px;">
+        <li>69 attack pattern detection</li>
+        <li>Behavioral baselines</li>
+        <li>SOC API integration</li>
+        <li>Attorney departure alerts</li>
+      </ul>
+    </div>
+    <div class="card" style="text-align: center; border-color: var(--accent); position: relative;">
+      <div class="badge accent" style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%);">Recommended</div>
+      <h3 style="color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; margin-top: 8px;">Full Platform</h3>
+      <div class="big-number accent" style="font-size: 40px; margin: 16px 0;">$20–40K</div>
+      <div class="stat-label" style="margin-bottom: 20px;">/month</div>
+      <ul class="check-list" style="text-align: left; font-size: 13px;">
+        <li>Everything in Security</li>
+        <li>Document intelligence</li>
+        <li>Self-improvement engine</li>
+        <li>ROI quantification</li>
+        <li>Forensic timeline analysis</li>
+        <li>Dedicated onboarding</li>
+      </ul>
+    </div>
+    <div class="card" style="text-align: center;">
+      <h3 style="color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Document Intel</h3>
+      <div class="big-number amber" style="font-size: 40px; margin: 16px 0;">$10–25K</div>
+      <div class="stat-label" style="margin-bottom: 20px;">/month</div>
+      <ul class="check-list" style="text-align: left; font-size: 13px;">
+        <li>134 docs/sec analysis</li>
+        <li>Predatory clause detection</li>
+        <li>93.3% accuracy</li>
+        <li>Contract red flags</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quote" style="margin-top: 32px; font-size: 18px;">
+    Insurance for attorney departures — <strong>$20K now or $2M later.</strong>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 13: THE ASK                               -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-13" data-label="Next Steps">
+  <div class="slide-label">Next Steps</div>
+  <h2>This is built.<br><span class="green">We need to deploy it.</span></h2>
+
+  <div class="columns columns-2" style="margin-top: 40px;">
+    <div>
+      <h3 style="margin-bottom: 20px;">What We Need</h3>
+      <div class="card green-border" style="margin-bottom: 16px;">
+        <span class="card-icon">🖥️</span>
+        <h3 style="font-size: 15px;">GPU Infrastructure</h3>
+        <p>Server hardware for on-premise deployment. Local inference eliminates cloud dependency and protects attorney-client privilege.</p>
+      </div>
+      <div class="card accent-border" style="margin-bottom: 16px;">
+        <span class="card-icon">🤝</span>
+        <h3 style="font-size: 15px;">First 3 Pilot Clients</h3>
+        <p>3 analyses per firm. $60K per close. Target: 2 closes from 5 pitches = $40K/month revenue within 90 days.</p>
+      </div>
+      <div class="card amber-border">
+        <span class="card-icon">📈</span>
+        <h3 style="font-size: 15px;">Market Validation Path</h3>
+        <p>Use pilot data to refine pricing, build case pattern database, and create the data flywheel that becomes our strongest moat.</p>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="margin-bottom: 20px;">What You Get</h3>
+      <ul class="check-list" style="font-size: 16px;">
+        <li>Production-ready platform (not a prototype)</li>
+        <li>13,439 events/sec throughput — proven</li>
+        <li>50/50 validation suite — passing</li>
+        <li>69 law-firm attack patterns — built</li>
+        <li>Self-improving detection — safe, tested</li>
+        <li>21 REST API endpoints — integrated</li>
+        <li>Zero-cloud architecture — privilege-safe</li>
+        <li>255× ROI for clients — quantified</li>
+      </ul>
+
+      <div class="card" style="margin-top: 24px; text-align: center; background: rgba(0, 255, 136, 0.04); border-color: rgba(0,255,136,0.15);">
+        <div style="font-size: 14px; color: var(--green); font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Target</div>
+        <div class="big-number green" style="font-size: 48px; margin: 8px 0;">$10–50M ARR</div>
+        <div class="stat-label">Before incumbents react (12–24 months)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════ -->
+<!-- SLIDE 14: CLOSE                                 -->
+<!-- ════════════════════════════════════════════════ -->
+<section class="slide" id="slide-14" data-label="Close" style="text-align: center; justify-content: center; align-items: center;">
+  <div class="slide-label" style="text-align: center;">CodeTyphoons</div>
+  <h1 style="font-size: 72px;">
+    <span class="accent">AION</span> OS
+  </h1>
+  <p class="subtitle" style="text-align: center; margin: 0 auto 32px; font-size: 24px;">
+    The insider threat intelligence platform<br>law firms didn't know they needed.
+  </p>
+  <div class="divider" style="margin: 24px auto;"></div>
+  <p style="color: var(--text-dim); font-size: 16px; margin-top: 24px;">
+    50/50 tests passing &nbsp;•&nbsp; 69 attack patterns &nbsp;•&nbsp; 13,439 events/sec &nbsp;•&nbsp; Zero cloud dependency
+  </p>
+  <p style="color: var(--text-dim); font-size: 14px; margin-top: 12px;">
+    Built. Tested. Ready to deploy.
+  </p>
+</section>
+
+
+<!-- ════════════════════════════════════════════  -->
+<!-- Scripts                                       -->
+<!-- ════════════════════════════════════════════  -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const slides = document.querySelectorAll('.slide');
+  const nav = document.getElementById('nav');
+  const progressBar = document.getElementById('progressBar');
+  const currentSlideEl = document.getElementById('currentSlide');
+  const totalSlidesEl = document.getElementById('totalSlides');
+
+  totalSlidesEl.textContent = slides.length;
+
+  // Build nav dots
+  slides.forEach((slide, i) => {
+    const a = document.createElement('a');
+    a.href = `#slide-${i + 1}`;
+    a.dataset.index = i;
+    const tooltip = document.createElement('span');
+    tooltip.className = 'tooltip';
+    tooltip.textContent = slide.dataset.label || `Slide ${i + 1}`;
+    a.appendChild(tooltip);
+    nav.appendChild(a);
+  });
+
+  const navDots = nav.querySelectorAll('a');
+
+  // Track current slide
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const index = Array.from(slides).indexOf(entry.target);
+        currentSlideEl.textContent = String(index + 1).padStart(2, '0');
+        progressBar.style.width = `${((index + 1) / slides.length) * 100}%`;
+        navDots.forEach((d, i) => d.classList.toggle('active', i === index));
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(s => observer.observe(s));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  });
+
+  // Animate bars on scroll
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.bar-fill').forEach(bar => {
+          const w = bar.style.width;
+          bar.style.width = '0%';
+          setTimeout(() => bar.style.width = w, 100);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.slide').forEach(s => barObserver.observe(s));
+});
+</script>
+
+</body>
+</html>

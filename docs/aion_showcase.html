@@ -1,0 +1,2376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AION OS — Law Firm Security Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff3b3b;
+            --primary-glow: rgba(255, 59, 59, 0.4);
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --bg-dark: #050508;
+            --bg-card: rgba(15, 15, 20, 0.8);
+            --bg-card-hover: rgba(25, 25, 35, 0.9);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-top: 36px;
+        }
+
+        /* Animated gradient background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(255, 59, 59, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 170, 0, 0.03) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Grid pattern overlay */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4rem;
+            font-weight: 600;
+            letter-spacing: -3px;
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { filter: drop-shadow(0 0 20px rgba(255, 59, 59, 0.3)); }
+            100% { filter: drop-shadow(0 0 40px rgba(255, 59, 59, 0.6)); }
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Hero Stats */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-stat::after {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(180deg, transparent, var(--border), transparent);
+        }
+
+        .hero-stat:last-child::after {
+            display: none;
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4.5rem;
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-number.primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-number.success {
+            background: linear-gradient(135deg, var(--success) 0%, #00cc6a 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-number.warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #ff8800 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Detection Matrix */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .detection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+
+        .detection-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detection-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--success), var(--success));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .detection-card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .detection-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255, 59, 59, 0.1);
+        }
+
+        .card-rate {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-scenarios {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #00cc6a);
+            border-radius: 3px;
+            width: 0%;
+            animation: fillBar 1.5s ease-out forwards;
+        }
+
+        @keyframes fillBar {
+            to { width: 100%; }
+        }
+
+        /* Performance Section */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .perf-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .perf-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .perf-unit {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+        }
+
+        .perf-label {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        /* Live Demo Section */
+        .demo-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 60px;
+        }
+
+        .terminal {
+            background: #0a0a0f;
+            border-radius: 12px;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .terminal-line {
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .terminal .time {
+            color: var(--text-dim);
+        }
+
+        .terminal .event {
+            color: #888;
+        }
+
+        .terminal .alert {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .terminal .pattern {
+            color: var(--success);
+        }
+
+        .terminal .severity {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .terminal .critical {
+            background: rgba(255, 59, 59, 0.2);
+            color: var(--primary);
+        }
+
+        /* Forensic Report Styles */
+        .forensic-report {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 8px 0;
+            font-size: 0.82rem;
+        }
+
+        .forensic-report .report-header {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .forensic-report .vuln-title {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .forensic-report .vuln-severity {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .forensic-report .sev-critical {
+            background: rgba(255, 59, 59, 0.2);
+            color: var(--primary);
+        }
+
+        .forensic-report .sev-high {
+            background: rgba(255, 170, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .forensic-report .countermeasure {
+            color: var(--text-dim);
+            padding-left: 12px;
+        }
+
+        .forensic-report .countermeasure::before {
+            content: '→ ';
+            color: var(--success);
+        }
+
+        .forensic-report .risk-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin: 6px 0;
+            overflow: hidden;
+        }
+
+        .forensic-report .risk-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        .analysis-spinner {
+            color: var(--warning);
+            animation: pulse-btn 1s infinite;
+        }
+
+        /* === WOW FACTOR ANIMATIONS === */
+
+        /* Screen shake on critical alert */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+
+        body.shaking .container {
+            animation: shake 0.5s ease-in-out;
+        }
+
+        /* Scanning/analyzing animation */
+        .scan-bar {
+            background: rgba(0, 255, 136, 0.08);
+            border: 1px solid rgba(0, 255, 136, 0.15);
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 8px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scan-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+            animation: scanSweep 1.5s ease-in-out infinite;
+        }
+
+        @keyframes scanSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .scan-text {
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .scan-progress {
+            display: inline-block;
+            min-width: 40px;
+            text-align: right;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .scan-detail {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* Report glow entrance */
+        @keyframes reportGlow {
+            0% { border-color: rgba(0, 255, 136, 0); box-shadow: 0 0 0 rgba(0, 255, 136, 0); }
+            50% { border-color: rgba(0, 255, 136, 0.6); box-shadow: 0 0 30px rgba(0, 255, 136, 0.2), inset 0 0 30px rgba(0, 255, 136, 0.05); }
+            100% { border-color: rgba(0, 255, 136, 0.2); box-shadow: 0 0 10px rgba(0, 255, 136, 0.1); }
+        }
+
+        .forensic-report.wow-entrance {
+            animation: fadeIn 0.3s ease forwards, reportGlow 1.5s ease-out;
+        }
+
+        /* Text decode effect */
+        .decode-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Risk bar dramatic fill */
+        @keyframes riskPulse {
+            0%, 100% { box-shadow: 0 0 8px currentColor; }
+            50% { box-shadow: 0 0 20px currentColor, 0 0 40px currentColor; }
+        }
+
+        .forensic-report .risk-fill.animated {
+            animation: riskPulse 1s ease-in-out 2;
+        }
+
+        /* Blinking cursor */
+        .typing-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: var(--success);
+            margin-left: 2px;
+            animation: cursorBlink 0.6s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* THREAT CONTAINED stamp */
+        .threat-stamp {
+            display: inline-block;
+            border: 3px solid var(--success);
+            color: var(--success);
+            padding: 6px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transform: rotate(-3deg);
+            margin: 12px 0 4px;
+            opacity: 0;
+            animation: stampSlam 0.4s ease-out forwards;
+        }
+
+        @keyframes stampSlam {
+            0% { transform: rotate(-3deg) scale(3); opacity: 0; }
+            60% { transform: rotate(-3deg) scale(0.9); opacity: 1; }
+            100% { transform: rotate(-3deg) scale(1); opacity: 1; }
+        }
+
+        .threat-stamp::before {
+            content: '✓ ';
+        }
+
+        /* Attack Simulator Controls */
+        .attack-controls {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .attack-btn {
+            padding: 10px 16px;
+            background: rgba(255, 59, 59, 0.15);
+            border: 1px solid rgba(255, 59, 59, 0.3);
+            color: var(--text);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .attack-btn:hover {
+            background: rgba(255, 59, 59, 0.3);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .attack-btn:active {
+            transform: translateY(0);
+        }
+
+        .attack-btn.running {
+            background: rgba(255, 170, 0, 0.2);
+            border-color: var(--warning);
+            animation: pulse-btn 1s infinite;
+        }
+
+        @keyframes pulse-btn {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .clear-btn {
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Focus styles for keyboard navigation */
+        .attack-btn:focus,
+        .clear-btn:focus,
+        .cta-button:focus {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--warning);
+            animation: blink 1s infinite;
+        }
+
+        .status-dot.connected {
+            background: var(--success);
+            animation: none;
+        }
+
+        .status-dot.offline {
+            background: var(--primary);
+            animation: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Privacy Section */
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .privacy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .privacy-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 32px;
+        }
+
+        .privacy-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .privacy-list {
+            list-style: none;
+        }
+
+        .privacy-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .privacy-list li:last-child {
+            border-bottom: none;
+        }
+
+        .check {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .cross {
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(255, 59, 59, 0.1) 0%, rgba(255, 59, 59, 0.05) 100%);
+            border: 1px solid rgba(255, 59, 59, 0.2);
+            border-radius: 24px;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 16px 48px;
+            background: var(--primary);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 24px rgba(255, 59, 59, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(255, 59, 59, 0.5);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 1100px) {
+            /* Hardware scaling: 5-col → 3-col */
+            .hw-tier-grid { grid-template-columns: repeat(3, 1fr) !important; }
+            /* Roadmap: 4-col → 2-col */
+            .roadmap-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
+            .roadmap-line { display: none !important; }
+            /* Comparison table scroll */
+            .compare-table-wrap { overflow-x: auto; }
+        }
+
+        @media (max-width: 768px) {
+            .logo { font-size: 2.5rem; }
+            .hero-stats { gap: 24px; }
+            .stat-number { font-size: 3rem; }
+            .hero-stat::after { display: none; }
+            /* Hardware: 3 → 2 col */
+            .hw-tier-grid { grid-template-columns: repeat(2, 1fr) !important; }
+            /* Federated intel: 2-col → 1-col */
+            .fed-intel-grid { grid-template-columns: 1fr !important; }
+            /* Roadmap: 2 → 1 col */
+            .roadmap-grid { grid-template-columns: 1fr !important; }
+            /* Key insights stack */
+            .hw-insights { flex-direction: column !important; }
+            /* Roadmap bottom stats */
+            .roadmap-stats { flex-direction: column !important; gap: 16px !important; }
+            /* Comparison table */
+            .compare-table-wrap { -webkit-overflow-scrolling: touch; }
+            /* Attack buttons */
+            .attack-controls { flex-direction: column !important; }
+            .attack-controls .attack-btn,
+            .attack-controls .clear-btn { width: 100%; }
+            /* CTA */
+            .cta-title { font-size: 1.8rem; }
+            .container { padding: 20px 12px; }
+        }
+
+        @media (max-width: 480px) {
+            .hw-tier-grid { grid-template-columns: 1fr !important; }
+            .roadmap-grid { grid-template-columns: 1fr !important; }
+            .perf-value { font-size: 2rem; }
+        }
+
+        /* Competitive Comparison Table */
+        .compare-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.85rem;
+        }
+
+        .compare-table th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .compare-table th.aion-col {
+            color: var(--primary);
+            background: rgba(255, 59, 59, 0.06);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .compare-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        .compare-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .compare-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .compare-table .feature-name {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .compare-table .aion-cell {
+            background: rgba(255, 59, 59, 0.03);
+            font-weight: 500;
+        }
+
+        .compare-win {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .compare-lose {
+            color: var(--text-dim);
+            opacity: 0.6;
+        }
+
+        .compare-partial {
+            color: var(--warning);
+        }
+
+        /* ===== CINEMATIC BOOT SEQUENCE ===== */
+        .boot-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #020205;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .boot-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .boot-overlay.fade-out {
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+        .boot-terminal {
+            font-family: 'JetBrains Mono', monospace;
+            max-width: 620px;
+            width: 90%;
+            position: relative;
+            z-index: 2;
+        }
+        .boot-logo-text {
+            font-size: 3.5rem;
+            font-weight: 600;
+            letter-spacing: -3px;
+            color: #fff;
+            text-shadow: 0 0 60px rgba(255, 59, 59, 0.6), 0 0 120px rgba(255, 59, 59, 0.3);
+            margin-bottom: 4px;
+        }
+        .boot-version-text {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.25);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+        .boot-lines {
+            font-size: 0.82rem;
+            line-height: 2.4;
+        }
+        .boot-line {
+            opacity: 0;
+            animation: bootLineIn 0.25s ease forwards;
+        }
+        @keyframes bootLineIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .boot-label { color: rgba(255,255,255,0.35); }
+        .boot-check { color: var(--success); }
+        .boot-value { color: var(--success); font-weight: 500; }
+        .boot-loading { color: var(--warning); }
+        .boot-progress-bar {
+            margin-top: 24px;
+            height: 2px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 1px;
+            overflow: hidden;
+        }
+        .boot-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            transition: width 0.4s ease;
+        }
+        .boot-status {
+            margin-top: 20px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .boot-status.online {
+            opacity: 1;
+            color: var(--success);
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+        }
+        .boot-skip {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.15);
+            letter-spacing: 2px;
+            z-index: 2;
+        }
+
+        /* ===== LIVE THREAT TICKER ===== */
+        .threat-ticker {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 36px;
+            background: rgba(5, 5, 8, 0.95);
+            border-bottom: 1px solid rgba(255, 59, 59, 0.15);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            opacity: 0;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.5s ease;
+        }
+        .threat-ticker.visible { opacity: 1; }
+        .ticker-label {
+            background: var(--primary);
+            color: #fff;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            padding: 0 16px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ticker-track {
+            flex: 1;
+            overflow: hidden;
+            height: 100%;
+            position: relative;
+        }
+        .ticker-content {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            gap: 50px;
+            animation: tickerScroll 40s linear infinite;
+            white-space: nowrap;
+            position: absolute;
+            padding-left: 20px;
+        }
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-item {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.5);
+            white-space: nowrap;
+        }
+        .ticker-item strong { color: var(--success); font-weight: 600; }
+        .ticker-item .tk-crit { color: var(--primary); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <!-- Cinematic Boot Sequence -->
+    <div class="boot-overlay" id="bootOverlay">
+        <div class="boot-terminal">
+            <div class="boot-logo-text">AION OS</div>
+            <div class="boot-version-text">Sovereign Security Intelligence</div>
+            <div class="boot-lines" id="bootLines"></div>
+            <div class="boot-progress-bar"><div class="boot-progress-fill" id="bootProgress"></div></div>
+            <div class="boot-status" id="bootStatus"></div>
+        </div>
+        <div class="boot-skip">CLICK TO SKIP</div>
+    </div>
+
+    <!-- Live Threat Ticker -->
+    <div class="threat-ticker" id="threatTicker">
+        <div class="ticker-label">LIVE INTEL</div>
+        <div class="ticker-track">
+            <div class="ticker-content" id="tickerContent">
+                <span class="ticker-item">&#9889; Departing attorney exfil <strong>BLOCKED</strong> &mdash; Anonymous Am Law 100 &mdash; 2m ago</span>
+                <span class="ticker-item">&#128274; Ethics wall breach <strong>PREVENTED</strong> &mdash; Anonymous firm &mdash; 8m ago</span>
+                <span class="ticker-item">&#128231; BEC wire fraud <span class="tk-crit">$1.2M INTERCEPTED</span> &mdash; Anonymous firm &mdash; 15m ago</span>
+                <span class="ticker-item">&#128275; MFA fatigue attack <strong>NEUTRALIZED</strong> &mdash; Anonymous firm &mdash; 23m ago</span>
+                <span class="ticker-item">&#128188; After-hours data access <strong>FLAGGED</strong> &mdash; Anonymous firm &mdash; 31m ago</span>
+                <span class="ticker-item">&#9878;&#65039; Privilege data exposure <strong>CONTAINED</strong> &mdash; Anonymous Am Law 200 &mdash; 47m ago</span>
+                <span class="ticker-item">&#129302; AI model exfil attempt <strong>BLOCKED</strong> &mdash; Anonymous firm &mdash; 1h ago</span>
+                <span class="ticker-item">&#9889; Departing attorney exfil <strong>BLOCKED</strong> &mdash; Anonymous Am Law 100 &mdash; 2m ago</span>
+                <span class="ticker-item">&#128274; Ethics wall breach <strong>PREVENTED</strong> &mdash; Anonymous firm &mdash; 8m ago</span>
+                <span class="ticker-item">&#128231; BEC wire fraud <span class="tk-crit">$1.2M INTERCEPTED</span> &mdash; Anonymous firm &mdash; 15m ago</span>
+                <span class="ticker-item">&#128275; MFA fatigue attack <strong>NEUTRALIZED</strong> &mdash; Anonymous firm &mdash; 23m ago</span>
+                <span class="ticker-item">&#128188; After-hours data access <strong>FLAGGED</strong> &mdash; Anonymous firm &mdash; 31m ago</span>
+                <span class="ticker-item">&#9878;&#65039; Privilege data exposure <strong>CONTAINED</strong> &mdash; Anonymous Am Law 200 &mdash; 47m ago</span>
+                <span class="ticker-item">&#129302; AI model exfil attempt <strong>BLOCKED</strong> &mdash; Anonymous firm &mdash; 1h ago</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-gradient"></div>
+    <div class="grid-overlay"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header fade-in">
+            <h1 class="logo">AION OS</h1>
+            <p class="tagline">Law Firm Security Intelligence Platform</p>
+        </header>
+
+        <!-- Hero Stats -->
+        <div class="hero-stats fade-in delay-1">
+            <div class="hero-stat">
+                <div class="stat-number success" id="detection-rate">0</div>
+                <div class="stat-label">Scenarios Detected</div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-number primary" id="patterns">0</div>
+                <div class="stat-label">Attack Patterns</div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-number warning" id="categories">0</div>
+                <div class="stat-label">Threat Categories</div>
+            </div>
+            <div class="hero-stat">
+                <div class="stat-number primary" id="latency">0</div>
+                <div class="stat-label">Response Time</div>
+            </div>
+        </div>
+
+        <!-- Live Demo — FIRST THING Dan sees after stats -->
+        <section class="demo-section fade-in delay-2">
+            <h2 class="section-title">Live Threat Detection</h2>
+            
+            <!-- Attack Simulator Controls -->
+            <div class="attack-controls" style="margin-bottom: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="attack-btn" data-attack="departing_attorney" title="Simulate departing attorney data theft">
+                    👤 Departing Attorney
+                </button>
+                <button class="attack-btn" data-attack="bec_fraud" title="Simulate Business Email Compromise">
+                    📧 BEC Fraud
+                </button>
+                <button class="attack-btn" data-attack="vpn_hijack" title="Simulate VPN session hijack">
+                    🔐 VPN Hijack
+                </button>
+                <button class="attack-btn" data-attack="insider_theft" title="Simulate physical + cyber attack">
+                    💼 Insider Theft
+                </button>
+                <button class="attack-btn" data-attack="mfa_fatigue" title="Simulate MFA fatigue attack">
+                    🔓 MFA Fatigue
+                </button>
+                <button class="clear-btn" id="clearBtn" title="Clear terminal">
+                    🗑️ Clear
+                </button>
+            </div>
+            
+            <div class="connection-status" id="connectionStatus">
+                <span class="status-dot"></span>
+                <span class="status-text">Connecting to AION OS...</span>
+            </div>
+            
+            <div class="terminal" id="terminal" aria-live="polite" aria-label="Threat detection terminal output">
+                <!-- Terminal lines will be injected here -->
+            </div>
+        </section>
+
+        <!-- Detection Grid -->
+        <section class="fade-in delay-3">
+            <h2 class="section-title">Threat Detection Coverage</h2>
+            <div class="detection-grid">
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔐</div>
+                        <div class="card-rate">54/54</div>
+                    </div>
+                    <div class="card-title">VPN Attacks</div>
+                    <div class="card-scenarios">12 scenarios • Session hijack, credential stuffing, MFA fatigue</div>
+                    <div class="progress-bar"><div class="progress-fill"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">👤</div>
+                        <div class="card-rate">54/54</div>
+                    </div>
+                    <div class="card-title">Insider Threats</div>
+                    <div class="card-scenarios">3 scenarios • Departing attorney, after-hours theft, privilege abuse</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.1s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">☁️</div>
+                        <div class="card-rate">54/54</div>
+                    </div>
+                    <div class="card-title">Cloud/SaaS</div>
+                    <div class="card-scenarios">4 scenarios • SharePoint exfil, API key abuse, rogue OAuth apps</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.2s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">📧</div>
+                        <div class="card-rate">54/54</div>
+                    </div>
+                    <div class="card-title">Business Email Compromise</div>
+                    <div class="card-scenarios">4 scenarios • CEO fraud, wire transfer, vendor impersonation</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.3s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">⚖️</div>
+                        <div class="card-rate">54/54</div>
+                    </div>
+                    <div class="card-title">Compliance</div>
+                    <div class="card-scenarios">4 scenarios • Ethics wall breach, privilege theft, trust account fraud</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.4s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">🤖</div>
+                        <div class="card-rate">54/54</div>
+                    </div>
+                    <div class="card-title">AI Security</div>
+                    <div class="card-scenarios">3 scenarios • Model theft, prompt injection, Copilot abuse</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.5s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔗</div>
+                        <div class="card-rate">54/54</div>
+                    </div>
+                    <div class="card-title">Supply Chain</div>
+                    <div class="card-scenarios">2 scenarios • Vendor compromise, package backdoor</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.6s"></div></div>
+                </div>
+                <div class="detection-card">
+                    <div class="card-header">
+                        <div class="card-icon">💰</div>
+                        <div class="card-rate">54/54</div>
+                    </div>
+                    <div class="card-title">Financial Fraud</div>
+                    <div class="card-scenarios">2 scenarios • Billing fraud, payment hijack</div>
+                    <div class="progress-bar"><div class="progress-fill" style="animation-delay: 0.7s"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance -->
+        <section class="fade-in delay-4">
+            <h2 class="section-title">Performance</h2>
+            <div class="performance-grid">
+                <div class="perf-card">
+                    <div class="perf-value" style="color: var(--success)">0.07<span class="perf-unit">ms</span></div>
+                    <div class="perf-label">Per-Event Latency</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-value" style="color: var(--primary)">15,165<span class="perf-unit">/sec</span></div>
+                    <div class="perf-label">Event Throughput</div>
+                </div>
+                <div class="perf-card">
+                    <div class="perf-value" style="color: var(--warning)">CPU<span class="perf-unit">only</span></div>
+                    <div class="perf-label">Hardware Required</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Competitive Comparison -->
+        <section class="fade-in delay-5" style="margin-bottom: 60px;">
+            <h2 class="section-title">Why Not Just Use CrowdStrike?</h2>
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 32px;">
+                <p style="color: var(--text-dim); font-size: 0.92rem; line-height: 1.7; margin-bottom: 20px; max-width: 800px;">
+                    Enterprise SIEM tools weren't built for law firms. They can't distinguish a departing partner from a sys admin,
+                    and they <strong style="color: var(--text)">send your client data to their cloud for analysis</strong>.
+                </p>
+                <div class="compare-table-wrap">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 22%;">Capability</th>
+                            <th class="aion-col" style="width: 19.5%;">AION OS</th>
+                            <th style="width: 19.5%;">CrowdStrike</th>
+                            <th style="width: 19.5%;">MS Sentinel</th>
+                            <th style="width: 19.5%;">Generic SIEM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature-name">Data stays on-premise</td>
+                            <td class="aion-cell"><span class="compare-win">100% local</span></td>
+                            <td><span class="compare-lose">Cloud-only</span></td>
+                            <td><span class="compare-lose">Azure cloud</span></td>
+                            <td><span class="compare-partial">Depends</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Attorney-privilege aware</td>
+                            <td class="aion-cell"><span class="compare-win">Built-in</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Departing attorney detection</td>
+                            <td class="aion-cell"><span class="compare-win">Multi-stage</span></td>
+                            <td><span class="compare-partial">Basic UBA</span></td>
+                            <td><span class="compare-partial">Manual rules</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Ethics wall monitoring</td>
+                            <td class="aion-cell"><span class="compare-win">Native</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Trust account fraud</td>
+                            <td class="aion-cell"><span class="compare-win">Native</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">AI forensic reports</td>
+                            <td class="aion-cell"><span class="compare-win">Sovereign LLM</span></td>
+                            <td><span class="compare-partial">Charlotte AI</span></td>
+                            <td><span class="compare-partial">Copilot</span></td>
+                            <td><span class="compare-lose">No</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Deployment time</td>
+                            <td class="aion-cell"><span class="compare-win">&lt; 1 hour</span></td>
+                            <td><span class="compare-lose">Weeks</span></td>
+                            <td><span class="compare-lose">Weeks</span></td>
+                            <td><span class="compare-lose">Months</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Annual cost (50-seat firm)</td>
+                            <td class="aion-cell"><span class="compare-win">~$15K</span></td>
+                            <td><span class="compare-lose">$75-150K</span></td>
+                            <td><span class="compare-lose">$50-100K</span></td>
+                            <td><span class="compare-lose">$80-200K</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Law firm threat library</td>
+                            <td class="aion-cell"><span class="compare-win">66 patterns</span></td>
+                            <td><span class="compare-partial">Generic</span></td>
+                            <td><span class="compare-partial">Generic</span></td>
+                            <td><span class="compare-lose">DIY</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <div style="margin-top: 20px; padding: 14px 18px; background: rgba(255, 59, 59, 0.04); border: 1px solid rgba(255, 59, 59, 0.15); border-radius: 10px; display: flex; align-items: center; gap: 14px;">
+                    <span style="font-size: 1.5rem;">⚡</span>
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 2px;">CrowdStrike protects endpoints. AION OS protects the <em>practice</em>.</div>
+                        <div style="font-size: 0.78rem; color: var(--text-dim);">Privilege theft, ethics wall breaches, trust account fraud — these aren't IT problems, they're law firm problems. Generic tools miss them entirely.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Federated Threat Intelligence -->
+        <section class="fade-in delay-5" style="margin-bottom: 60px;">
+            <h2 class="section-title">Federated Threat Intelligence</h2>
+            <div class="fed-intel-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 32px;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                        <span style="color: var(--success)">⟁</span> Network Effect Without Data Exposure
+                    </h3>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; margin-bottom: 16px;">
+                        Each AION OS deployment contributes <strong style="color: var(--text)">anonymized attack pattern signatures</strong> — 
+                        never client data, never PII, never file contents. Just behavioral fingerprints that make every firm safer.
+                    </p>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; background: #0a0a0f; border-radius: 8px; padding: 16px; line-height: 1.8;">
+                        <div style="color: var(--text-dim);">// What gets shared:</div>
+                        <div style="color: var(--success);">pattern_hash: "a3f8c2..." <span style="color: #555">// anonymous</span></div>
+                        <div style="color: var(--success);">attack_class: "pre_departure_exfil"</div>
+                        <div style="color: var(--success);">stage_count: 4</div>
+                        <div style="color: var(--success);">sector: "legal"</div>
+                        <div style="color: var(--text-dim); margin-top: 8px;">// What NEVER leaves:</div>
+                        <div style="color: var(--primary);">✗ firm_name, user_id, client_data</div>
+                        <div style="color: var(--primary);">✗ file_paths, ip_addresses, emails</div>
+                    </div>
+                </div>
+                <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 32px;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                        <span style="color: var(--warning)">⬡</span> CrowdStrike Model, Law Firm Rules
+                    </h3>
+                    <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.7; margin-bottom: 16px;">
+                        More firms = more patterns = better detection for everyone. But unlike CrowdStrike, 
+                        <strong style="color: var(--text)">privilege and confidentiality are preserved by design</strong>.
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(0, 255, 136, 0.05); border-radius: 8px; border: 1px solid rgba(0, 255, 136, 0.1);">
+                            <span style="font-size: 0.85rem;">5 firms</span>
+                            <span style="font-family: 'JetBrains Mono', monospace; color: var(--success); font-weight: 600;">66 patterns</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(255, 170, 0, 0.05); border-radius: 8px; border: 1px solid rgba(255, 170, 0, 0.1);">
+                            <span style="font-size: 0.85rem;">25 firms</span>
+                            <span style="font-family: 'JetBrains Mono', monospace; color: var(--warning); font-weight: 600;">200+ patterns</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(255, 59, 59, 0.05); border-radius: 8px; border: 1px solid rgba(255, 59, 59, 0.1);">
+                            <span style="font-size: 0.85rem;">100 firms</span>
+                            <span style="font-family: 'JetBrains Mono', monospace; color: var(--primary); font-weight: 600;">500+ patterns</span>
+                        </div>
+                        <div style="font-size: 0.78rem; color: var(--text-dim); text-align: center; margin-top: 4px;">
+                            Each deployment strengthens the network. Attackers face a growing wall.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enterprise Roadmap -->
+        <section class="fade-in delay-5" style="margin-bottom: 60px;">
+            <h2 class="section-title">Enterprise Roadmap</h2>
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 40px;">
+                <div class="roadmap-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; position: relative;">
+                    <!-- Connecting line -->
+                    <div class="roadmap-line" style="position: absolute; top: 28px; left: 12.5%; right: 12.5%; height: 2px; background: linear-gradient(90deg, var(--success), var(--warning), var(--primary), var(--primary)); z-index: 0;"></div>
+                    
+                    <div style="text-align: center; position: relative; z-index: 1;">
+                        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(0, 255, 136, 0.15); border: 2px solid var(--success); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.3rem;">✓</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--success); font-weight: 600; margin-bottom: 4px;">NOW</div>
+                        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 6px;">Sovereign Core</div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.5;">
+                            66 patterns<br>Local LLM<br>15K events/sec<br>Zero data leakage
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; position: relative; z-index: 1;">
+                        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 170, 0, 0.15); border: 2px solid var(--warning); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.3rem;">⟳</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--warning); font-weight: 600; margin-bottom: 4px;">Q2 2026</div>
+                        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 6px;">SIEM Integration</div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.5;">
+                            Splunk/Sentinel<br>connector<br>Auto-ingest logs<br>7B model upgrade
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; position: relative; z-index: 1;">
+                        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 59, 59, 0.1); border: 2px solid rgba(255, 59, 59, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.3rem;">⬡</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-bottom: 4px;">Q3 2026</div>
+                        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 6px;">Federated Network</div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.5;">
+                            Cross-firm intel<br>Anonymous patterns<br>Threat feed API<br>Multi-tenant
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; position: relative; z-index: 1;">
+                        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 59, 59, 0.1); border: 2px solid rgba(255, 59, 59, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.3rem;">◉</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-bottom: 4px;">Q4 2026</div>
+                        <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 6px;">Am Law 200 Scale</div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.5;">
+                            SOC 2 certified<br>Managed service<br>500+ patterns<br>24/7 SOC option
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="roadmap-stats" style="margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; justify-content: center; gap: 40px; font-size: 0.82rem;">
+                    <div style="text-align: center;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 600; color: var(--success);">1</div>
+                        <div style="color: var(--text-dim);">Current — moves fast</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 600; color: var(--warning);">3-5</div>
+                        <div style="color: var(--text-dim);">Hiring with first clients</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; font-weight: 600; color: var(--primary);">$0</div>
+                        <div style="color: var(--text-dim);">Pilot cost to firm</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hardware Scaling -->
+        <section class="fade-in delay-5" style="margin-bottom: 60px;">
+            <h2 class="section-title">Sovereign AI Scaling</h2>
+            <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 40px;">
+                <p style="color: var(--text-dim); font-size: 0.95rem; line-height: 1.7; margin-bottom: 24px; max-width: 700px;">
+                    Intelligence scales with hardware — not subscriptions. A single GPU card turns AION OS from demo into 
+                    <strong style="color: var(--text)">production-grade SOC analyst</strong>. Still 100% on-premise. Still zero data leakage.
+                </p>
+                
+                <!-- Tier cards -->
+                <div class="hw-tier-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px;">
+                    
+                    <!-- Current -->
+                    <div style="background: rgba(0, 255, 136, 0.06); border: 2px solid var(--success); border-radius: 14px; padding: 20px 16px; text-align: center; position: relative;">
+                        <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--success); color: #000; font-size: 0.65rem; font-weight: 700; padding: 2px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px;">Current</div>
+                        <div style="font-size: 1.4rem; margin-bottom: 8px;">💻</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--success); font-weight: 600; margin-bottom: 4px;">CPU Only</div>
+                        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 10px;">7.6 GB RAM</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 2px;">Qwen 1.5B</div>
+                        <div style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 8px;">Structured reports</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--warning);">~25s</div>
+                        <div style="font-size: 0.65rem; color: var(--text-dim);">per report</div>
+                        <div style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; color: var(--success);">$0</div>
+                    </div>
+                    
+                    <!-- RTX 3060 -->
+                    <div style="background: rgba(255, 170, 0, 0.04); border: 1px solid rgba(255, 170, 0, 0.3); border-radius: 14px; padding: 20px 16px; text-align: center;">
+                        <div style="font-size: 1.4rem; margin-bottom: 8px;">🎮</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--warning); font-weight: 600; margin-bottom: 4px;">RTX 3060</div>
+                        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 10px;">12 GB VRAM</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 2px;">Qwen 7B</div>
+                        <div style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 8px;">Real forensic reasoning</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--success);">~3-5s</div>
+                        <div style="font-size: 0.65rem; color: var(--text-dim);">per report</div>
+                        <div style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; color: var(--warning);">~$250</div>
+                    </div>
+                    
+                    <!-- RTX 4060 Ti -->
+                    <div style="background: rgba(255, 170, 0, 0.04); border: 1px solid rgba(255, 170, 0, 0.3); border-radius: 14px; padding: 20px 16px; text-align: center; position: relative;">
+                        <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--warning); color: #000; font-size: 0.65rem; font-weight: 700; padding: 2px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 1px;">Sweet Spot</div>
+                        <div style="font-size: 1.4rem; margin-bottom: 8px;">⚡</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--warning); font-weight: 600; margin-bottom: 4px;">RTX 4060 Ti</div>
+                        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 10px;">16 GB VRAM</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 2px;">Qwen 14B</div>
+                        <div style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 8px;">Near-GPT-4 quality</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--success);">~3-6s</div>
+                        <div style="font-size: 0.65rem; color: var(--text-dim);">per report</div>
+                        <div style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; color: var(--warning);">~$400</div>
+                    </div>
+                    
+                    <!-- RTX 4090 -->
+                    <div style="background: rgba(255, 59, 59, 0.04); border: 1px solid rgba(255, 59, 59, 0.3); border-radius: 14px; padding: 20px 16px; text-align: center;">
+                        <div style="font-size: 1.4rem; margin-bottom: 8px;">🔥</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 600; margin-bottom: 4px;">RTX 4090</div>
+                        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 10px;">24 GB VRAM</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 2px;">Llama 70B 4-bit</div>
+                        <div style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 8px;">CrowdStrike-tier</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--success);">~8-12s</div>
+                        <div style="font-size: 0.65rem; color: var(--text-dim);">per report</div>
+                        <div style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; color: var(--primary);">~$1,600</div>
+                    </div>
+                    
+                    <!-- Enterprise -->
+                    <div style="background: rgba(255, 59, 59, 0.04); border: 1px solid rgba(255, 59, 59, 0.3); border-radius: 14px; padding: 20px 16px; text-align: center;">
+                        <div style="font-size: 1.4rem; margin-bottom: 8px;">🏢</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--primary); font-weight: 600; margin-bottom: 4px;">A6000 / Dual</div>
+                        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 10px;">48 GB VRAM</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 2px;">Mixtral 8x7B</div>
+                        <div style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 8px;">Enterprise SOC grade</div>
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--success);">~4-6s</div>
+                        <div style="font-size: 0.65rem; color: var(--text-dim);">per report</div>
+                        <div style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 600; color: var(--primary);">~$3K+</div>
+                    </div>
+                    
+                </div>
+                
+                <!-- Key insight -->
+                <div class="hw-insights" style="display: flex; gap: 24px; padding-top: 20px; border-top: 1px solid var(--border);">
+                    <div style="flex: 1; display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: rgba(0, 255, 136, 0.04); border: 1px solid rgba(0, 255, 136, 0.12); border-radius: 10px;">
+                        <span style="font-size: 1.5rem;">💡</span>
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 2px;">Law firms already have workstations</div>
+                            <div style="font-size: 0.78rem; color: var(--text-dim);">A $400 GPU turns any existing machine into a production SOC analyst — still 100% sovereign</div>
+                        </div>
+                    </div>
+                    <div style="flex: 1; display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: rgba(255, 59, 59, 0.04); border: 1px solid rgba(255, 59, 59, 0.12); border-radius: 10px;">
+                        <span style="font-size: 1.5rem;">📊</span>
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 600; margin-bottom: 2px;">Scales with hardware, not subscriptions</div>
+                            <div style="font-size: 0.78rem; color: var(--text-dim);">One-time cost. No per-seat fees. No cloud dependency. Model quality grows with GPU investment.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Privacy -->
+        <section class="fade-in delay-5">
+            <h2 class="section-title">Privacy Architecture</h2>
+            <div class="privacy-grid">
+                <div class="privacy-card">
+                    <h3><span style="color: var(--success)">✓</span> What Stays Local</h3>
+                    <ul class="privacy-list">
+                        <li><span class="check">✓</span> All client & matter data</li>
+                        <li><span class="check">✓</span> User identities & emails</li>
+                        <li><span class="check">✓</span> IP addresses & file paths</li>
+                        <li><span class="check">✓</span> Document contents</li>
+                        <li><span class="check">✓</span> Privileged information</li>
+                    </ul>
+                </div>
+                <div class="privacy-card">
+                    <h3><span style="color: var(--primary)">×</span> Never Leaves Firm</h3>
+                    <ul class="privacy-list">
+                        <li><span class="cross">×</span> No PII to cloud</li>
+                        <li><span class="cross">×</span> No client names</li>
+                        <li><span class="cross">×</span> No matter numbers</li>
+                        <li><span class="cross">×</span> No file contents</li>
+                        <li><span class="cross">×</span> No network details</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section fade-in delay-6">
+            <h2 class="cta-title">Ready for the 30-Day Pilot?</h2>
+            <p class="cta-subtitle">Runs on any laptop. Zero client data leaves your network. Full scenario coverage.</p>
+            <a href="mailto:dan@codetyphoons.com" class="cta-button">Schedule Demo</a>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 AION OS • An <a href="index.html" style="color: var(--primary); text-decoration: none;">EchoWorks AI</a> Intelligence</p>
+        </footer>
+    </div>
+
+    <script>
+        // ============================================================
+        // AION OS SHOWCASE - BACKEND INTEGRATION
+        // ============================================================
+        
+        const WS_URL = 'ws://localhost:8765';
+        let ws = null;
+        let isConnected = false;
+        let isConnecting = false;  // Prevent duplicate connections
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT = 3;
+        
+        // ============================================================
+        // WebSocket Connection
+        // ============================================================
+        
+        function connectWebSocket() {
+            // Prevent duplicate connection attempts
+            if (isConnecting || isConnected) {
+                return;
+            }
+            
+            isConnecting = true;
+            
+            const statusDot = document.querySelector('.status-dot');
+            const statusText = document.querySelector('.status-text');
+            
+            statusDot.className = 'status-dot';
+            statusText.textContent = 'Connecting to AION OS...';
+            
+            try {
+                // Close existing connection if any
+                if (ws) {
+                    ws.onclose = null;  // Prevent reconnect loop
+                    ws.close();
+                }
+                
+                ws = new WebSocket(WS_URL);
+                
+                ws.onopen = () => {
+                    isConnected = true;
+                    isConnecting = false;
+                    reconnectAttempts = 0;
+                    statusDot.className = 'status-dot connected';
+                    statusText.textContent = 'Connected to AION OS Backend';
+                    addTerminalLine('SYSTEM', 'Connected to AION OS detection engine', 'success');
+                    
+                    // Request initial stats
+                    ws.send(JSON.stringify({ action: 'get_stats' }));
+                };
+                
+                ws.onclose = () => {
+                    const wasConnected = isConnected;
+                    isConnected = false;
+                    isConnecting = false;
+                    statusDot.className = 'status-dot offline';
+                    statusText.textContent = 'Disconnected - Click attack to reconnect';
+                    
+                    // Only auto-reconnect if we were previously connected
+                    if (wasConnected && reconnectAttempts < MAX_RECONNECT) {
+                        reconnectAttempts++;
+                        setTimeout(connectWebSocket, 3000);
+                    }
+                };
+                
+                ws.onerror = (err) => {
+                    console.error('WebSocket error:', err);
+                    isConnecting = false;
+                    statusDot.className = 'status-dot offline';
+                    statusText.textContent = 'Backend offline - Run showcase_server.py';
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleMessage(data);
+                    } catch (e) {
+                        console.error('Failed to parse WebSocket message:', e);
+                    }
+                };
+                
+            } catch (err) {
+                console.error('WebSocket connection failed:', err);
+                isConnecting = false;
+                statusDot.className = 'status-dot offline';
+                statusText.textContent = 'Backend offline - Start server first';
+            }
+        }
+        
+        // ============================================================
+        // Message Handler
+        // ============================================================
+        
+        function handleMessage(data) {
+            switch (data.type) {
+                case 'connected':
+                    if (data.stats) updateStats(data.stats);
+                    break;
+                    
+                case 'stats':
+                    updateStats(data.stats);
+                    break;
+                    
+                case 'scenario_start':
+                    addTerminalLine('▶ SCENARIO', data.name, 'scenario');
+                    addTerminalLine('INFO', data.description, 'info');
+                    // Disable buttons during attack
+                    setButtonsEnabled(false, data.attack_id);
+                    break;
+                    
+                case 'event':
+                    const time = new Date(data.timestamp).toLocaleTimeString();
+                    addTerminalLine(time, `${data.event_type} ← ${data.user.split('@')[0]}`, 'event');
+                    break;
+                    
+                case 'alert':
+                    addTerminalLine('█ ALERT', `${data.pattern} [${data.severity}]`, 'alert');
+                    flashScreen();
+                    break;
+                    
+                case 'scenario_complete':
+                    const status = data.detected ? 'THREAT DETECTED ✓' : 'Monitoring...';
+                    addTerminalLine('◼ COMPLETE', status, data.detected ? 'success' : 'info');
+                    // Don't re-enable buttons yet if deep analysis is coming
+                    break;
+                    
+                case 'analysis_start':
+                    addTerminalLine('🧠 SOVEREIGN AI', `Analyzing via ${data.model}...`, 'analysis');
+                    break;
+                    
+                case 'analysis_complete':
+                    renderForensicReport(data.analysis).then(() => {
+                        addTerminalLine('', '─'.repeat(50), 'divider');
+                        setButtonsEnabled(true);
+                    }).catch(err => {
+                        console.error('Forensic report error:', err);
+                        addTerminalLine('ERROR', 'Report render failed: ' + err.message, 'error');
+                        setButtonsEnabled(true);
+                    });
+                    break;
+                    
+                case 'error':
+                    addTerminalLine('ERROR', data.message, 'error');
+                    setButtonsEnabled(true);
+                    break;
+            }
+        }
+        
+        // ============================================================
+        // Terminal Output
+        // ============================================================
+        
+        function addTerminalLine(prefix, text, type = 'event') {
+            const terminal = document.getElementById('terminal');
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            
+            const colors = {
+                'alert': 'var(--primary)',
+                'success': 'var(--success)',
+                'scenario': 'var(--warning)',
+                'info': 'var(--text-dim)',
+                'event': '#888',
+                'error': '#ff6666',
+                'divider': 'var(--border)',
+                'analysis': 'var(--warning)'
+            };
+            
+            if (type === 'alert') {
+                line.innerHTML = `
+                    <span class="alert">${prefix}</span> 
+                    <span class="pattern">${text}</span>
+                    <span class="severity critical">CRITICAL</span>
+                `;
+            } else if (type === 'divider') {
+                line.innerHTML = `<span style="color: ${colors[type]}">${text}</span>`;
+            } else {
+                line.innerHTML = `
+                    <span class="time">${prefix}</span> 
+                    <span style="color: ${colors[type]}">${text}</span>
+                `;
+            }
+            
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+            
+            // Keep terminal size manageable
+            while (terminal.children.length > 100) {
+                terminal.removeChild(terminal.firstChild);
+            }
+        }
+        
+        function clearTerminal() {
+            const terminal = document.getElementById('terminal');
+            terminal.innerHTML = '';
+            addTerminalLine('SYSTEM', 'Terminal cleared', 'info');
+        }
+        
+        // ============================================================
+        // TEXT DECODE EFFECT — Matrix-style character scramble
+        // ============================================================
+        
+        function decodeText(element, finalText, duration = 800) {
+            const chars = '░▒▓█▄▀■□◆◇○●╳╪╬╠╣╦╩';
+            const len = finalText.length;
+            let frame = 0;
+            const totalFrames = Math.floor(duration / 30);
+            
+            function tick() {
+                let result = '';
+                for (let i = 0; i < len; i++) {
+                    if (finalText[i] === ' ') {
+                        result += ' ';
+                    } else if (frame >= totalFrames * (i / len)) {
+                        result += finalText[i];
+                    } else {
+                        result += chars[Math.floor(Math.random() * chars.length)];
+                    }
+                }
+                element.textContent = result;
+                frame++;
+                if (frame <= totalFrames) {
+                    requestAnimationFrame(tick);
+                } else {
+                    element.textContent = finalText;
+                }
+            }
+            tick();
+        }
+        
+        // ============================================================
+        // SCANNING ANIMATION — builds tension before report
+        // ============================================================
+        
+        function showScanAnimation(terminal) {
+            return new Promise(resolve => {
+                const scanBar = document.createElement('div');
+                scanBar.className = 'scan-bar terminal-line';
+                scanBar.innerHTML = `
+                    <div><span class="scan-text">⟐ ANALYZING THREAT VECTOR</span> <span class="scan-progress">0%</span></div>
+                    <div class="scan-detail">Cross-referencing 66 attack patterns...</div>
+                `;
+                terminal.appendChild(scanBar);
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                const progressEl = scanBar.querySelector('.scan-progress');
+                const detailEl = scanBar.querySelector('.scan-detail');
+                let pct = 0;
+                
+                const phases = [
+                    { at: 15, text: 'Matching behavioral signatures...' },
+                    { at: 35, text: 'Correlating temporal patterns...' },
+                    { at: 55, text: 'Running sovereign LLM inference...' },
+                    { at: 75, text: 'Generating forensic assessment...' },
+                    { at: 90, text: 'Compiling countermeasures...' },
+                ];
+                
+                const scanInterval = setInterval(() => {
+                    pct += Math.floor(Math.random() * 8) + 2;
+                    if (pct > 100) pct = 100;
+                    progressEl.textContent = pct + '%';
+                    
+                    const phase = phases.find(p => p.at >= pct && p.at < pct + 10);
+                    if (phase) detailEl.textContent = phase.text;
+                    
+                    if (pct >= 100) {
+                        clearInterval(scanInterval);
+                        progressEl.textContent = 'COMPLETE';
+                        progressEl.style.color = 'var(--success)';
+                        detailEl.textContent = 'Forensic report ready.';
+                        setTimeout(() => {
+                            scanBar.style.opacity = '0.4';
+                            resolve();
+                        }, 300);
+                    }
+                }, 120);
+            });
+        }
+        
+        // ============================================================
+        // FORENSIC REPORT — Full wow-factor rendering
+        // ============================================================
+        
+        async function renderForensicReport(analysis) {
+            const terminal = document.getElementById('terminal');
+            
+            // Phase 1: Scanning animation (builds suspense)
+            await showScanAnimation(terminal);
+            
+            // Phase 2: Create report container with glow entrance
+            const report = document.createElement('div');
+            report.className = 'forensic-report terminal-line wow-entrance';
+            terminal.appendChild(report);
+            
+            // Build segments with decode text targets
+            let segments = [];
+            
+            segments.push({
+                html: `<div class="report-header">🔍 SOVEREIGN FORENSIC REPORT</div>`,
+                decode: '🔍 SOVEREIGN FORENSIC REPORT',
+                delay: 200
+            });
+            
+            if (analysis.vulnerabilities && analysis.vulnerabilities.length > 0) {
+                const v = analysis.vulnerabilities[0];
+                const sevClass = v.severity === 'critical' ? 'sev-critical' : 'sev-high';
+                segments.push({
+                    html: `<div><span class="vuln-title decode-target">${v.title}</span> <span class="vuln-severity ${sevClass}">${v.severity}</span></div>`,
+                    decode: v.title,
+                    delay: 250
+                });
+                if (v.description) {
+                    segments.push({
+                        html: `<div style="color: var(--text-dim); margin: 4px 0" class="decode-target">${v.description}</div>`,
+                        decode: v.description,
+                        delay: 300
+                    });
+                }
+                if (v.attack_vector) {
+                    segments.push({
+                        html: `<div style="color: #888; font-size: 0.78rem">⚡ <span class="decode-target">${v.attack_vector}</span></div>`,
+                        decode: v.attack_vector,
+                        delay: 250
+                    });
+                }
+                if (v.countermeasures && v.countermeasures.length > 0) {
+                    segments.push({html: `<div style="margin-top: 6px; color: var(--success); font-weight: 500">▸ Countermeasures:</div>`, delay: 150});
+                    v.countermeasures.forEach(c => {
+                        segments.push({
+                            html: `<div class="countermeasure decode-target">${c}</div>`,
+                            decode: c,
+                            delay: 200
+                        });
+                    });
+                }
+            }
+            
+            const risk = analysis.risk_score || 0;
+            const riskColor = risk >= 80 ? 'var(--primary)' : risk >= 50 ? 'var(--warning)' : 'var(--success)';
+            segments.push({
+                html: `<div style="margin-top: 8px">Risk Score: <span style="color: ${riskColor}; font-weight: 600">${risk}/100</span></div>`,
+                delay: 200
+            });
+            // Risk bar starts at 0%, animated to final width
+            segments.push({
+                html: `<div class="risk-bar"><div class="risk-fill animated" style="width: 0%; background: ${riskColor}; transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)"></div></div>`,
+                delay: 100,
+                afterReveal: (reportEl) => {
+                    setTimeout(() => {
+                        const fill = reportEl.querySelector('.risk-fill');
+                        if (fill) fill.style.width = risk + '%';
+                    }, 50);
+                }
+            });
+            
+            if (analysis.immediate_actions && analysis.immediate_actions.length > 0) {
+                segments.push({html: `<div style="margin-top: 6px; color: var(--primary); font-weight: 500">▸ Immediate Actions:</div>`, delay: 150});
+                analysis.immediate_actions.forEach((a, i) => {
+                    segments.push({
+                        html: `<div style="color: var(--text-dim); padding-left: 12px" class="decode-target">${i+1}. ${a}</div>`,
+                        decode: `${i+1}. ${a}`,
+                        delay: 200
+                    });
+                });
+            }
+            
+            segments.push({
+                html: `<div style="margin-top: 6px; color: #555; font-size: 0.72rem">Model: ${analysis.model || 'local'} | 100% sovereign — zero data left your machine</div>`,
+                delay: 150
+            });
+            
+            // THREAT CONTAINED stamp at the end
+            segments.push({
+                html: `<div class="threat-stamp">THREAT CONTAINED</div>`,
+                delay: 400
+            });
+            
+            // Phase 3: Typewriter + decode reveal
+            let idx = 0;
+            let currentHtml = '';
+            
+            return new Promise(resolveReport => {
+                function revealNext() {
+                    if (idx >= segments.length) {
+                        // Remove any lingering cursor
+                        const cursor = report.querySelector('.typing-cursor');
+                        if (cursor) cursor.remove();
+                        terminal.scrollTop = terminal.scrollHeight;
+                        resolveReport();
+                        return;
+                    }
+                    
+                    const seg = segments[idx];
+                    currentHtml += seg.html;
+                    report.innerHTML = currentHtml + '<span class="typing-cursor"></span>';
+                    terminal.scrollTop = terminal.scrollHeight;
+                    
+                    // Run decode effect on the latest decode-target
+                    if (seg.decode) {
+                        const targets = report.querySelectorAll('.decode-target');
+                        const lastTarget = targets[targets.length - 1];
+                        if (lastTarget) {
+                            decodeText(lastTarget, seg.decode, Math.min(seg.delay - 50, 600));
+                        }
+                    }
+                    
+                    // Run afterReveal callback (for risk bar animation)
+                    if (seg.afterReveal) seg.afterReveal(report);
+                    
+                    idx++;
+                    setTimeout(revealNext, seg.delay);
+                }
+                revealNext();
+            });
+        }
+        
+        function flashScreen() {
+            const body = document.body;
+            const container = document.querySelector('.container');
+            // Red vignette flash
+            body.style.boxShadow = 'inset 0 0 150px rgba(255, 59, 59, 0.5)';
+            // Force-restart shake animation (remove → reflow → add)
+            body.classList.remove('shaking');
+            container.style.animation = 'none';
+            void container.offsetHeight;          // force reflow
+            container.style.animation = '';
+            body.classList.add('shaking');
+            setTimeout(() => {
+                body.style.boxShadow = 'none';
+                body.classList.remove('shaking');
+            }, 600);
+        }
+        
+        // ============================================================
+        // Attack Buttons
+        // ============================================================
+        
+        function triggerAttack(attackId) {
+            if (isConnected && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    action: 'trigger_attack',
+                    attack_id: attackId
+                }));
+            } else if (!isConnecting) {
+                // Not connected, try to connect then fall back to simulation
+                connectWebSocket();
+                setTimeout(() => {
+                    if (isConnected) {
+                        triggerAttack(attackId);
+                    } else {
+                        fallbackSimulation(attackId);
+                    }
+                }, 1500);
+            } else {
+                // Already trying to connect, just run simulation
+                fallbackSimulation(attackId);
+            }
+        }
+        
+        function setButtonsEnabled(enabled, activeId = null) {
+            document.querySelectorAll('.attack-btn').forEach(btn => {
+                const id = btn.dataset.attack;
+                if (!enabled && id === activeId) {
+                    btn.classList.add('running');
+                } else {
+                    btn.classList.remove('running');
+                }
+                btn.disabled = !enabled;
+                btn.style.opacity = enabled ? '1' : '0.5';
+            });
+        }
+        
+        // ============================================================
+        // Stats Update
+        // ============================================================
+        
+        function updateStats(stats) {
+            if (stats.detection_rate) {
+                document.getElementById('detection-rate').textContent = stats.detection_rate + '%';
+            }
+            if (stats.patterns_loaded) {
+                document.getElementById('patterns').textContent = stats.patterns_loaded;
+            }
+            if (stats.categories) {
+                document.getElementById('categories').textContent = stats.categories;
+            }
+            if (stats.latency_ms) {
+                document.getElementById('latency').textContent = '<' + (stats.latency_ms * 10).toFixed(1) + 'ms';
+            }
+        }
+        
+        // ============================================================
+        // Fallback Simulation (when backend unavailable)
+        // ============================================================
+        
+        function fallbackSimulation(attackId = null) {
+            addTerminalLine('SYSTEM', 'Running in demo mode (backend offline)', 'info');
+            
+            const scenarios = {
+                'departing_attorney': [
+                    { prefix: '14:32:01', text: 'vpn_access ← partner_alpha', type: 'event' },
+                    { prefix: '14:32:15', text: 'file_access_bulk ← partner_alpha', type: 'event' },
+                    { prefix: '█ ALERT', text: 'pre_departure_exfil [CRITICAL]', type: 'alert' },
+                ],
+                'bec_fraud': [
+                    { prefix: '14:40:11', text: 'email_from_external ← finance_lead', type: 'event' },
+                    { prefix: '14:40:22', text: 'wire_transfer_initiated ← finance_lead', type: 'event' },
+                    { prefix: '█ ALERT', text: 'bec_wire_fraud [CRITICAL]', type: 'alert' },
+                ],
+                'vpn_hijack': [
+                    { prefix: '14:35:01', text: 'vpn_login ← user_alpha', type: 'event' },
+                    { prefix: '14:35:15', text: 'vpn_session_anomaly ← user_alpha', type: 'event' },
+                    { prefix: '█ ALERT', text: 'vpn_session_takeover [CRITICAL]', type: 'alert' },
+                ],
+                'insider_theft': [
+                    { prefix: '03:00:01', text: 'badge_access ← contractor_x', type: 'event' },
+                    { prefix: '03:00:15', text: 'usb_mount ← contractor_x', type: 'event' },
+                    { prefix: '█ ALERT', text: 'physical_cyber_exfil [CRITICAL]', type: 'alert' },
+                ],
+                'mfa_fatigue': [
+                    { prefix: '02:00:01', text: 'mfa_push_sent ← victim_user', type: 'event' },
+                    { prefix: '02:00:05', text: 'mfa_push_sent ← victim_user', type: 'event' },
+                    { prefix: '02:00:08', text: 'mfa_approved ← victim_user', type: 'event' },
+                    { prefix: '█ ALERT', text: 'mfa_fatigue_attack [CRITICAL]', type: 'alert' },
+                ]
+            };
+            
+            const sequence = attackId && scenarios[attackId] ? scenarios[attackId] : 
+                Object.values(scenarios).flat();
+            
+            let i = 0;
+            function showNext() {
+                if (i >= sequence.length) {
+                    // Show sample forensic report in demo mode
+                    addTerminalLine('🧠 SOVEREIGN AI', 'Demo analysis (LM Studio offline)', 'analysis');
+                    renderForensicReport({
+                        vulnerabilities: [{
+                            title: 'Simulated Threat Analysis',
+                            severity: 'critical',
+                            description: 'Demo mode — connect LM Studio for real sovereign AI analysis',
+                            attack_vector: 'Pattern detected by rule engine, LLM generates full forensic report',
+                            countermeasures: ['Start LM Studio for live analysis', 'Run showcase_server.py for full integration']
+                        }],
+                        risk_score: 92,
+                        immediate_actions: ['Enable LM Studio on localhost:1234', 'Run: python showcase_server.py'],
+                        latency_ms: 0,
+                        model: 'demo-mode'
+                    }).then(() => {
+                        addTerminalLine('', '─'.repeat(50), 'divider');
+                        setButtonsEnabled(true);
+                    });
+                    return;
+                }
+                const item = sequence[i];
+                addTerminalLine(item.prefix, item.text, item.type);
+                if (item.type === 'alert') flashScreen();
+                i++;
+                setTimeout(showNext, item.type === 'alert' ? 1500 : 800);
+            }
+            
+            setButtonsEnabled(false, attackId);
+            showNext();
+        }
+        
+        // ============================================================
+        // Particle Animation
+        // ============================================================
+        
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Counter animation
+        function animateCounter(id, target, suffix = '', duration = 2000) {
+            const element = document.getElementById(id);
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                
+                if (typeof target === 'number') {
+                    const current = Math.floor(eased * target);
+                    element.textContent = current + suffix;
+                } else {
+                    element.textContent = progress >= 1 ? target : '...';
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        // ============================================================
+        // Initialize
+        // ============================================================
+        
+        // ============================================================
+        // BOOT SEQUENCE
+        // ============================================================
+        
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+        
+        let bootSkipped = false;
+        
+        async function runBootSequence() {
+            const overlay = document.getElementById('bootOverlay');
+            const bootLines = document.getElementById('bootLines');
+            const progressFill = document.getElementById('bootProgress');
+            
+            // Click to skip
+            overlay.addEventListener('click', () => {
+                bootSkipped = true;
+            });
+            
+            const steps = [
+                { label: 'Loading pattern database', result: '66 PATTERNS', pct: 12 },
+                { label: 'Initializing threat categories', result: '15 CATEGORIES ACTIVE', pct: 28 },
+                { label: 'Connecting sovereign LLM', result: 'QWEN 1.5B \u2014 LOCAL INFERENCE', pct: 48 },
+                { label: 'Calibrating detection engine', result: '0.07ms LATENCY', pct: 64 },
+                { label: 'Verifying data sovereignty', result: 'ZERO EXTERNAL EGRESS', pct: 80 },
+                { label: 'Running system diagnostics', result: 'BENCHMARK 96/100', pct: 100 },
+            ];
+            
+            await sleep(400);
+            
+            for (const step of steps) {
+                if (bootSkipped) break;
+                const line = document.createElement('div');
+                line.className = 'boot-line';
+                line.innerHTML = `<span class="boot-label">[  ] ${step.label}...</span> <span class="boot-loading">\u27F3</span>`;
+                bootLines.appendChild(line);
+                progressFill.style.width = step.pct + '%';
+                
+                await sleep(bootSkipped ? 0 : 300 + Math.random() * 200);
+                
+                line.innerHTML = `<span class="boot-check">[\u2713]</span> <span class="boot-label">${step.label}</span> \u2192 <span class="boot-value">${step.result}</span>`;
+            }
+            
+            if (!bootSkipped) await sleep(350);
+            
+            const status = document.getElementById('bootStatus');
+            status.className = 'boot-status online';
+            status.textContent = '\u2588\u2588\u2588\u2588 SYSTEM OPERATIONAL \u2588\u2588\u2588\u2588';
+            
+            if (!bootSkipped) await sleep(900);
+            
+            overlay.classList.add('fade-out');
+            document.getElementById('threatTicker').classList.add('visible');
+            
+            await sleep(bootSkipped ? 300 : 1000);
+            overlay.style.display = 'none';
+        }
+        
+        // ============================================================
+        // AUTO-PLAY DEMO
+        // ============================================================
+        
+        async function autoPlayDemo() {
+            // Wait for WebSocket to connect (up to 3s)
+            let waited = 0;
+            while (!isConnected && waited < 3000) {
+                await sleep(200);
+                waited += 200;
+            }
+            
+            await sleep(600);
+            
+            // Smooth scroll to demo section
+            const demoSection = document.querySelector('.demo-section');
+            if (demoSection) {
+                demoSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            await sleep(800);
+            
+            // Auto-trigger departing attorney scenario
+            triggerAttack('departing_attorney');
+        }
+        
+        // ============================================================
+        // Initialize
+        // ============================================================
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            createParticles();
+            
+            // Run cinematic boot sequence
+            await runBootSequence();
+            
+            // Animate counters
+            animateCounter('detection-rate', '54/54', '');
+            animateCounter('patterns', 66, '');
+            animateCounter('categories', 15, '');
+            animateCounter('latency', '<0.1', 'ms');
+            
+            // Connect to backend
+            connectWebSocket();
+            
+            // Wire up attack buttons
+            document.querySelectorAll('.attack-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const attackId = btn.dataset.attack;
+                    if (attackId) triggerAttack(attackId);
+                });
+            });
+            
+            // Clear button
+            document.getElementById('clearBtn').addEventListener('click', clearTerminal);
+            
+            // Auto-play demo after boot
+            autoPlayDemo();
+        });
+    </script>
+</body>
+</html>

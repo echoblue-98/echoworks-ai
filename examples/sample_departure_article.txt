@@ -1,0 +1,49 @@
+Law360, New York (January 8, 2026) -- 
+
+HIGH-PROFILE IP PARTNER DEPARTS TO RIVAL FIRM
+
+Margaret Chen, a senior intellectual property partner at Wilson & Associates LLP for 18 years, has joined competitor Morrison LLP, the firms announced Tuesday. The move has sparked litigation, with Wilson filing an emergency temporary restraining order in New York State Supreme Court last week.
+
+According to court documents filed in Wilson & Associates v. Chen (Case No. 2026-CV-1842), the departure has resulted in what Wilson describes as "catastrophic client defections and systematic data exfiltration." The complaint alleges Chen took 12 major clients representing approximately $4.2 million in annual billings.
+
+"This wasn't a standard departure," said Wilson's managing partner Richard Thompson in a statement. "Our forensic investigation revealed evidence of systematic preparation over several months."
+
+Court filings detail a timeline of suspicious activity:
+
+- 47 days before giving notice, Chen allegedly configured email forwarding rules sending all correspondence to a personal Gmail account
+- 35 days before notice, cloud storage sync logs show 18GB of data transferred to personal OneDrive, including client contact lists, billing rate sheets, and active matter files
+- 21 days before notice, printing logs show 1,247 pages printed after hours, including confidential strategy documents
+- 14 days before departure, VPN logs indicate weekend access from an unrecognized device, with downloads of the firm's entire IP client database
+
+"We had no monitoring in place for these specific behaviors," Thompson admitted. "We thought our IT security was adequate, but it focused on external threats, not internal risk."
+
+Chen, through her attorney, denies wrongdoing. "Ms. Chen fully complied with her fiduciary duties," said her counsel David Martinez of Martinez & Lopez. "The clients chose to follow her based on 18 years of relationship-building. That's not theft—that's the nature of professional services."
+
+The case highlights growing concerns about partner mobility in IP practices, where relationships are highly personal and valuable intellectual property spans both client work and firm-developed methodologies.
+
+Wilson is seeking:
+- Return of all confidential documents and data
+- Forensic imaging of Chen's personal devices  
+- Injunction preventing client contact for 24 months
+- Damages exceeding $5 million
+
+Industry experts say the case underscores gaps in law firm security protocols. "Most firms monitor for outside hackers, but partners have unlimited access," said Sarah Phillips, a legal ethics consultant. "When a senior partner decides to leave, they can quietly prepare for months before anyone notices."
+
+Wilson has implemented new policies post-departure:
+- Mandatory "garden leave" for equity partners (60-day paid transition with no client contact)
+- Automated monitoring of email forwarding rules
+- Alerts for unusual printing or file download activity
+- Quarterly access audits for partners with $1M+ books of business
+
+Morrison LLP declined to comment on the litigation, saying only: "We welcome Margaret's substantial IP practice expertise. Client movements happen organically in professional services."
+
+The case is set for a preliminary hearing February 15, 2026 before Judge Maria Rodriguez in New York State Supreme Court, New York County.
+
+Legal observers say the outcome could set precedent for how courts balance partner mobility rights against firm trade secret protection, particularly regarding client relationship data and practice methodology intelligence.
+
+"This is the test case for the digital age," said Phillips. "Partners can now walk out with terabytes of data on a thumb drive. Firms need new playbooks."
+
+[END]
+
+Contact: reporters@law360.com
+© 2026 Portfolio Media Inc. All rights reserved.

@@ -1,0 +1,137 @@
+CORPORATE NETWORK SECURITY CONFIGURATION
+
+ENVIRONMENT: Production E-commerce Platform
+COMPLIANCE: PCI-DSS, SOC2
+
+================================================================================
+NETWORK TOPOLOGY
+================================================================================
+
+DMZ ZONE (Public-Facing):
+- 3x Web Servers (Nginx)
+  - Ports 80, 443 open to internet
+  - Load balanced
+  - SSL/TLS configured
+  
+- 2x API Gateway Servers
+  - Port 8443 open to internet
+  - Rate limiting enabled
+  
+INTERNAL ZONE (Private Network):
+- 5x Application Servers (Java/Spring Boot)
+  - Ports 8080, 8443
+  - Session management
+  
+- 2x Database Servers (PostgreSQL)
+  - Port 5432
+  - Contains customer PII and payment data
+  - Encrypted at rest
+  
+- 1x Redis Cache Server
+  - Port 6379
+  - No authentication configured
+  
+ADMIN ZONE (Management):
+- 2x Monitoring Systems (Prometheus, Grafana)
+  - Ports 9090, 3000
+  - Username/password authentication
+  
+- 1x Legacy Management Console
+  - Windows Server 2012 (EOL)
+  - Unpatched for 2+ years
+  - Admin credentials stored in config files
+
+================================================================================
+FIREWALL RULES
+================================================================================
+
+Internet → DMZ:
+- Allow: HTTP (80), HTTPS (443), API (8443)
+- Deny: All other traffic
+
+DMZ → Internal:
+- Allow: Port 8080 (app servers)
+- Allow: Port 5432 (database access for queries)
+- Allow: Port 6379 (Redis cache)
+
+Internal → DMZ:
+- Allow: All traffic
+
+Admin → Internal:
+- Allow: All traffic (no restrictions)
+- Allow: All protocols
+
+Internal → Admin:
+- Allow: SSH (22), RDP (3389)
+
+================================================================================
+AUTHENTICATION & ACCESS
+================================================================================
+
+Web Servers:
+- No authentication (public-facing)
+- SSL certificates valid
+
+API Gateway:
+- API key authentication
+- Keys rotate every 90 days
+
+Application Servers:
+- Basic authentication
+- LDAP integration for user accounts
+
+Database Servers:
+- Username/password
+- Admin account: admin/Password123
+- Application service account has full permissions
+
+Redis Cache:
+- NO AUTHENTICATION CONFIGURED
+- Accepts connections from entire internal network
+
+Monitoring Systems:
+- Web UI authentication (username/password)
+- Default credentials changed
+- Sessions expire after 30 minutes
+
+Legacy Management Console:
+- Local Windows authentication
+- Administrator password in plaintext config file
+- RDP accessible from internal network
+
+================================================================================
+PATCHING STATUS
+================================================================================
+
+DMZ Servers:
+- Web servers: Patched monthly
+- API gateways: Patched within 30 days of CVE
+
+Internal Servers:
+- Application servers: Patched quarterly
+- Database servers: Patched quarterly
+- Redis: Version 3.2.0 (known vulnerabilities, unpatched)
+
+Admin Servers:
+- Monitoring: Up to date
+- Legacy console: UNPATCHED (Windows Server 2012 EOL)
+
+================================================================================
+LOGGING & MONITORING
+================================================================================
+
+- Web server logs: Enabled (7 day retention)
+- Application logs: Enabled (30 day retention)
+- Database audit logs: NOT ENABLED
+- Firewall logs: Enabled
+- IDS/IPS: Not deployed
+- SIEM: Not configured
+
+================================================================================
+INCIDENT RESPONSE
+================================================================================
+
+- Incident response plan: Exists but not tested in 18 months
+- Security team: 2 people
+- On-call rotation: No formal rotation
+- Backup systems: Daily backups, not tested for restoration

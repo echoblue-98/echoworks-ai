@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AION OS — The Living Node</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Particle background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 68, 68, 0.6);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        /* The Node */
+        .node-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .node-core {
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ff4444 0%, #aa0000 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 60px rgba(255, 68, 68, 0.8),
+                0 0 120px rgba(255, 68, 68, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+            animation: breathe 4s ease-in-out infinite;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(255, 68, 68, 0.8), 0 0 120px rgba(255, 68, 68, 0.4); }
+            50% { transform: scale(1.1); box-shadow: 0 0 80px rgba(255, 68, 68, 1), 0 0 160px rgba(255, 68, 68, 0.6); }
+        }
+
+        /* Orbital rings */
+        .orbit {
+            position: absolute;
+            border: 1px solid rgba(255, 68, 68, 0.2);
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+
+        .orbit-1 { width: 150px; height: 150px; animation-duration: 15s; }
+        .orbit-2 { width: 220px; height: 220px; animation-duration: 25s; animation-direction: reverse; }
+        .orbit-3 { width: 300px; height: 300px; animation-duration: 35s; }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Agents on orbits */
+        .agent {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ff4444;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.8);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .agent::after {
+            content: attr(data-label);
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .agent:hover::after {
+            opacity: 1;
+        }
+
+        .orbit-1 .agent { top: -6px; left: calc(50% - 6px); animation-delay: 0s; }
+        .orbit-2 .agent:nth-child(1) { top: -6px; left: calc(50% - 6px); animation-delay: 0.4s; }
+        .orbit-2 .agent:nth-child(2) { bottom: -6px; left: calc(50% - 6px); animation-delay: 0.8s; }
+        .orbit-3 .agent:nth-child(1) { top: calc(50% - 6px); right: -6px; animation-delay: 1.2s; }
+        .orbit-3 .agent:nth-child(2) { top: calc(50% - 6px); left: -6px; animation-delay: 1.6s; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.8; }
+        }
+
+        /* Signal streams */
+        .signal-stream {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to top, transparent, rgba(255, 68, 68, 0.8), transparent);
+            animation: stream 2s linear infinite;
+        }
+
+        .stream-1 { left: -150px; top: 50%; transform: rotate(-30deg); animation-delay: 0s; }
+        .stream-2 { left: -120px; top: 30%; transform: rotate(-15deg); animation-delay: 0.5s; }
+        .stream-3 { right: -150px; top: 50%; transform: rotate(30deg); animation-delay: 1s; }
+        .stream-4 { right: -120px; top: 70%; transform: rotate(15deg); animation-delay: 1.5s; }
+        .stream-5 { left: 50%; bottom: -100px; transform: translateX(-50%); animation-delay: 0.7s; }
+
+        @keyframes stream {
+            0% { opacity: 0; transform: translateY(50px) rotate(inherit); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-50px) rotate(inherit); }
+        }
+
+        /* Title */
+        .title {
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .title h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #fff;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            animation: fadeIn 2s ease-out;
+        }
+
+        .title .tagline {
+            font-size: 1rem;
+            color: rgba(255, 68, 68, 0.8);
+            margin-top: 10px;
+            letter-spacing: 0.2em;
+            animation: fadeIn 2s ease-out 0.5s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Status bar */
+        .status-bar {
+            position: fixed;
+            bottom: 40px;
+            display: flex;
+            gap: 40px;
+            animation: fadeIn 2s ease-out 1s backwards;
+        }
+
+        .status-item {
+            text-align: center;
+        }
+
+        .status-value {
+            font-size: 1.5rem;
+            color: #fff;
+            font-weight: 300;
+        }
+
+        .status-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 5px;
+        }
+
+        .status-value.live {
+            color: #44ff44;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Threat alert animation */
+        .threat-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 68, 68, 0.5);
+            animation: threatPulse 3s ease-out infinite;
+        }
+
+        @keyframes threatPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Connection lines */
+        .connection {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 68, 68, 0.3), transparent);
+            transform-origin: left center;
+        }
+
+        /* Surfaces indicator */
+        .surfaces {
+            position: fixed;
+            top: 40px;
+            display: flex;
+            gap: 30px;
+            animation: fadeIn 2s ease-out 1.5s backwards;
+        }
+
+        .surface {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.4;
+            transition: opacity 0.3s, transform 0.3s;
+            cursor: pointer;
+        }
+
+        .surface:hover {
+            opacity: 1;
+            transform: translateY(-5px);
+        }
+
+        .surface-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .surface-label {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .surface.active {
+            opacity: 1;
+        }
+
+        .surface.active .surface-icon {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Surfaces at top -->
+    <div class="surfaces">
+        <div class="surface active">
+            <div class="surface-icon">🌐</div>
+            <div class="surface-label">Browser</div>
+        </div>
+        <div class="surface">
+            <div class="surface-icon">🖥️</div>
+            <div class="surface-label">Desktop</div>
+        </div>
+        <div class="surface active">
+            <div class="surface-icon">☁️</div>
+            <div class="surface-label">Cloud</div>
+        </div>
+        <div class="surface">
+            <div class="surface-icon">⌨️</div>
+            <div class="surface-label">Terminal</div>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="container">
+        <!-- The Living Node -->
+        <div class="node-container">
+            <!-- Signal streams coming in -->
+            <div class="signal-stream stream-1"></div>
+            <div class="signal-stream stream-2"></div>
+            <div class="signal-stream stream-3"></div>
+            <div class="signal-stream stream-4"></div>
+            <div class="signal-stream stream-5"></div>
+
+            <!-- Orbital rings with agents -->
+            <div class="orbit orbit-3">
+                <div class="agent" data-label="Exfiltrator"></div>
+                <div class="agent" data-label="Tracker"></div>
+            </div>
+            <div class="orbit orbit-2">
+                <div class="agent" data-label="Breacher"></div>
+                <div class="agent" data-label="Recon"></div>
+            </div>
+            <div class="orbit orbit-1">
+                <div class="agent" data-label="Attacker"></div>
+            </div>
+
+            <!-- Threat pulse rings -->
+            <div class="threat-pulse"></div>
+            <div class="threat-pulse" style="animation-delay: 1s;"></div>
+            <div class="threat-pulse" style="animation-delay: 2s;"></div>
+
+            <!-- Core -->
+            <div class="node-core"></div>
+        </div>
+
+        <!-- Title -->
+        <div class="title">
+            <h1>AION OS</h1>
+            <div class="tagline">The Living Node</div>
+        </div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-value live">●</div>
+            <div class="status-label">Node Active</div>
+        </div>
+        <div class="status-item">
+            <div class="status-value" id="agents">5</div>
+            <div class="status-label">Agents</div>
+        </div>
+        <div class="status-item">
+            <div class="status-value" id="patterns">6</div>
+            <div class="status-label">Patterns</div>
+        </div>
+        <div class="status-item">
+            <div class="status-value" id="signals">0</div>
+            <div class="status-label">Signals/min</div>
+        </div>
+    </div>
+
+    <script>
+        // Generate particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Simulate signal counter
+        let signalCount = 0;
+        setInterval(() => {
+            signalCount += Math.floor(Math.random() * 3);
+            document.getElementById('signals').textContent = signalCount;
+        }, 1000);
+
+        // Random agent activation effect
+        const agents = document.querySelectorAll('.agent');
+        setInterval(() => {
+            const randomAgent = agents[Math.floor(Math.random() * agents.length)];
+            randomAgent.style.background = '#44ff44';
+            randomAgent.style.boxShadow = '0 0 30px rgba(68, 255, 68, 1)';
+            setTimeout(() => {
+                randomAgent.style.background = '#ff4444';
+                randomAgent.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.8)';
+            }, 500);
+        }, 3000);
+    </script>
+</body>
+</html>

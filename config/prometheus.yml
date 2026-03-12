@@ -1,0 +1,14 @@
+# Prometheus configuration for AION OS metrics scraping
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'aion-os'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['aion-api:8000']
+        labels:
+          service: 'aion-os'
+          environment: 'production'

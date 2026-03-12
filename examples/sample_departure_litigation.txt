@@ -1,0 +1,84 @@
+The American Lawyer - December 2025
+
+LATHAM LITIGATION PARTNER DEPARTURE SPARKS $8M LAWSUIT
+
+A high-stakes litigation has erupted after Thomas Reynolds, a senior litigation partner at Latham & Watkins for 23 years, departed to join Paul Weiss in September. The case highlights emerging concerns about data security during partner transitions at elite law firms.
+
+According to the complaint filed in U.S. District Court for the Southern District of New York (Latham & Watkins LLP v. Reynolds, Case No. 1:25-cv-8847), Reynolds allegedly engaged in "systematic and premeditated theft of client relationships and confidential firm data" over a six-month period preceding his departure.
+
+Court documents reveal a detailed forensic timeline:
+
+DIGITAL FORENSICS FINDINGS:
+
+Six months before departure (March 2025):
+- Reynolds began forwarding emails from 47 key client contacts to personal ProtonMail account
+- Created personal Dropbox account and began syncing litigation strategy documents
+
+Four months before departure (May 2025):
+- Downloaded complete client contact database (2,847 entries) to personal laptop
+- Accessed firm's billing system after hours, exported rate cards and fee arrangements
+- Searched internal database for "client satisfaction scores" and "relationship mapping"
+
+Two months before departure (July 2025):
+- Increased client entertainment spending by 340% (later characterized as "pre-departure cultivation")
+- Began meeting clients outside normal business contexts
+- Printed 3,200+ pages including case strategies, expert witness lists, and settlement authorities
+
+Final month (August 2025):
+- Copied entire litigation playbook folder (78GB) to external drive
+- Forwarded 156 confidential case memos to personal email
+- Deleted browser history and cleared email sent folder
+
+"The scale of preparation was unprecedented," said Latham's managing partner in a statement. "This wasn't opportunistic - it was a calculated six-month operation."
+
+FINANCIAL IMPACT:
+
+Court filings detail the alleged damages:
+- 23 clients followed Reynolds to Paul Weiss (representing $9.2M annual billings)
+- Confidential rate information allegedly used to undercut Latham's pricing
+- Two pending matters worth estimated $15M in fees moved mid-stream
+- Firm estimates $2.1M in forensic investigation and remediation costs
+
+SECURITY GAPS EXPOSED:
+
+Industry experts note the case reveals common blind spots:
+
+1. EMAIL MONITORING: Latham's security systems flagged external forwards but auto-approved forwards to "known" personal accounts registered to partners
+
+2. CLOUD STORAGE: No restrictions on partner-level cloud sync; personal Dropbox installed on firm equipment without alerts
+
+3. PRINTING PATTERNS: No anomaly detection for printing volume; 3,200 pages went unnoticed
+
+4. CLIENT CONTACT ACCESS: Partners had unrestricted export capabilities for client databases
+
+5. AFTER-HOURS ACCESS: No behavioral triggers for unusual access patterns despite 340% increase in weekend logins
+
+6. DEVICE MANAGEMENT: Personal laptops used for firm work without MDM controls
+
+DEFENSE RESPONSE:
+
+Reynolds, through counsel, denies wrongdoing: "Mr. Reynolds maintained client relationships through decades of personal service. Clients chose to follow him - as is their right and his. The so-called 'exfiltration' is simply normal partner work product development."
+
+His attorneys argue the information was not trade secret material and that non-solicitation provisions in his partnership agreement are unenforceable under New York law.
+
+SETTLEMENT TALKS:
+
+Sources indicate preliminary settlement discussions valuing the dispute at $8-12M, though significant gaps remain between the parties.
+
+INDUSTRY IMPLICATIONS:
+
+Legal technology consultants say the case will drive changes:
+
+"Every AmLaw 100 firm should be asking: do we monitor email forwarding rules for partners? Do we track cloud storage sync? Do we have printing anomaly detection? Most don't," said Jennifer Walsh, a legal security consultant.
+
+Latham has since implemented:
+- Real-time monitoring of email forwarding rules at all levels
+- Cloud storage restrictions for equity partners
+- Behavioral analytics on document access patterns
+- Mandatory exit forensics for all departing partners
+- "Garden leave" policy with 90-day paid transition
+
+The case is scheduled for a preliminary injunction hearing January 15, 2026.
+
+---
+© 2025 ALM Media Properties, LLC. All Rights Reserved.

@@ -57,6 +57,9 @@ from .temporal_engine import (
     TemporalCorrelationEngine, SecurityEvent, EventType, 
     AttackSequence, CorrelationAlert
 )
+from .detection_cache import DetectionCache
+from .pattern_engines import PatternEnginePipeline, EngineScore
+from .precompute_daemon import PrecomputeDaemon, ActiveUserStore
 
 logger = logging.getLogger("aionos.hybrid")
 
@@ -510,7 +513,8 @@ class HybridDetectionEngine:
     Goal: Reach 1M local patterns, then Gemini becomes optional.
     """
     
-    def __init__(self, enable_gemini: bool = True, fast_mode: bool = True):
+    def __init__(self, enable_gemini: bool = True, fast_mode: bool = True,
+                 enable_cache: bool = True, enable_daemon: bool = False):
         # Local engine - the workhorse
         self.local_engine = TemporalCorrelationEngine(fast_mode=fast_mode)
         
@@ -530,6 +534,17 @@ class HybridDetectionEngine:
         self._load_probationary_patterns()
         self._unique_users_seen: set = set()  # Track total unique users for rate calculation
         
+        # ================================================================
+        # CACHE + PATTERN ENGINES + DAEMON
+        # ================================================================
+        self.cache = DetectionCache() if enable_cache else None
+        self.pattern_pipeline = PatternEnginePipeline()
+        self.user_store = ActiveUserStore()
+        self.daemon: Optional[PrecomputeDaemon] = None
+        if enable_daemon and self.cache:
+            self.daemon = PrecomputeDaemon(self.cache, self.user_store)
+            self.daemon.start()
+        
         # Stats
         self._stats = {
             "local_detections": 0,
@@ -538,7 +553,9 @@ class HybridDetectionEngine:
             "patterns_learned": len(self._learned_patterns),
             "patterns_in_probation": len(self._probationary_patterns),
             "patterns_discarded": 0,
-            "shadow_mode_triggers": 0
+            "shadow_mode_triggers": 0,
+            "cache_hits": 0,
+            "pattern_engine_evals": 0,
         }
         
         # Background thread for Gemini batching
@@ -551,6 +568,8 @@ class HybridDetectionEngine:
         logger.info(f"HybridEngine initialized: {len(self.local_engine.attack_sequences)} local patterns, "
                    f"{len(self._learned_patterns)} learned patterns, "
                    f"{len(self._probationary_patterns)} probationary patterns, "
+                   f"cache={'on' if self.cache else 'off'}, "
+                   f"daemon={'on' if self.daemon else 'off'}, "
                    f"Gemini={'enabled' if self.gemini and self.gemini.enabled else 'disabled'}")
     
     def _load_learned_patterns(self):
@@ -641,14 +660,95 @@ class HybridDetectionEngine:
         """
         Process event through hybrid detection.
         
-        1. Try local detection first (fast, free)
-        2. Check probationary patterns (shadow mode - log only)
-        3. If no match, queue for Gemini analysis
+        Pipeline order:
+        0. Check cache (instant hit)
+        1. Run pattern engines (sub-ms, no LLM)
+        2. Local temporal detection (active patterns)
+        3. Check probationary patterns (shadow mode - log only)
+        4. If no match, queue for Gemini analysis
+        5. Feed user store for daemon pre-compute
         """
         alerts = []
         start_time = time.perf_counter()
         
-        # TIER 1: Local detection (active patterns)
+        # Feed ActiveUserStore (for daemon pre-compute)
+        self.user_store.record_event(
+            event.user_id, event.event_type.value,
+            {"risk": event.risk_score, "src": event.source_system},
+        )
+        
+        # TIER 0: Cache check
+        if self.cache:
+            cache_key = DetectionCache.make_key(
+                [event.event_type.value], user_id=event.user_id
+            )
+            cached = self.cache.get(cache_key)
+            if cached and cached.get("precomputed"):
+                self._stats["cache_hits"] += 1
+                # Return cached result as a HybridAlert if score warrants it
+                if cached.get("score", 0) >= 0.6:
+                    from .temporal_engine import CorrelationAlert
+                    alert = CorrelationAlert(
+                        user_id=event.user_id,
+                        matched_sequence="cached_pattern",
+                        stages_matched=[event.event_type.value],
+                        current_stage=1,
+                        total_stages=1,
+                        risk_score=cached["score"],
+                        description=f"Cache hit: {cached.get('band', 'HIGH')} risk",
+                    )
+                    latency_us = (time.perf_counter() - start_time) * 1_000_000
+                    alerts.append(HybridAlert(
+                        alert=alert, source=DetectionSource.LOCAL,
+                        latency_us=latency_us,
+                    ))
+                    return alerts
+        
+        # TIER 0.5: Pattern engines (pure Python, sub-ms)
+        user_data = self.user_store.get_user(event.user_id)
+        if user_data:
+            event_counts = dict(user_data.get("event_counts", {}))
+            trust_events = user_data.get("events", [])
+            pe_result = self.pattern_pipeline.evaluate(
+                event_counts, trust_events,
+                base_risk=event.risk_score / 100.0 if event.risk_score > 1 else event.risk_score,
+                timestamp=event.timestamp,
+                initial_trust=user_data.get("trust", 1.0),
+            )
+            self._stats["pattern_engine_evals"] += 1
+            
+            # Cache the result
+            if self.cache:
+                self.cache.put(cache_key, {
+                    "score": pe_result.score,
+                    "confidence": pe_result.confidence,
+                    "signals": pe_result.signals,
+                    "engine": pe_result.engine,
+                    "band": pe_result.score >= 0.85 and "CRITICAL" or
+                            pe_result.score >= 0.60 and "HIGH" or
+                            pe_result.score >= 0.35 and "MEDIUM" or "LOW",
+                    "precomputed": False,
+                })
+            
+            # If pattern engines find high risk, emit alert
+            if pe_result.score >= 0.6:
+                from .temporal_engine import CorrelationAlert
+                pe_alert = CorrelationAlert(
+                    user_id=event.user_id,
+                    matched_sequence=f"pattern_engine:{pe_result.engine}",
+                    stages_matched=list(event_counts.keys())[:5],
+                    current_stage=len(event_counts),
+                    total_stages=len(event_counts),
+                    risk_score=pe_result.score,
+                    description=" | ".join(pe_result.signals[:3]),
+                )
+                latency_us = (time.perf_counter() - start_time) * 1_000_000
+                alerts.append(HybridAlert(
+                    alert=pe_alert, source=DetectionSource.LOCAL,
+                    latency_us=latency_us,
+                ))
+        
+        # TIER 1: Local temporal detection (active patterns)
         local_alerts = self.local_engine.ingest_event(event)
         latency_us = (time.perf_counter() - start_time) * 1_000_000
         
@@ -852,7 +952,7 @@ class HybridDetectionEngine:
     @property
     def stats(self) -> Dict:
         """Get hybrid engine statistics"""
-        return {
+        base = {
             **self._stats,
             "local_patterns": len(self.local_engine.attack_sequences),
             "learned_patterns": len(self._learned_patterns),
@@ -860,8 +960,13 @@ class HybridDetectionEngine:
             "target_patterns": LOCAL_PATTERN_TARGET,
             "progress_to_target": f"{len(self._learned_patterns) / LOCAL_PATTERN_TARGET * 100:.4f}%",
             "gemini_stats": self.gemini.stats if self.gemini else None,
-            "queue_size": sum(len(v) for v in self._unmatched_queue.values())
+            "queue_size": sum(len(v) for v in self._unmatched_queue.values()),
         }
+        if self.cache:
+            base["cache"] = self.cache.stats()
+        if self.daemon:
+            base["daemon"] = self.daemon.stats()
+        return base
     
     @property
     def pattern_count(self) -> int:
@@ -873,6 +978,8 @@ class HybridDetectionEngine:
         self._stop_gemini_thread = True
         if self._gemini_thread:
             self._gemini_thread.join(timeout=5)
+        if self.daemon:
+            self.daemon.stop()
         self._save_learned_patterns()
 
 

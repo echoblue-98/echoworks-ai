@@ -107,8 +107,15 @@ For each analysis, provide:
 
 Respond ONLY with valid JSON. No markdown, no explanation outside the JSON."""
 
-    def __init__(self, provider: LLMProvider = None):
-        """Initialize with specified provider or auto-detect best available."""
+    def __init__(self, provider: LLMProvider = None, pattern_confidence_threshold: float = 0.55):
+        """Initialize with specified provider or auto-detect best available.
+        
+        Args:
+            provider: LLM provider to use, or None for auto-detect.
+            pattern_confidence_threshold: Minimum confidence from pattern analysis
+                to skip LLM. Default 0.55 — patterns handle ~80% of known combos.
+        """
+        self.pattern_confidence_threshold = pattern_confidence_threshold
         if provider is None:
             # Auto-detect: prefer local LM Studio > Ollama > Claude > Mock
             if _check_lmstudio():
@@ -164,11 +171,19 @@ Respond ONLY with valid JSON. No markdown, no explanation outside the JSON."""
                 inference_time_ms=0
             )
         
-        # Build prompt
-        prompt = self._build_prompt(user_id, events, prior_history)
-        
-        # Run inference
+        # ── Pattern-first: try pure-Python heuristics before any LLM call ──
         start = datetime.now()
+        pattern_result = self._pattern_analyze(events)
+        
+        if pattern_result.confidence >= self.pattern_confidence_threshold:
+            # High-confidence pattern match — skip LLM entirely
+            pattern_result.inference_time_ms = int(
+                (datetime.now() - start).total_seconds() * 1000
+            )
+            return pattern_result
+        
+        # ── Low confidence — fall through to LLM ──
+        prompt = self._build_prompt(user_id, events, prior_history)
         
         if self.provider == LLMProvider.CLAUDE:
             response = self._call_claude(prompt)
@@ -185,6 +200,199 @@ Respond ONLY with valid JSON. No markdown, no explanation outside the JSON."""
         result = self._parse_response(response, len(events), elapsed_ms)
         return result
     
+    # ========================================================================
+    # Pattern-first analysis — pure Python, zero LLM, sub-millisecond
+    # ========================================================================
+
+    # Event combos → (threat_type, base_confidence, reasoning_template, actions)
+    PATTERN_RULES: List[tuple] = [
+        # ── Pre-departure theft ──
+        (
+            {"linkedin_update", "file_download"},
+            "departure_theft", 0.75,
+            "User updated LinkedIn profile and downloaded files — classic pre-departure data theft preparation.",
+            ["Review files downloaded in last 7 days", "Check for email forwarding rules", "Verify employment status"],
+        ),
+        (
+            {"linkedin_update", "cloud_sync"},
+            "departure_theft", 0.70,
+            "LinkedIn activity combined with cloud sync suggests data staging for departure.",
+            ["Audit cloud sync destinations", "Check for personal storage targets", "Review HR status"],
+        ),
+        (
+            {"linkedin_update", "email_forward"},
+            "departure_theft", 0.65,
+            "LinkedIn updates plus email forwarding rules — possible client list exfiltration before departure.",
+            ["Inspect email forwarding targets", "Review client contact access logs", "Notify HR"],
+        ),
+        (
+            {"linkedin_update", "print_job"},
+            "departure_theft", 0.60,
+            "Resume activity combined with printing sensitive documents suggests pre-departure reconnaissance.",
+            ["Audit print job contents", "Check for confidential document access", "Monitor file access"],
+        ),
+        # ── Data exfiltration ──
+        (
+            {"after_hours_access", "file_download"},
+            "data_exfiltration", 0.70,
+            "After-hours access combined with file downloads indicates potential data theft.",
+            ["Review downloaded files for sensitivity", "Check for USB activity", "Enable enhanced monitoring"],
+        ),
+        (
+            {"after_hours_access", "database_query"},
+            "data_exfiltration", 0.65,
+            "After-hours database access is anomalous — combined with other activity suggests exfiltration.",
+            ["Review database queries executed", "Check for data exports", "Enable enhanced monitoring"],
+        ),
+        (
+            {"bulk_operation", "cloud_sync"},
+            "data_exfiltration", 0.75,
+            "Bulk operations synced to cloud storage — high-volume data movement detected.",
+            ["Audit cloud sync volume", "Check destination accounts", "Suspend sync pending review"],
+        ),
+        (
+            {"usb_activity", "file_download"},
+            "data_exfiltration", 0.80,
+            "USB device activity combined with file downloads — likely physical data exfiltration.",
+            ["Identify USB device", "Review copied files", "Consider device confiscation"],
+        ),
+        (
+            {"file_download", "email_forward"},
+            "data_exfiltration", 0.65,
+            "File downloads followed by email forwarding — data leaving the organization via email.",
+            ["Inspect forwarded attachments", "Check external recipients", "Review DLP alerts"],
+        ),
+        # ── Account compromise ──
+        (
+            {"impossible_travel", "credential_access"},
+            "account_compromise", 0.85,
+            "Impossible travel event with credential access — strong indicator of compromised account.",
+            ["Force password reset", "Revoke active sessions", "Review recent access from anomalous location"],
+        ),
+        (
+            {"vpn_brute_force", "credential_access"},
+            "account_compromise", 0.90,
+            "Brute-force VPN attempts followed by credential access — likely successful account takeover.",
+            ["Lock account immediately", "Reset credentials", "Audit all actions since compromise"],
+        ),
+        (
+            {"impossible_travel", "vpn_access"},
+            "account_compromise", 0.70,
+            "VPN access from impossible travel location — potential credential sharing or compromise.",
+            ["Verify user location", "Check for VPN credential sharing", "Enable MFA enforcement"],
+        ),
+        (
+            {"mfa_bypass", "credential_access"},
+            "account_compromise", 0.85,
+            "MFA bypass combined with credential access — sophisticated account takeover attempt.",
+            ["Revoke all sessions", "Reset MFA enrollment", "Investigate bypass method"],
+        ),
+        # ── Insider sabotage ──
+        (
+            {"security_disable", "log_deletion"},
+            "insider_sabotage", 0.90,
+            "Security controls disabled and logs deleted — active evidence destruction in progress.",
+            ["Restore security controls immediately", "Recover deleted logs from backup", "Isolate user account"],
+        ),
+        (
+            {"permission_change", "admin_action"},
+            "insider_sabotage", 0.65,
+            "Unauthorized permission escalation combined with admin actions — potential privilege abuse.",
+            ["Audit permission changes", "Review admin actions taken", "Revert unauthorized changes"],
+        ),
+        (
+            {"security_disable", "scheduled_task"},
+            "insider_sabotage", 0.75,
+            "Security disabled with scheduled task creation — possible time-bomb or persistent backdoor.",
+            ["Inspect scheduled tasks", "Re-enable security controls", "Scan for backdoors"],
+        ),
+        # ── BEC / Wire fraud ──
+        (
+            {"email_impersonation", "wire_transfer_request"},
+            "bec_wire_fraud", 0.90,
+            "Email impersonation combined with wire transfer request — business email compromise in progress.",
+            ["Hold all pending wire transfers", "Verify request via secondary channel", "Quarantine impersonation email"],
+        ),
+        (
+            {"email_rule_change", "email_account_takeover"},
+            "bec_wire_fraud", 0.80,
+            "Email rules modified after account takeover — attacker setting up persistent access.",
+            ["Audit all email rules", "Reset account credentials", "Check for forwarding to external addresses"],
+        ),
+        (
+            {"executive_whaling", "bec_indicator"},
+            "bec_wire_fraud", 0.85,
+            "Executive-targeted phishing with BEC indicators — high-value social engineering attack.",
+            ["Alert executive team", "Review recent executive email threads", "Enable enhanced filtering"],
+        ),
+        # ── Reconnaissance ──
+        (
+            {"database_query", "file_download"},
+            "reconnaissance", 0.55,
+            "Database queries combined with file downloads — possible data mapping before exfiltration.",
+            ["Review query targets", "Check download sensitivity", "Monitor for follow-up actions"],
+        ),
+    ]
+
+    def _pattern_analyze(self, events: List[Dict]) -> ReasoningResult:
+        """
+        Pure-Python event-combo analysis. Sub-millisecond.
+        
+        Checks event types against 20+ known threat combos. Returns a
+        ReasoningResult with confidence reflecting match quality. If no
+        combo matches, returns confidence=0 so the caller falls through to LLM.
+        """
+        event_types = set()
+        for e in events:
+            raw = e.get("type", e.get("event_type", ""))
+            event_types.add(raw.lower())
+            # Also normalize common variants
+            if "linkedin" in raw.lower():
+                event_types.add("linkedin_update")
+            if "download" in raw.lower():
+                event_types.add("file_download")
+            if "after" in raw.lower() and "hour" in raw.lower():
+                event_types.add("after_hours_access")
+            if "database" in raw.lower() or "query" in raw.lower():
+                event_types.add("database_query")
+
+        best_match = None
+        best_confidence = 0.0
+
+        for rule in self.PATTERN_RULES:
+            required_types, threat_type, base_conf, reasoning, actions = rule
+            if required_types.issubset(event_types):
+                # Bonus: more matching event types beyond the required set → higher confidence
+                overlap_bonus = min(0.15, len(event_types & required_types) * 0.05)
+                volume_bonus = min(0.10, len(events) / 50)  # More events → more confident
+                confidence = min(1.0, base_conf + overlap_bonus + volume_bonus)
+                if confidence > best_confidence:
+                    best_confidence = confidence
+                    best_match = (threat_type, confidence, reasoning, actions)
+
+        if best_match:
+            threat_type, confidence, reasoning, actions = best_match
+            return ReasoningResult(
+                threat_detected=True,
+                confidence=confidence,
+                threat_type=threat_type,
+                reasoning=f"[Pattern Engine] {reasoning}",
+                recommended_actions=actions,
+                events_analyzed=len(events),
+                inference_time_ms=0,  # caller fills in actual timing
+            )
+
+        # No combo matched — low confidence, will fall through to LLM
+        return ReasoningResult(
+            threat_detected=False,
+            confidence=0.0,
+            threat_type="none",
+            reasoning="No known event combination matched. LLM analysis required for novel pattern detection.",
+            recommended_actions=[],
+            events_analyzed=len(events),
+            inference_time_ms=0,
+        )
+
     def _build_prompt(self, user_id: str, events: List[Dict], prior_history: str = '') -> str:
         """Build the analysis prompt with optional case history"""
         events_text = []

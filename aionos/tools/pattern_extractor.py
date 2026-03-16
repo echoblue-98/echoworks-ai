@@ -182,14 +182,8 @@ If critical information is missing, mark as "UNKNOWN" but still extract what you
 """
         
         try:
-            # Send to Gemini for extraction (using analyze method)
-            response = self.gemini_client.analyze(
-                content=raw_text,
-                context={"task": "pattern_extraction", "source_type": source_type},
-                intensity=5
-            )
-            
-            # Reconstruct extraction with direct API call
+            # Single Gemini call with the structured extraction prompt
+            # (previously made two calls — the analyze() call was redundant)
             import requests
             api_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
             headers = {"Content-Type": "application/json"}

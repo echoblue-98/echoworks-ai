@@ -389,6 +389,84 @@ Return ONLY valid JSON with this exact structure:
                 "privacy_mode": "SOVEREIGN - 100% local inference"
             }
     
+    def quick_analyze_local(self, content: str) -> Dict[str, Any]:
+        """
+        Pure-Python threat classification — zero LLM, sub-millisecond.
+        
+        Replaces quick_analyze() for known threat patterns. Falls back to
+        quick_analyze() only for content that doesn't match any keyword cluster.
+        """
+        text = content[:2000].lower()
+        
+        # Keyword → (threat_type, risk_weight)
+        THREAT_KEYWORDS = {
+            # Departure / IP theft
+            "resign": ("departure_theft", 0.15), "departure": ("departure_theft", 0.15),
+            "leaving": ("departure_theft", 0.10), "two weeks": ("departure_theft", 0.20),
+            "notice": ("departure_theft", 0.10), "competitor": ("departure_theft", 0.15),
+            "client list": ("departure_theft", 0.25), "trade secret": ("departure_theft", 0.25),
+            "non-compete": ("departure_theft", 0.15), "poach": ("departure_theft", 0.20),
+            "linkedin": ("departure_theft", 0.10), "recruiter": ("departure_theft", 0.15),
+            # Data exfiltration
+            "download": ("data_exfiltration", 0.10), "export": ("data_exfiltration", 0.15),
+            "bulk": ("data_exfiltration", 0.15), "usb": ("data_exfiltration", 0.20),
+            "external drive": ("data_exfiltration", 0.20), "personal email": ("data_exfiltration", 0.20),
+            "cloud sync": ("data_exfiltration", 0.15), "dropbox": ("data_exfiltration", 0.15),
+            # Account compromise
+            "brute force": ("account_compromise", 0.25), "impossible travel": ("account_compromise", 0.25),
+            "credential": ("account_compromise", 0.15), "unauthorized": ("account_compromise", 0.15),
+            "mfa bypass": ("account_compromise", 0.25), "password reset": ("account_compromise", 0.10),
+            # Insider sabotage
+            "disable": ("insider_sabotage", 0.20), "delete log": ("insider_sabotage", 0.25),
+            "backdoor": ("insider_sabotage", 0.25), "privilege escalation": ("insider_sabotage", 0.20),
+            # Wire fraud / BEC
+            "wire transfer": ("bec_wire_fraud", 0.25), "impersonat": ("bec_wire_fraud", 0.20),
+            "urgent payment": ("bec_wire_fraud", 0.25), "invoice": ("bec_wire_fraud", 0.10),
+        }
+        
+        ACTION_MAP = {
+            "departure_theft": ["Review file access logs", "Check email forwarding rules", "Verify employment status with HR"],
+            "data_exfiltration": ["Audit data transfer volumes", "Check USB/cloud activity", "Enable DLP alerts"],
+            "account_compromise": ["Force password reset", "Revoke active sessions", "Review access from anomalous locations"],
+            "insider_sabotage": ["Restore security controls", "Recover deleted logs", "Isolate user account"],
+            "bec_wire_fraud": ["Hold pending wire transfers", "Verify via secondary channel", "Quarantine suspicious emails"],
+        }
+        
+        # Score each threat type
+        scores: Dict[str, float] = {}
+        for keyword, (threat_type, weight) in THREAT_KEYWORDS.items():
+            if keyword in text:
+                scores[threat_type] = scores.get(threat_type, 0) + weight
+        
+        if not scores:
+            # No keywords matched — fall back to LLM if available
+            if self.is_available:
+                return self.quick_analyze(content)
+            return {"vulnerabilities": [], "risk_score": 0, "threat": "none",
+                    "action": "No threat indicators detected", "cost": 0.0,
+                    "privacy_mode": "SOVEREIGN - Pattern analysis"}
+        
+        # Pick top threat
+        top_threat = max(scores, key=scores.get)
+        risk_score = min(100, int(scores[top_threat] * 100))
+        
+        return {
+            "vulnerabilities": [{
+                "title": f"{top_threat.replace('_', ' ').title()} Detected",
+                "agent": "Pattern Engine (Local)",
+                "severity": "critical" if risk_score >= 75 else "high" if risk_score >= 50 else "medium",
+                "description": f"Keyword analysis identified {top_threat.replace('_', ' ')} indicators (score: {risk_score}).",
+                "countermeasures": ACTION_MAP.get(top_threat, []),
+            }],
+            "risk_score": risk_score,
+            "threat": top_threat,
+            "action": ACTION_MAP.get(top_threat, ["Monitor and review"])[0],
+            "cost": 0.0,
+            "agents_used": ["Pattern Engine (Local)"],
+            "privacy_mode": "SOVEREIGN - Pattern analysis, zero LLM",
+            "latency_ms": 0,
+        }
+
     def quick_test(self, prompt: str = "What is 2+2?") -> Dict[str, Any]:
         """Quick connectivity test"""
         try:

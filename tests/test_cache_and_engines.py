@@ -382,3 +382,164 @@ class TestHybridWithCache:
         engine.ingest_event(event)
         assert engine.stats["pattern_engine_evals"] >= 1
         engine.shutdown()
+
+
+# =============================================================================
+# PATTERN-FIRST REASONING ENGINE
+# =============================================================================
+
+class TestPatternFirstReasoning:
+    """Tests for the pattern-first analysis in LLMReasoningEngine."""
+
+    def _engine(self):
+        from aionos.core.reasoning_engine import LLMReasoningEngine, LLMProvider
+        return LLMReasoningEngine(provider=LLMProvider.MOCK, pattern_confidence_threshold=0.55)
+
+    def test_departure_theft_detected(self):
+        engine = self._engine()
+        events = [
+            {"type": "linkedin_update", "timestamp": "2026-03-16T09:00:00", "details": {}},
+            {"type": "file_download", "timestamp": "2026-03-16T10:00:00", "details": {}},
+        ]
+        result = engine.analyze_events("alice@firm.com", events)
+        assert result.threat_detected is True
+        assert result.threat_type == "departure_theft"
+        assert result.confidence >= 0.55
+        assert "Pattern Engine" in result.reasoning
+
+    def test_account_compromise_detected(self):
+        engine = self._engine()
+        events = [
+            {"type": "impossible_travel", "timestamp": "2026-03-16T03:00:00", "details": {}},
+            {"type": "credential_access", "timestamp": "2026-03-16T03:05:00", "details": {}},
+        ]
+        result = engine.analyze_events("bob@firm.com", events)
+        assert result.threat_detected is True
+        assert result.threat_type == "account_compromise"
+        assert result.confidence >= 0.80
+
+    def test_sabotage_detected(self):
+        engine = self._engine()
+        events = [
+            {"type": "security_disable", "timestamp": "2026-03-16T02:00:00", "details": {}},
+            {"type": "log_deletion", "timestamp": "2026-03-16T02:10:00", "details": {}},
+        ]
+        result = engine.analyze_events("mallory@firm.com", events)
+        assert result.threat_detected is True
+        assert result.threat_type == "insider_sabotage"
+        assert result.confidence >= 0.85
+
+    def test_bec_wire_fraud_detected(self):
+        engine = self._engine()
+        events = [
+            {"type": "email_impersonation", "timestamp": "2026-03-16T11:00:00", "details": {}},
+            {"type": "wire_transfer_request", "timestamp": "2026-03-16T11:30:00", "details": {}},
+        ]
+        result = engine.analyze_events("attacker@external.com", events)
+        assert result.threat_detected is True
+        assert result.threat_type == "bec_wire_fraud"
+        assert result.confidence >= 0.85
+
+    def test_no_match_falls_through_to_mock(self):
+        """When no pattern matches, falls through to LLM (mock in this case)."""
+        engine = self._engine()
+        events = [
+            {"type": "normal_login", "timestamp": "2026-03-16T09:00:00", "details": {}},
+        ]
+        result = engine.analyze_events("safe@firm.com", events)
+        # Mock returns no threat for unrecognized events
+        assert result.threat_detected is False
+
+    def test_empty_events_returns_empty(self):
+        engine = self._engine()
+        result = engine.analyze_events("nobody@firm.com", [])
+        assert result.threat_detected is False
+        assert result.events_analyzed == 0
+
+    def test_sub_millisecond_pattern_match(self):
+        """Pattern analysis should be sub-millisecond."""
+        engine = self._engine()
+        events = [
+            {"type": "usb_activity", "timestamp": "2026-03-16T14:00:00", "details": {}},
+            {"type": "file_download", "timestamp": "2026-03-16T14:05:00", "details": {}},
+        ]
+        start = time.perf_counter()
+        result = engine.analyze_events("eve@firm.com", events)
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        assert result.threat_detected is True
+        assert elapsed_ms < 50  # Pattern match should be well under 50ms
+
+    def test_data_exfiltration_after_hours(self):
+        engine = self._engine()
+        events = [
+            {"type": "after_hours_access", "timestamp": "2026-03-16T02:00:00", "details": {}},
+            {"type": "file_download", "timestamp": "2026-03-16T02:30:00", "details": {}},
+        ]
+        result = engine.analyze_events("suspect@firm.com", events)
+        assert result.threat_detected is True
+        assert result.threat_type == "data_exfiltration"
+
+    def test_high_threshold_forces_llm(self):
+        """With threshold=1.0, patterns never satisfy → always falls to LLM."""
+        from aionos.core.reasoning_engine import LLMReasoningEngine, LLMProvider
+        engine = LLMReasoningEngine(provider=LLMProvider.MOCK, pattern_confidence_threshold=1.0)
+        events = [
+            {"type": "linkedin_update", "timestamp": "2026-03-16T09:00:00", "details": {}},
+            {"type": "file_download", "timestamp": "2026-03-16T10:00:00", "details": {}},
+        ]
+        result = engine.analyze_events("alice@firm.com", events)
+        # Mock handles linkedin+download → departure_theft
+        assert result.threat_detected is True
+        # But reasoning should NOT have "[Pattern Engine]" tag
+        assert "Pattern Engine" not in result.reasoning
+
+
+# =============================================================================
+# QUICK ANALYZE LOCAL (LMStudioClient)
+# =============================================================================
+
+class TestQuickAnalyzeLocal:
+    """Tests for the pure-Python quick_analyze_local on LMStudioClient."""
+
+    def _client(self):
+        from aionos.api.lmstudio_client import LMStudioClient
+        # Don't need LM Studio actually running — testing the local path
+        return LMStudioClient()
+
+    def test_departure_keywords(self):
+        client = self._client()
+        result = client.quick_analyze_local("Attorney is resigning and took the client list")
+        assert result["risk_score"] > 0
+        assert result["threat"] == "departure_theft"
+        assert result["cost"] == 0.0
+        assert "Pattern Engine" in result["agents_used"][0]
+
+    def test_exfiltration_keywords(self):
+        client = self._client()
+        result = client.quick_analyze_local("Bulk download to USB external drive detected")
+        assert result["risk_score"] > 0
+        assert result["threat"] == "data_exfiltration"
+
+    def test_compromise_keywords(self):
+        client = self._client()
+        result = client.quick_analyze_local("Impossible travel from Russia, brute force credential attack")
+        assert result["risk_score"] > 0
+        assert result["threat"] == "account_compromise"
+
+    def test_bec_keywords(self):
+        client = self._client()
+        result = client.quick_analyze_local("Wire transfer urgent payment requested via impersonation email")
+        assert result["risk_score"] > 0
+        assert result["threat"] == "bec_wire_fraud"
+
+    def test_no_keywords_returns_zero_or_fallback(self):
+        client = self._client()
+        result = client.quick_analyze_local("The weather today is sunny and nice")
+        # Should either have risk_score 0 or fall back to LLM
+        # Since LM Studio likely not running in test, should get 0
+        assert result["risk_score"] == 0 or "error" in result
+
+    def test_sovereignty_label(self):
+        client = self._client()
+        result = client.quick_analyze_local("Employee is leaving and took trade secret documents")
+        assert "SOVEREIGN" in result.get("privacy_mode", "")

@@ -400,22 +400,64 @@
         <section class="live-ops fade-in delay-4" id="live-ops">
             <div class="section-label" style="text-align:center;">Live Operations</div>
             <h2 class="section-title" style="text-align:center; margin-bottom: 40px;">The Engine, Running Now</h2>
-            <p style="text-align:center; color:var(--text-dim); max-width:640px; margin:0 auto 48px; font-size:1.02rem; line-height:1.7;">Real detection engine. Real patterns. 4 verticals running simultaneously. Detection in under 1 millisecond. Full NIST incident response simulation.</p>
+            <p style="text-align:center; color:var(--text-dim); max-width:640px; margin:0 auto 48px; font-size:1.02rem; line-height:1.7;">Watch AION OS detect a multi-stage insider threat in real time. Every scenario below runs from real detection patterns — no scripted demos.</p>
+
+            <!-- Scenario selector -->
+            <div style="display:flex; justify-content:center; gap:12px; margin-bottom:24px; flex-wrap:wrap;" id="scenario-selector">
+                <button class="scenario-btn active" data-scenario="legal" style="padding:10px 22px; border-radius:10px; border:1px solid rgba(239,68,68,0.4); background:rgba(239,68,68,0.12); color:#ff6b6b; font-size:0.8rem; font-weight:600; cursor:pointer; font-family:'JetBrains Mono',monospace; letter-spacing:0.5px; transition:all 0.3s;">&#x1F6E1;&#xFE0F; ATTORNEY DEPARTURE</button>
+                <button class="scenario-btn" data-scenario="healthcare" style="padding:10px 22px; border-radius:10px; border:1px solid rgba(45,212,191,0.3); background:rgba(45,212,191,0.06); color:rgba(45,212,191,0.6); font-size:0.8rem; font-weight:600; cursor:pointer; font-family:'JetBrains Mono',monospace; letter-spacing:0.5px; transition:all 0.3s;">&#x1F3E5; HEALTHCARE FRAUD</button>
+                <button class="scenario-btn" data-scenario="realestate" style="padding:10px 22px; border-radius:10px; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.06); color:rgba(16,185,129,0.6); font-size:0.8rem; font-weight:600; cursor:pointer; font-family:'JetBrains Mono',monospace; letter-spacing:0.5px; transition:all 0.3s;">&#x1F3E0; WIRE FRAUD</button>
+            </div>
+
             <div class="demo-container">
                 <div class="demo-header">
                     <div class="demo-header-left">
                         <div class="demo-pulse"></div>
-                        <span class="demo-title-text">EchoWorks Detection Engine</span>
+                        <span class="demo-title-text">AION OS — SOC Command Console</span>
                     </div>
-                    <span class="demo-badge">4 VERTICALS &#8226; 290 TESTS &#8226; SUB-MS</span>
+                    <span class="demo-badge" id="demo-badge-text">ATTORNEY DEPARTURE &#8226; LIVE</span>
                 </div>
-                <div style="padding: 60px 28px; text-align: center; background: rgba(0,0,0,0.3);">
-                    <div style="font-size: 3rem; margin-bottom: 20px;">&#x1F6E1;&#xFE0F;</div>
-                    <h3 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 12px;">SOC Command Console</h3>
-                    <p style="color: var(--text-dim); max-width: 500px; margin: 0 auto 8px; line-height: 1.7;">Real-time insider threat detection across legal, healthcare, real estate, and enterprise verticals. Pattern-first detection in &lt;1ms. Full NIST 800-61 incident response.</p>
-                    <p style="color: var(--text-dim); font-size: 0.85rem; margin-bottom: 28px;">Request a demo to see the engine running live on your use case.</p>
-                    <a href="mailto:echoworksaillc@gmail.com?subject=Demo%20Request%20%E2%80%94%20EchoWorks%20AI" class="btn btn-primary" style="display:inline-block;">Request a Demo</a>
+
+                <!-- Animated terminal -->
+                <div id="soc-terminal" style="background:#050508; padding:24px 28px; min-height:520px; font-family:'JetBrains Mono',monospace; font-size:0.78rem; line-height:1.8; overflow:hidden; position:relative;">
+                    <!-- Scanline effect -->
+                    <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:2;"></div>
+
+                    <!-- Top status bar -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="color:#10b981;font-size:0.7rem;" id="engine-status">&#x25CF; ENGINE ONLINE</span>
+                            <span style="color:rgba(255,255,255,0.2);">|</span>
+                            <span style="color:rgba(255,255,255,0.3);font-size:0.7rem;" id="pattern-count">117 PATTERNS LOADED</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="color:rgba(255,255,255,0.3);font-size:0.7rem;" id="latency-display">LATENCY: 0.04ms</span>
+                            <span style="color:rgba(255,255,255,0.2);">|</span>
+                            <span style="color:rgba(255,255,255,0.3);font-size:0.7rem;">ON-PREMISE</span>
+                        </div>
+                    </div>
+
+                    <!-- Trust score bar -->
+                    <div style="margin-bottom:20px;">
+                        <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                            <span style="color:rgba(255,255,255,0.4);font-size:0.68rem;">ENTITY TRUST SCORE</span>
+                            <span style="font-size:0.68rem;font-weight:700;" id="trust-score-val" style="color:#10b981;">100</span>
+                        </div>
+                        <div style="height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+                            <div id="trust-bar" style="height:100%;width:100%;background:linear-gradient(90deg,#10b981,#10b981);border-radius:4px;transition:all 0.8s ease;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Event feed -->
+                    <div id="event-feed" style="position:relative;z-index:1;"></div>
+
+                    <!-- Threat level indicator -->
+                    <div id="threat-level" style="position:absolute;bottom:24px;right:28px;text-align:right;opacity:0;transition:opacity 0.5s;">
+                        <div style="font-size:0.65rem;color:rgba(255,255,255,0.3);letter-spacing:2px;margin-bottom:4px;">THREAT LEVEL</div>
+                        <div id="threat-level-text" style="font-size:1.8rem;font-weight:800;letter-spacing:-1px;">LOW</div>
+                    </div>
                 </div>
+
                 <div class="demo-footer">
                     <div class="demo-stats">
                         <span><span class="demo-stat-val">4</span> Verticals</span>
@@ -423,6 +465,7 @@
                         <span><span class="demo-stat-val">&lt;1ms</span> Detection</span>
                         <span><span class="demo-stat-val">100%</span> On-Premise</span>
                     </div>
+                    <a href="mailto:echoworksaillc@gmail.com?subject=Demo%20Request%20%E2%80%94%20EchoWorks%20AI" class="demo-expand-btn">Request Live Demo</a>
                 </div>
             </div>
         </section>
@@ -490,13 +533,236 @@
             });
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
         document.querySelectorAll('.arch-entity, .arch-connector, .moat-pillar, .vert-card, .anti-card, .demo-container').forEach(el => { observer.observe(el); });
-        // Scroll-reveal observer for new sections
         const revealObs = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObs.unobserve(entry.target); }
             });
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
         document.querySelectorAll('.who-card').forEach(el => { revealObs.observe(el); });
+
+        /* ── SOC COMMAND CONSOLE ANIMATION ── */
+        const scenarios = {
+            legal: {
+                badge: 'ATTORNEY DEPARTURE \u2022 LIVE',
+                color: '#ff6b6b',
+                entity: 'att_jchen_042',
+                events: [
+                    { time: 0, type: 'INGEST', sev: 'INFO', color: 'rgba(255,255,255,0.4)', text: 'Event stream connected \u2014 iManage DMS + Email Gateway + Cloud Proxy', trust: 100 },
+                    { time: 1200, type: 'EVENT', sev: 'LOW', color: '#60a5fa', text: '\u250C\u2500 matter_access | att_jchen_042 | iManage', trust: 92 },
+                    { time: 1400, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  34 file accesses on Apex Capital matter M-2024-1847 \u2014 after hours', trust: 92 },
+                    { time: 1600, type: 'ENGINE', sev: '', color: '#8b5cf6', text: '\u2514\u2500 ProximityEngine: single-entity cluster forming | TrustScore: 92', trust: 92 },
+                    { time: 3000, type: 'EVENT', sev: 'MEDIUM', color: '#f59e0b', text: '\u250C\u2500 dms_bulk_export | att_jchen_042 | iManage', trust: 68 },
+                    { time: 3200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  218 files / 890 MB across 2 matters [M-2024-1847, M-2024-1901]', trust: 68 },
+                    { time: 3400, type: 'ENGINE', sev: '', color: '#f59e0b', text: '\u2514\u2500 PhaseEngine: departure_staging phase detected | TrustScore: 68 \u2193', trust: 68 },
+                    { time: 5000, type: 'EVENT', sev: 'HIGH', color: '#ef4444', text: '\u250C\u2500 email_forward | att_jchen_042 | Exchange Gateway', trust: 35 },
+                    { time: 5200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  5 attachments (42 MB) \u2192 jchen.personal@gmail.com', trust: 35 },
+                    { time: 5400, type: 'PATTERN', sev: '', color: '#ef4444', text: '\u2514\u2500 \u26A0 PATTERN MATCH: departure_theft [matter+export+personal_email] confidence: 0.87', trust: 35 },
+                    { time: 5600, type: 'ENGINE', sev: '', color: '#8b5cf6', text: '   LLM BYPASSED \u2014 pure pattern match \u2014 0.04ms', trust: 35 },
+                    { time: 7200, type: 'EVENT', sev: 'CRITICAL', color: '#ff3b3b', text: '\u250C\u2500 cloud_upload | att_jchen_042 | Cloud Proxy', trust: 8 },
+                    { time: 7400, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  890 MB \u2192 dropbox.com via split-tunnel VPN', trust: 8 },
+                    { time: 7600, type: 'CRITICAL', sev: '', color: '#ff3b3b', text: '\u2514\u2500 \u2588\u2588 CRITICAL: Full exfiltration chain confirmed', trust: 8 },
+                    { time: 7800, type: 'CHAIN', sev: '', color: '#ff6b6b', text: '   Chain: matter_access \u2192 bulk_export \u2192 email_forward \u2192 cloud_upload', trust: 8 },
+                    { time: 9000, type: 'NIST', sev: '', color: '#8b5cf6', text: '\u2500\u2500\u2500 NIST 800-61 INCIDENT RESPONSE \u2500\u2500\u2500', trust: 8 },
+                    { time: 9300, type: 'ACTION', sev: '', color: '#10b981', text: '  [CONTAIN] Revoke iManage session tokens for att_jchen_042', trust: 8 },
+                    { time: 9500, type: 'ACTION', sev: '', color: '#10b981', text: '  [CONTAIN] Suspend split-tunnel VPN access', trust: 8 },
+                    { time: 9700, type: 'ACTION', sev: '', color: '#10b981', text: '  [PRESERVE] Email evidence quarantined \u2014 litigation hold applied', trust: 8 },
+                    { time: 9900, type: 'ACTION', sev: '', color: '#10b981', text: '  [NOTIFY] Ethics partner alert dispatched', trust: 8 },
+                    { time: 10200, type: 'REPORT', sev: '', color: '#60a5fa', text: '  \u2714 Incident report generated \u2014 PDF + JSONL audit trail', trust: 8 },
+                    { time: 10800, type: 'DONE', sev: '', color: 'rgba(255,255,255,0.3)', text: '\u2500\u2500\u2500 Detection complete \u2014 3.2s from first event to containment \u2500\u2500\u2500', trust: 8 },
+                ]
+            },
+            healthcare: {
+                badge: 'HEALTHCARE FRAUD \u2022 LIVE',
+                color: '#2dd4bf',
+                entity: 'npi_1234567890',
+                events: [
+                    { time: 0, type: 'INGEST', sev: 'INFO', color: 'rgba(255,255,255,0.4)', text: 'Event stream connected \u2014 Epic EHR + Claims Pipeline + PDMP', trust: 100 },
+                    { time: 1200, type: 'EVENT', sev: 'LOW', color: '#60a5fa', text: '\u250C\u2500 claim_submitted | npi_1234567890 | Claims Pipeline', trust: 95 },
+                    { time: 1400, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  CPT 99215 | $285.00 | Metro Clinic \u2014 standard E&M baseline', trust: 95 },
+                    { time: 1600, type: 'ENGINE', sev: '', color: '#8b5cf6', text: '\u2514\u2500 ProximityEngine: baseline established | TrustScore: 95', trust: 95 },
+                    { time: 3000, type: 'EVENT', sev: 'HIGH', color: '#f59e0b', text: '\u250C\u2500 upcoding_pattern | npi_1234567890 | Claims Analytics', trust: 58 },
+                    { time: 3200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  92% claims at CPT 99215 vs 31% peer avg | 48 claims in window', trust: 58 },
+                    { time: 3400, type: 'ENGINE', sev: '', color: '#f59e0b', text: '\u2514\u2500 PatternEngine: statistical_upcoding \u2014 actuarial anomaly | TrustScore: 58 \u2193', trust: 58 },
+                    { time: 5000, type: 'EVENT', sev: 'HIGH', color: '#ef4444', text: '\u250C\u2500 impossible_travel | npi_1234567890 | Epic EHR', trust: 30 },
+                    { time: 5200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  Chicago, IL \u2192 Houston, TX in 45 minutes \u2014 credential compromise likely', trust: 30 },
+                    { time: 5400, type: 'ENGINE', sev: '', color: '#ef4444', text: '\u2514\u2500 ProximityEngine: upcoding + impossible_travel on same NPI | TrustScore: 30 \u2193', trust: 30 },
+                    { time: 7000, type: 'EVENT', sev: 'CRITICAL', color: '#ff3b3b', text: '\u250C\u2500 after_hours_ehr_access | npi_1234567890 | Epic EHR', trust: 5 },
+                    { time: 7200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  Controlled substance record \u2014 oncology dept \u2014 patient P-00482', trust: 5 },
+                    { time: 7400, type: 'CRITICAL', sev: '', color: '#ff3b3b', text: '\u2514\u2500 \u2588\u2588 CRITICAL: 3 independent signals on single NPI', trust: 5 },
+                    { time: 7600, type: 'CHAIN', sev: '', color: '#ff6b6b', text: '   Chain: upcoding \u2192 impossible_travel \u2192 after_hours_narcotics', trust: 5 },
+                    { time: 8800, type: 'NIST', sev: '', color: '#8b5cf6', text: '\u2500\u2500\u2500 NIST 800-61 INCIDENT RESPONSE \u2500\u2500\u2500', trust: 5 },
+                    { time: 9100, type: 'ACTION', sev: '', color: '#10b981', text: '  [CONTAIN] Suspend EHR access for npi_1234567890', trust: 5 },
+                    { time: 9300, type: 'ACTION', sev: '', color: '#10b981', text: '  [CONTAIN] Freeze claims pipeline \u2014 48 claims held', trust: 5 },
+                    { time: 9500, type: 'ACTION', sev: '', color: '#10b981', text: '  [PRESERVE] Audit trail preserved \u2014 chain of custody locked', trust: 5 },
+                    { time: 9700, type: 'ACTION', sev: '', color: '#10b981', text: '  [NOTIFY] Compliance officer + DEA liaison alerted', trust: 5 },
+                    { time: 10000, type: 'REPORT', sev: '', color: '#60a5fa', text: '  \u2714 OCR breach assessment pre-populated \u2014 HIPAA \u00A7 164.312', trust: 5 },
+                    { time: 10600, type: 'DONE', sev: '', color: 'rgba(255,255,255,0.3)', text: '\u2500\u2500\u2500 Detection complete \u2014 2.8s \u2014 zero PHI transmitted externally \u2500\u2500\u2500', trust: 5 },
+                ]
+            },
+            realestate: {
+                badge: 'WIRE FRAUD \u2022 LIVE',
+                color: '#10b981',
+                entity: 'parcel_09-1447-002',
+                events: [
+                    { time: 0, type: 'INGEST', sev: 'INFO', color: 'rgba(255,255,255,0.4)', text: 'Event stream connected \u2014 County Records + MLS + Wire Transfer Monitor', trust: 100 },
+                    { time: 1200, type: 'EVENT', sev: 'LOW', color: '#60a5fa', text: '\u250C\u2500 deed_transfer | parcel_09-1447-002 | San Diego County', trust: 88 },
+                    { time: 1400, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  Oceanview Holdings LLC \u2192 Pacific Realty Trust | $2.8M grant deed', trust: 88 },
+                    { time: 1600, type: 'ENGINE', sev: '', color: '#8b5cf6', text: '\u2514\u2500 ProximityEngine: LLC-to-LLC transfer logged | TrustScore: 88', trust: 88 },
+                    { time: 3000, type: 'EVENT', sev: 'MEDIUM', color: '#f59e0b', text: '\u250C\u2500 rapid_flip | parcel_09-1447-002 | MLS', trust: 55 },
+                    { time: 3200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  Relisted at $4.2M after 18 days \u2014 50% markup \u2014 no improvements filed', trust: 55 },
+                    { time: 3400, type: 'ENGINE', sev: '', color: '#f59e0b', text: '\u2514\u2500 PatternEngine: rapid_flip_anomaly detected | TrustScore: 55 \u2193', trust: 55 },
+                    { time: 5000, type: 'EVENT', sev: 'HIGH', color: '#ef4444', text: '\u250C\u2500 beneficial_owner_change | parcel_09-1447-002 | FinCEN BOI', trust: 28 },
+                    { time: 5200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  Pacific Realty Trust \u2192 PRT Delaware Sub LLC \u2014 3-layer entity', trust: 28 },
+                    { time: 5400, type: 'ENGINE', sev: '', color: '#ef4444', text: '\u2514\u2500 PhaseEngine: ownership_obfuscation + rapid_flip \u2014 FinCEN red flag | TrustScore: 28 \u2193', trust: 28 },
+                    { time: 7000, type: 'EVENT', sev: 'CRITICAL', color: '#ff3b3b', text: '\u250C\u2500 cash_purchase | parcel_09-1447-002 | Wire Transfer Monitor', trust: 4 },
+                    { time: 7200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  $4.2M all-cash \u2014 wire origin: Cayman Islands National Bank \u2014 BSA flagged', trust: 4 },
+                    { time: 7400, type: 'CRITICAL', sev: '', color: '#ff3b3b', text: '\u2514\u2500 \u2588\u2588 CRITICAL: Money laundering pattern confirmed', trust: 4 },
+                    { time: 7600, type: 'CHAIN', sev: '', color: '#ff6b6b', text: '   Chain: rapid_flip \u2192 shell_entity \u2192 offshore_wire \u2192 no_financing', trust: 4 },
+                    { time: 8800, type: 'NIST', sev: '', color: '#8b5cf6', text: '\u2500\u2500\u2500 NIST 800-61 INCIDENT RESPONSE \u2500\u2500\u2500', trust: 4 },
+                    { time: 9100, type: 'ACTION', sev: '', color: '#10b981', text: '  [CONTAIN] File SAR with FinCEN \u2014 auto-populated', trust: 4 },
+                    { time: 9300, type: 'ACTION', sev: '', color: '#10b981', text: '  [CONTAIN] Freeze escrow disbursement', trust: 4 },
+                    { time: 9500, type: 'ACTION', sev: '', color: '#10b981', text: '  [PRESERVE] Request beneficial ownership disclosure \u2014 CTA \u00A7 5336', trust: 4 },
+                    { time: 9700, type: 'ACTION', sev: '', color: '#10b981', text: '  [NOTIFY] Title insurance review flagged', trust: 4 },
+                    { time: 10000, type: 'REPORT', sev: '', color: '#60a5fa', text: '  \u2714 FBI IC3 report pre-populated \u2014 wire fraud \u00A7 1343', trust: 4 },
+                    { time: 10600, type: 'DONE', sev: '', color: 'rgba(255,255,255,0.3)', text: '\u2500\u2500\u2500 Detection complete \u2014 3.1s \u2014 all data stays on-premise \u2500\u2500\u2500', trust: 4 },
+                ]
+            }
+        };
+
+        let activeScenario = 'legal';
+        let animationTimers = [];
+        let simStarted = false;
+
+        function clearTimers() {
+            animationTimers.forEach(t => clearTimeout(t));
+            animationTimers = [];
+        }
+
+        function updateTrust(val) {
+            const bar = document.getElementById('trust-bar');
+            const valEl = document.getElementById('trust-score-val');
+            if (!bar || !valEl) return;
+            bar.style.width = val + '%';
+            valEl.textContent = val;
+            if (val > 70) { bar.style.background = 'linear-gradient(90deg,#10b981,#10b981)'; valEl.style.color = '#10b981'; }
+            else if (val > 40) { bar.style.background = 'linear-gradient(90deg,#f59e0b,#f59e0b)'; valEl.style.color = '#f59e0b'; }
+            else if (val > 15) { bar.style.background = 'linear-gradient(90deg,#ef4444,#ef4444)'; valEl.style.color = '#ef4444'; }
+            else { bar.style.background = 'linear-gradient(90deg,#ff3b3b,#ff3b3b)'; valEl.style.color = '#ff3b3b'; }
+        }
+
+        function updateThreatLevel(trust) {
+            const el = document.getElementById('threat-level');
+            const txt = document.getElementById('threat-level-text');
+            if (!el || !txt) return;
+            el.style.opacity = '1';
+            if (trust > 70) { txt.textContent = 'LOW'; txt.style.color = '#10b981'; }
+            else if (trust > 40) { txt.textContent = 'MEDIUM'; txt.style.color = '#f59e0b'; }
+            else if (trust > 15) { txt.textContent = 'HIGH'; txt.style.color = '#ef4444'; }
+            else { txt.textContent = 'CRITICAL'; txt.style.color = '#ff3b3b'; txt.style.textShadow = '0 0 20px rgba(255,59,59,0.6)'; }
+        }
+
+        function addEvent(ev) {
+            const feed = document.getElementById('event-feed');
+            if (!feed) return;
+            const line = document.createElement('div');
+            line.style.cssText = 'opacity:0;transform:translateX(-10px);transition:all 0.4s ease;margin-bottom:2px;';
+
+            const ts = new Date().toISOString().split('T')[1].split('.')[0];
+            let prefix = '';
+            if (ev.sev === 'CRITICAL') prefix = '<span style="background:#ff3b3b;color:#fff;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:700;margin-right:8px;animation:demoPulse 1s ease-in-out infinite;">CRITICAL</span>';
+            else if (ev.sev === 'HIGH') prefix = '<span style="color:#ef4444;font-weight:600;margin-right:8px;">[HIGH]</span>';
+            else if (ev.sev === 'MEDIUM') prefix = '<span style="color:#f59e0b;font-weight:600;margin-right:8px;">[MEDIUM]</span>';
+            else if (ev.sev === 'LOW') prefix = '<span style="color:#60a5fa;font-weight:600;margin-right:8px;">[LOW]</span>';
+            else if (ev.sev === 'INFO') prefix = '<span style="color:rgba(255,255,255,0.3);margin-right:8px;">[INFO]</span>';
+
+            const timestamp = ev.type === 'DETAIL' || ev.type === 'ENGINE' || ev.type === 'PATTERN' || ev.type === 'ACTION' || ev.type === 'CHAIN' || ev.type === 'REPORT' || ev.type === 'DONE' || ev.type === 'NIST'
+                ? '<span style="color:transparent;font-size:0.7rem;">          </span>'
+                : '<span style="color:rgba(255,255,255,0.2);font-size:0.7rem;">' + ts + '</span> ';
+
+            line.innerHTML = timestamp + prefix + '<span style="color:' + ev.color + ';">' + ev.text + '</span>';
+
+            // Flash effect for CRITICAL
+            if (ev.type === 'CRITICAL') {
+                const terminal = document.getElementById('soc-terminal');
+                if (terminal) {
+                    terminal.style.boxShadow = '0 0 40px rgba(255,59,59,0.3)';
+                    setTimeout(() => { terminal.style.boxShadow = 'none'; }, 800);
+                }
+            }
+
+            feed.appendChild(line);
+            requestAnimationFrame(() => { line.style.opacity = '1'; line.style.transform = 'translateX(0)'; });
+
+            // Auto-scroll by keeping only last ~18 lines visible
+            const lines = feed.children;
+            if (lines.length > 18) {
+                lines[0].style.opacity = '0';
+                lines[0].style.height = '0';
+                lines[0].style.margin = '0';
+                lines[0].style.overflow = 'hidden';
+                lines[0].style.transition = 'all 0.3s';
+            }
+
+            updateTrust(ev.trust);
+            updateThreatLevel(ev.trust);
+        }
+
+        function runScenario(name) {
+            clearTimers();
+            const s = scenarios[name];
+            if (!s) return;
+
+            // Reset
+            const feed = document.getElementById('event-feed');
+            if (feed) feed.innerHTML = '';
+            updateTrust(100);
+            const tl = document.getElementById('threat-level');
+            if (tl) tl.style.opacity = '0';
+            const txt = document.getElementById('threat-level-text');
+            if (txt) txt.style.textShadow = 'none';
+            const badge = document.getElementById('demo-badge-text');
+            if (badge) badge.textContent = s.badge;
+            const terminal = document.getElementById('soc-terminal');
+            if (terminal) terminal.style.boxShadow = 'none';
+
+            // Update button styles
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.opacity = '0.6';
+            });
+            const activeBtn = document.querySelector('[data-scenario="' + name + '"]');
+            if (activeBtn) { activeBtn.classList.add('active'); activeBtn.style.opacity = '1'; }
+
+            s.events.forEach(ev => {
+                const timer = setTimeout(() => addEvent(ev), ev.time);
+                animationTimers.push(timer);
+            });
+
+            // Loop after complete
+            const lastTime = s.events[s.events.length - 1].time;
+            const loopTimer = setTimeout(() => runScenario(name), lastTime + 4000);
+            animationTimers.push(loopTimer);
+        }
+
+        // Scenario buttons
+        document.querySelectorAll('.scenario-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                activeScenario = this.getAttribute('data-scenario');
+                runScenario(activeScenario);
+            });
+        });
+
+        // Auto-start when section scrolls into view
+        const simObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !simStarted) {
+                    simStarted = true;
+                    runScenario(activeScenario);
+                }
+            });
+        }, { threshold: 0.2 });
+        const simTarget = document.getElementById('soc-terminal');
+        if (simTarget) simObserver.observe(simTarget);
     </script>
 </body>
 </html>

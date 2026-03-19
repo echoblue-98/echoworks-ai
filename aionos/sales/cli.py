@@ -28,6 +28,12 @@ import sys
 import os
 from datetime import date, datetime
 
+# Ensure UTF-8 output on Windows
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout.reconfigure(encoding="utf-8")
+if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
+    sys.stderr.reconfigure(encoding="utf-8")
+
 from aionos.sales.engine import SalesEngine
 from aionos.sales.prospects import Pipeline
 from aionos.sales.messages import MessageGenerator
@@ -61,7 +67,7 @@ def _cli_list(args, pipe: Pipeline) -> None:
         return
 
     print(f"\n  {'ID':>4}  {'Name':<22} {'Company':<22} {'Vertical':<12} {'Stage':<16} {'Email':<30}")
-    print(f"  {'─'*4}  {'─'*22} {'─'*22} {'─'*12} {'─'*16} {'─'*30}")
+    print(f"  {'-'*4}  {'-'*22} {'-'*22} {'-'*12} {'-'*16} {'-'*30}")
     for p in prospects:
         print(
             f"  {p['id']:>4}  {p['name']:<22.22} {p['company']:<22.22} "
@@ -83,28 +89,28 @@ def _cli_generate(args, pipe: Pipeline, gen: MessageGenerator) -> None:
         vertical=prospect["vertical"],
     )
 
-    print(f"\n{'═'*70}")
+    print(f"\n{'='*70}")
     print(f"  MESSAGES FOR: {prospect['name']} @ {prospect['company']}")
     print(f"  Vertical: {prospect['vertical']}  |  Stage: {prospect['stage']}")
-    print(f"{'═'*70}\n")
+    print(f"{'='*70}\n")
 
     for key in ["cold_email", "linkedin_request", "follow_up_1", "follow_up_2", "follow_up_3"]:
         if key in msgs:
             label = key.replace("_", " ").upper()
-            print(f"  ┌─── {label} {'─' * (55 - len(label))}┐")
+            print(f"  +--- {label} {'-' * (55 - len(label))}+")
             for line in msgs[key].split("\n"):
-                print(f"  │ {line}")
-            print(f"  └{'─'*60}┘\n")
+                print(f"  | {line}")
+            print(f"  +{'-'*60}+\n")
 
     # Show objection handlers
     obj_keys = [k for k in msgs if k.startswith("objection_")]
     if obj_keys:
-        print(f"  ┌─── OBJECTION HANDLERS ─────────────────────────────────┐")
+        print(f"  +--- OBJECTION HANDLERS {'-'*35}+")
         for k in obj_keys[:3]:
             for line in msgs[k].split("\n"):
-                print(f"  │ {line}")
-            print(f"  │")
-        print(f"  └{'─'*60}┘\n")
+                print(f"  | {line}")
+            print(f"  |")
+        print(f"  +{'-'*60}+\n")
 
 
 def _cli_batch(args, pipe: Pipeline, gen: MessageGenerator) -> None:
@@ -125,12 +131,12 @@ def _cli_batch(args, pipe: Pipeline, gen: MessageGenerator) -> None:
             title=p.get("title", ""),
             vertical=p["vertical"],
         )
-        print(f"  ── #{p['id']} {p['name']} @ {p['company']} ({p['vertical']}) ──")
+        print(f"  -- #{p['id']} {p['name']} @ {p['company']} ({p['vertical']}) --")
         print(f"  LINKEDIN (paste this):")
         print(f"  {msgs['linkedin_request']}")
         print()
         print(f"  EMAIL SUBJECT: {msgs['cold_email'].split(chr(10))[0].replace('Subject: ', '')}")
-        print(f"  {'─'*50}")
+        print(f"  {'-'*50}")
         print()
 
 
@@ -142,9 +148,9 @@ def _cli_queue(args, pipe: Pipeline, gen: MessageGenerator, engine: SalesEngine)
         print("  Tip: Add prospects and they'll auto-schedule.")
         return
 
-    print(f"\n  ╔══ DAILY ACTION QUEUE — {date_str} ══╗")
-    print(f"  ║  {len(queue)} prospect(s) need action today")
-    print(f"  ╚{'═'*40}╝\n")
+    print(f"\n  === DAILY ACTION QUEUE -- {date_str} ===")
+    print(f"  {len(queue)} prospect(s) need action today")
+    print()
 
     for p in queue:
         seq_day = p.get("sequence_day", 0)
@@ -159,24 +165,24 @@ def _cli_queue(args, pipe: Pipeline, gen: MessageGenerator, engine: SalesEngine)
             vertical=p["vertical"],
         )
 
-        print(f"  ┌─── #{p['id']} {p['name']} @ {p['company']} ───")
-        print(f"  │  Stage: {p['stage']}  |  Day: {seq_day}")
-        print(f"  │  Channel: {channel}  |  Action: {action}")
+        print(f"  +--- #{p['id']} {p['name']} @ {p['company']} ---")
+        print(f"  |  Stage: {p['stage']}  |  Day: {seq_day}")
+        print(f"  |  Channel: {channel}  |  Action: {action}")
 
         if channel == "LINKEDIN":
-            print(f"  │")
-            print(f"  │  PASTE THIS:")
-            print(f"  │  {msgs['linkedin_request']}")
+            print(f"  |")
+            print(f"  |  PASTE THIS:")
+            print(f"  |  {msgs['linkedin_request']}")
         elif channel == "EMAIL":
             email_key = "cold_email" if seq_day == 0 else f"follow_up_{min(seq_day, 3)}"
             if email_key in msgs:
                 subject_line = msgs[email_key].split("\n")[0]
-                print(f"  │")
-                print(f"  │  {subject_line}")
+                print(f"  |")
+                print(f"  |  {subject_line}")
                 if p.get("email"):
-                    print(f"  │  To: {p['email']}")
+                    print(f"  |  To: {p['email']}")
 
-        print(f"  └{'─'*50}")
+        print(f"  +{'-'*50}")
         print()
 
 
@@ -187,13 +193,13 @@ def _cli_stats(args, pipe: Pipeline) -> None:
         return
 
     total = sum(counts.values())
-    print(f"\n  ╔══ PIPELINE STATS ══╗")
+    print(f"\n  === PIPELINE STATS ===")
     for stage, count in sorted(counts.items()):
-        bar = "█" * count
-        print(f"  ║  {stage:<16} {count:>3}  {bar}")
-    print(f"  ║  {'─'*28}")
-    print(f"  ║  {'TOTAL':<16} {total:>3}")
-    print(f"  ╚{'═'*30}╝\n")
+        bar = "#" * count
+        print(f"  {stage:<16} {count:>3}  {bar}")
+    print(f"  {'-'*28}")
+    print(f"  {'TOTAL':<16} {total:>3}")
+    print()
 
 
 def _cli_advance(args, pipe: Pipeline) -> None:

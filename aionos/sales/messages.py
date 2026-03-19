@@ -149,7 +149,7 @@ class MessageGenerator:
         pain = persona.pain_points[0] if persona.pain_points else ""
         reg_name = regs[0].name if regs else ""
         reg_penalty = regs[0].penalty_range if regs else ""
-        chain = " → ".join(scenario.event_chain[:3])
+        chain = " -> ".join(scenario.event_chain[:3])
         speed = scenario.detection_speed
         impact = scenario.financial_impact
 
@@ -158,10 +158,10 @@ class MessageGenerator:
             f"{first_name},\n\n"
             f"{persona.opening_line}\n\n"
             f"The attack chain is always the same: {chain}. "
-            f"By the time it's discovered, the damage is done — "
+            f"By the time it's discovered, the damage is done -- "
             f"{impact}.\n\n"
             f"We built a detection engine that catches this pattern "
-            f"in {speed} — before anyone knows it's happening. "
+            f"in {speed} -- before anyone knows it's happening. "
             f"It runs entirely on-premise. No data leaves {company}'s "
             f"network.\n\n"
             f"The regulatory exposure is real: {reg_name} "
@@ -183,7 +183,7 @@ class MessageGenerator:
         speed = scenario.detection_speed
         # Hard cap at 300 chars for LinkedIn
         msg = (
-            f"Hi {first_name} — quick question: {pain.lower().rstrip('.')}? "
+            f"Hi {first_name} -- quick question: {pain.lower().rstrip('.')}? "
             f"We built a system that detects {scenario.name.lower()} "
             f"in {speed}, runs 100% on-premise. "
             f"3-min demo recording available if relevant."
@@ -229,7 +229,7 @@ class MessageGenerator:
             f"{first_name},\n\n"
             f"I've reached out a few times about insider threat "
             f"detection for {company}. I know timing matters.\n\n"
-            f"If this isn't a priority right now, no worries — "
+            f"If this isn't a priority right now, no worries -- "
             f"I'll stop following up. But if something changes "
             f"(a departure incident, a compliance audit, a client "
             f"security requirement), we're here.\n\n"

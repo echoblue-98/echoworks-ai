@@ -13,5 +13,10 @@ Verticals:
 
 from aionos.sales.engine import SalesEngine
 from aionos.sales.models import Vertical, BuyerPersona, ThreatScenario
+from aionos.sales.prospects import Pipeline
+from aionos.sales.messages import MessageGenerator
 
-__all__ = ["SalesEngine", "Vertical", "BuyerPersona", "ThreatScenario"]
+__all__ = [
+    "SalesEngine", "Vertical", "BuyerPersona", "ThreatScenario",
+    "Pipeline", "MessageGenerator",
+]

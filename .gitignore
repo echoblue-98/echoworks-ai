@@ -164,3 +164,7 @@ chen_risk_report.pdf
 # Research notes (may contain competitive intel)
 # -----------------------------------------------------------------------------
 research_notes/
+
+# Sales pipeline data
+pipeline.db
+prospects_export.csv

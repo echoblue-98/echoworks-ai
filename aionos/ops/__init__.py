@@ -21,5 +21,6 @@ Usage:
 from aionos.ops.store import OpsStore
 from aionos.ops.runner import OpsRunner
 from aionos.ops.learner import EvolutionEngine
+from aionos.ops.briefing import Briefing
 
-__all__ = ["OpsStore", "OpsRunner", "EvolutionEngine"]
+__all__ = ["OpsStore", "OpsRunner", "EvolutionEngine", "Briefing"]

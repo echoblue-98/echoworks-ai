@@ -35,6 +35,9 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
 from aionos.ops.store import OpsStore, _get_current_week
 from aionos.ops.runner import OpsRunner
 from aionos.ops.learner import EvolutionEngine
+from aionos.ops.briefing import Briefing
+from aionos.ops.notify import notify_brief_ready
+from aionos.ops import scheduler as sched
 
 
 # ================================================================
@@ -421,6 +424,42 @@ def _learn_insights(args, ops: OpsStore) -> None:
 
 
 # ================================================================
+#  BRIEF COMMAND
+# ================================================================
+
+def _brief(args, ops: OpsStore) -> None:
+    brief = Briefing(ops)
+    result = brief.generate()
+    print(result["text"])
+
+    if args.save:
+        path = brief.save()
+        print(f"\n  Saved: {path}")
+
+    if args.notify:
+        sent = notify_brief_ready(result["summary"], result["urgency"])
+        if sent:
+            print("  Notification sent.")
+
+
+# ================================================================
+#  SCHEDULE COMMAND
+# ================================================================
+
+def _schedule(args, ops: OpsStore) -> None:
+    cmd = args.sched_cmd
+    if cmd == "install":
+        time = args.time if hasattr(args, "time") and args.time else "08:30"
+        sched.install(time)
+    elif cmd == "uninstall":
+        sched.uninstall()
+    elif cmd == "status":
+        sched.print_status()
+    else:
+        print("  Usage: schedule install | uninstall | status")
+
+
+# ================================================================
 #  DAILY COMMAND
 # ================================================================
 
@@ -545,6 +584,24 @@ def main() -> None:
     learn_sub.add_parser("velocity", help="Pipeline velocity analysis")
     learn_sub.add_parser("insights", help="View stored evolution insights")
 
+    # ── brief ──
+    brief_parser = sub.add_parser("brief", help="Daily executive briefing")
+    brief_parser.add_argument("--save", action="store_true",
+                              help="Save briefing to file")
+    brief_parser.add_argument("--notify", action="store_true",
+                              help="Send Windows notification")
+
+    # ── schedule ──
+    sched_parser = sub.add_parser("schedule", help="AION OS task scheduler")
+    sched_sub = sched_parser.add_subparsers(dest="sched_cmd")
+
+    p = sched_sub.add_parser("install", help="Install daily scheduled task")
+    p.add_argument("--time", default="08:30",
+                   help="Time to run (HH:MM), default 08:30")
+
+    sched_sub.add_parser("uninstall", help="Remove scheduled task")
+    sched_sub.add_parser("status", help="Check scheduler status")
+
     # ── review ──
     rev_parser = sub.add_parser("review", help="Weekly reviews")
     rev_sub = rev_parser.add_subparsers(dest="rev_cmd")
@@ -619,6 +676,10 @@ def main() -> None:
                 _learn_insights(args, ops)
             else:
                 _learn_full(args, ops)
+        elif args.command == "brief":
+            _brief(args, ops)
+        elif args.command == "schedule":
+            _schedule(args, ops)
         elif args.command == "review":
             cmd = args.rev_cmd
             if cmd == "generate":

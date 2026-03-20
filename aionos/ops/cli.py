@@ -34,6 +34,7 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
 
 from aionos.ops.store import OpsStore, _get_current_week
 from aionos.ops.runner import OpsRunner
+from aionos.ops.learner import EvolutionEngine
 
 
 # ================================================================
@@ -365,6 +366,61 @@ def _review_history(args, ops: OpsStore) -> None:
 
 
 # ================================================================
+#  LEARN / EVOLUTION COMMANDS
+# ================================================================
+
+def _learn_full(args, ops: OpsStore) -> None:
+    engine = EvolutionEngine(ops)
+    report = engine.run_full_cycle()
+    print(report)
+
+
+def _learn_deals(args, ops: OpsStore) -> None:
+    engine = EvolutionEngine(ops)
+    print(engine.analyze_deals())
+    print()
+    print(engine.format_insights())
+
+
+def _learn_playbooks(args, ops: OpsStore) -> None:
+    engine = EvolutionEngine(ops)
+    print(engine.analyze_playbooks())
+    print()
+    print(engine.format_insights())
+
+
+def _learn_velocity(args, ops: OpsStore) -> None:
+    engine = EvolutionEngine(ops)
+    print(engine.analyze_velocity())
+    print()
+    print(engine.format_insights())
+
+
+def _learn_insights(args, ops: OpsStore) -> None:
+    """Show the latest evolution memo."""
+    memos = ops.list_memos(category="operations", status="active")
+    evolution_memos = [m for m in memos if "Evolution" in m.get("title", "")]
+    if not evolution_memos:
+        print("  No evolution insights yet. Run: python -m aionos.ops.cli learn")
+        return
+    # Show the latest
+    m = evolution_memos[0]
+    print(f"\n  {'=' * 60}")
+    print(f"  {m['title']}")
+    print(f"  {'=' * 60}\n")
+    if m.get("issue"):
+        print("  --- INSIGHTS ---")
+        for line in m["issue"].split("\n"):
+            print(f"  {line}")
+        print()
+    if m.get("strategy"):
+        print("  --- RECOMMENDATIONS ---")
+        for line in m["strategy"].split("\n"):
+            print(f"  {line}")
+        print()
+
+
+# ================================================================
 #  DAILY COMMAND
 # ================================================================
 
@@ -480,6 +536,15 @@ def main() -> None:
     p.add_argument("name")
     p.add_argument("--last", type=int, default=8)
 
+    # ── learn / evolution ──
+    learn_parser = sub.add_parser("learn", help="AION OS evolution -- self-improvement engine")
+    learn_sub = learn_parser.add_subparsers(dest="learn_cmd")
+
+    learn_sub.add_parser("deals", help="Analyze closed deals for patterns")
+    learn_sub.add_parser("playbooks", help="Analyze playbook efficiency")
+    learn_sub.add_parser("velocity", help="Pipeline velocity analysis")
+    learn_sub.add_parser("insights", help="View stored evolution insights")
+
     # ── review ──
     rev_parser = sub.add_parser("review", help="Weekly reviews")
     rev_sub = rev_parser.add_subparsers(dest="rev_cmd")
@@ -542,6 +607,18 @@ def main() -> None:
                 _metric_trend(args, ops)
             else:
                 met_parser.print_help()
+        elif args.command == "learn":
+            cmd = args.learn_cmd
+            if cmd == "deals":
+                _learn_deals(args, ops)
+            elif cmd == "playbooks":
+                _learn_playbooks(args, ops)
+            elif cmd == "velocity":
+                _learn_velocity(args, ops)
+            elif cmd == "insights":
+                _learn_insights(args, ops)
+            else:
+                _learn_full(args, ops)
         elif args.command == "review":
             cmd = args.rev_cmd
             if cmd == "generate":

@@ -20,5 +20,6 @@ Usage:
 
 from aionos.ops.store import OpsStore
 from aionos.ops.runner import OpsRunner
+from aionos.ops.learner import EvolutionEngine
 
-__all__ = ["OpsStore", "OpsRunner"]
+__all__ = ["OpsStore", "OpsRunner", "EvolutionEngine"]

@@ -168,3 +168,6 @@ research_notes/
 # Sales pipeline data
 pipeline.db
 prospects_export.csv
+
+# Ops engine data
+ops.db

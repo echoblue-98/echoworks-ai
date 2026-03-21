@@ -56,20 +56,28 @@ class OpsRunner:
         lines.append(self._stale_alerts())
         lines.append("")
 
-        # 4. Memo review reminders
+        # 4. Deal health (funnel)
+        lines.append(self._funnel_summary())
+        lines.append("")
+
+        # 5. Memo review reminders
         lines.append(self._memo_reviews())
         lines.append("")
 
-        # 5. Active playbooks
+        # 6. Active playbooks
         lines.append(self._playbook_status())
         lines.append("")
 
-        # 6. This week's metrics
+        # 7. This week's metrics
         lines.append(self._weekly_metrics())
         lines.append("")
 
-        # 7. Auto-record pipeline metrics
+        # 8. Auto-record pipeline metrics
         self._auto_record_metrics()
+
+        # 9. Trigger engine -- check time/metric triggers
+        lines.append(self._trigger_check())
+        lines.append("")
 
         lines.append("-" * 60)
         lines.append("  Run: python -m aionos.ops.runner")
@@ -217,6 +225,35 @@ class OpsRunner:
             )
         except Exception:
             pass
+
+    def _trigger_check(self) -> str:
+        """Run trigger engine checks (time + metric triggers)."""
+        try:
+            from aionos.ops.triggers import TriggerEngine
+            triggers = TriggerEngine(self._ops)
+            return triggers.check_all()
+        except Exception:
+            return "  --- TRIGGER ENGINE ---\n  (Not configured)"
+
+    def _funnel_summary(self) -> str:
+        """Quick funnel health summary for daily report."""
+        try:
+            from aionos.sales.funnel import FunnelEngine, DealHealth
+            engine = FunnelEngine()
+            health = engine.health_check()
+            at_risk = len(health[DealHealth.AT_RISK])
+            stuck = len(health[DealHealth.STUCK])
+            dead = len(health[DealHealth.DEAD])
+            healthy = len(health[DealHealth.HEALTHY])
+            if at_risk + stuck + dead == 0:
+                return "  --- DEAL HEALTH ---\n  All deals healthy."
+            lines = ["  --- DEAL HEALTH ---"]
+            lines.append(f"  Healthy: {healthy}  At-risk: {at_risk}  Stuck: {stuck}  Dead: {dead}")
+            if stuck + dead > 0:
+                lines.append("  Run: python -m aionos.ops.cli funnel health")
+            return "\n".join(lines)
+        except Exception:
+            return "  --- DEAL HEALTH ---\n  (No funnel data)"
 
     def generate_weekly_review(self) -> str:
         """Generate and store a weekly review from current data."""

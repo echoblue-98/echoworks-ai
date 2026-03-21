@@ -209,7 +209,33 @@ def _cli_advance(args, pipe: Pipeline) -> None:
         return
     old_stage = prospect["stage"]
     pipe.advance(args.prospect_id, args.stage)
-    print(f"  {prospect['name']}: {old_stage} → {args.stage}")
+    print(f"  {prospect['name']}: {old_stage} -> {args.stage}")
+
+    # Fire trigger events for automation
+    try:
+        from aionos.ops.store import OpsStore
+        from aionos.ops.triggers import TriggerEngine
+        ops = OpsStore()
+        triggers = TriggerEngine(ops)
+        actions = triggers.fire_event(
+            "stage_change",
+            prospect_id=args.prospect_id,
+            old_stage=old_stage,
+            new_stage=args.stage,
+        )
+        if args.stage == "closed_won":
+            actions += triggers.fire_event("deal_closed_won", prospect_id=args.prospect_id)
+        elif args.stage == "closed_lost":
+            actions += triggers.fire_event("deal_closed_lost", prospect_id=args.prospect_id)
+        elif args.stage == "demo_scheduled":
+            actions += triggers.fire_event("demo_scheduled", prospect_id=args.prospect_id)
+        elif args.stage == "proposal_sent":
+            actions += triggers.fire_event("proposal_sent", prospect_id=args.prospect_id)
+        for a in actions:
+            print(f"    >> Trigger: {a}")
+        ops.close()
+    except Exception:
+        pass
 
 
 def _cli_history(args, pipe: Pipeline) -> None:
@@ -346,6 +372,9 @@ def main() -> None:
     p_log.add_argument("--message", default="")
     p_log.add_argument("--follow-up-days", dest="follow_up_days", default=None)
 
+    # funnel
+    p_funnel = sub.add_parser("funnel", help="Funnel report (scoring + health)")
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -380,6 +409,10 @@ def main() -> None:
             _cli_import(args, pipe)
         elif args.command == "log":
             _cli_log(args, pipe)
+        elif args.command == "funnel":
+            from aionos.sales.funnel import FunnelEngine
+            engine_f = FunnelEngine(pipe)
+            print(engine_f.funnel_report())
     finally:
         pipe.close()
 

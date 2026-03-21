@@ -37,6 +37,8 @@ from aionos.ops.runner import OpsRunner
 from aionos.ops.learner import EvolutionEngine
 from aionos.ops.briefing import Briefing
 from aionos.ops.notify import notify_brief_ready
+from aionos.ops.triggers import TriggerEngine
+from aionos.ops.templates import TemplateLibrary
 from aionos.ops import scheduler as sched
 
 
@@ -460,6 +462,212 @@ def _schedule(args, ops: OpsStore) -> None:
 
 
 # ================================================================
+#  TRIGGER COMMANDS
+# ================================================================
+
+def _trigger_list(args, ops: OpsStore) -> None:
+    triggers = TriggerEngine(ops)
+    show_all = hasattr(args, "all") and args.all
+    rules = triggers.list_rules(enabled_only=not show_all)
+    if not rules:
+        print("  No trigger rules configured.")
+        print("  Run: python -m aionos.ops.seed  (to seed defaults)")
+        return
+
+    print(f"\n  {'ID':>4}  {'Name':<30} {'Type':<8} {'Event':<18} {'PB':>3}  {'Enabled':<8}")
+    print(f"  {'-'*4}  {'-'*30} {'-'*8} {'-'*18} {'-'*3}  {'-'*8}")
+    for r in rules:
+        enabled = "yes" if r["enabled"] else "no"
+        pb = str(r["playbook_id"]) if r["playbook_id"] else "-"
+        print(
+            f"  {r['id']:>4}  {r['name']:<30.30} {r['trigger_type']:<8} "
+            f"{r['event_type']:<18.18} {pb:>3}  {enabled:<8}"
+        )
+    print(f"\n  Total: {len(rules)}")
+
+
+def _trigger_add(args, ops: OpsStore) -> None:
+    triggers = TriggerEngine(ops)
+    rule_id = triggers.add_rule(
+        name=args.name,
+        trigger_type=args.type,
+        event_type=args.event or "",
+        condition=args.condition or "",
+        playbook_id=int(args.playbook) if args.playbook else None,
+        action=args.action or "",
+    )
+    print(f"  Created trigger rule #{rule_id}: {args.name}")
+
+
+def _trigger_enable(args, ops: OpsStore) -> None:
+    triggers = TriggerEngine(ops)
+    triggers.enable_rule(args.rule_id)
+    print(f"  Enabled trigger rule #{args.rule_id}")
+
+
+def _trigger_disable(args, ops: OpsStore) -> None:
+    triggers = TriggerEngine(ops)
+    triggers.disable_rule(args.rule_id)
+    print(f"  Disabled trigger rule #{args.rule_id}")
+
+
+def _trigger_fire(args, ops: OpsStore) -> None:
+    triggers = TriggerEngine(ops)
+    actions = triggers.fire_event(args.event_type)
+    if actions:
+        print(f"  Fired event '{args.event_type}' -- {len(actions)} action(s):")
+        for a in actions:
+            print(f"    >> {a}")
+    else:
+        print(f"  Fired event '{args.event_type}' -- no matching rules.")
+
+
+def _trigger_check(args, ops: OpsStore) -> None:
+    triggers = TriggerEngine(ops)
+    result = triggers.check_all()
+    print(result)
+
+
+def _trigger_log(args, ops: OpsStore) -> None:
+    triggers = TriggerEngine(ops)
+    limit = args.limit if hasattr(args, "limit") else 20
+    log = triggers.recent_log(limit=limit)
+    if not log:
+        print("  No trigger activity logged yet.")
+        return
+
+    print(f"\n  {'Timestamp':<20} {'Rule':<25} {'Event':<18} {'Action':<30}")
+    print(f"  {'-'*20} {'-'*25} {'-'*18} {'-'*30}")
+    for entry in log:
+        ts = entry["timestamp"][:19].replace("T", " ")
+        print(
+            f"  {ts:<20} {entry.get('rule_name', '?'):<25.25} "
+            f"{entry['event_type']:<18.18} {entry['action_taken']:<30.30}"
+        )
+
+
+# ================================================================
+#  FUNNEL COMMANDS
+# ================================================================
+
+def _funnel_report(args, ops: OpsStore) -> None:
+    from aionos.sales.funnel import FunnelEngine
+    engine = FunnelEngine()
+    print(engine.funnel_report())
+
+
+def _funnel_score(args, ops: OpsStore) -> None:
+    from aionos.sales.funnel import FunnelEngine
+    engine = FunnelEngine()
+    scored = engine.score_all()
+    if not scored:
+        print("  No active prospects to score.")
+        return
+
+    print(f"\n  {'ID':>4}  {'Name':<22} {'Company':<22} {'Stage':<16} {'Score':>5}")
+    print(f"  {'-'*4}  {'-'*22} {'-'*22} {'-'*16} {'-'*5}")
+    for p in scored:
+        print(
+            f"  {p['id']:>4}  {p['name']:<22.22} {p['company']:<22.22} "
+            f"{p['stage']:<16} {p['lead_score']:>5}"
+        )
+    print(f"\n  Scored: {len(scored)} prospects")
+
+
+def _funnel_health(args, ops: OpsStore) -> None:
+    from aionos.sales.funnel import FunnelEngine, DealHealth
+    engine = FunnelEngine()
+    results = engine.health_check()
+
+    for status in [DealHealth.HEALTHY, DealHealth.AT_RISK, DealHealth.STUCK, DealHealth.DEAD]:
+        icon = {"healthy": "[OK]", "at_risk": "[!!]", "stuck": "[XX]", "dead": "[--]"}[status]
+        deals = results[status]
+        if deals:
+            print(f"\n  {icon} {status.upper()} ({len(deals)})")
+            for p in deals:
+                print(f"    #{p['id']:>3} {p['name']:<20} {p['company']:<20} {p['health_reason']}")
+
+    total = sum(len(v) for v in results.values())
+    if total == 0:
+        print("  No active deals to assess.")
+
+
+def _funnel_advance(args, ops: OpsStore) -> None:
+    from aionos.sales.funnel import FunnelEngine
+    engine = FunnelEngine()
+    actions = engine.auto_advance()
+    if actions:
+        print(f"  Auto-advanced {len(actions)} deal(s):")
+        for a in actions:
+            print(f"    >> {a}")
+
+        # Fire stage_change events for trigger integration
+        triggers = TriggerEngine(ops)
+        for a in actions:
+            # Parse "Auto-advanced #X Name (Company): old -> new"
+            if "->" in a:
+                new_stage = a.split("->")[-1].strip()
+                triggers.fire_event("stage_change", new_stage=new_stage)
+                if new_stage == "closed_won":
+                    triggers.fire_event("deal_closed_won")
+    else:
+        print("  No deals qualified for auto-advance.")
+
+
+# ================================================================
+#  TEMPLATE COMMANDS
+# ================================================================
+
+def _template_list(args, ops: OpsStore) -> None:
+    lib = TemplateLibrary()
+    category = args.category if hasattr(args, "category") and args.category != "all" else None
+    templates = lib.list_templates(category=category)
+
+    if not templates:
+        print("  No templates found.")
+        return
+
+    print(f"\n  {'Key':<30} {'Name':<30} {'Cat':<12} {'Steps':>5}")
+    print(f"  {'-'*30} {'-'*30} {'-'*12} {'-'*5}")
+    for t in templates:
+        print(f"  {t['key']:<30} {t['name']:<30.30} {t['category']:<12} {t['steps']:>5}")
+    print(f"\n  Total: {len(templates)}")
+    print("  Use: python -m aionos.ops.cli template create <key>")
+
+
+def _template_show(args, ops: OpsStore) -> None:
+    lib = TemplateLibrary()
+    tmpl = lib.get_template(args.key)
+    if not tmpl:
+        print(f"  Template '{args.key}' not found.")
+        print("  Run: python -m aionos.ops.cli template list")
+        return
+
+    print(f"\n  {'=' * 60}")
+    print(f"  TEMPLATE: {tmpl['name']}")
+    print(f"  Category: {tmpl['category']}")
+    print(f"  Trigger: {tmpl['trigger']}")
+    print(f"  {'=' * 60}")
+    print(f"\n  {tmpl['description']}\n")
+    for i, step in enumerate(tmpl["steps"], 1):
+        print(f"  {i:>2}. {step}")
+    print()
+
+
+def _template_create(args, ops: OpsStore) -> None:
+    lib = TemplateLibrary()
+    name_override = args.name if hasattr(args, "name") and args.name else None
+    pb_id = lib.create_from_template(args.key, ops, name_override=name_override)
+    if pb_id:
+        pb = ops.get_playbook(pb_id)
+        print(f"  Created playbook #{pb_id}: {pb['name']} [{pb['category']}]")
+        print(f"  Steps: {len(pb.get('steps', []))}")
+    else:
+        print(f"  Template '{args.key}' not found.")
+        print("  Run: python -m aionos.ops.cli template list")
+
+
+# ================================================================
 #  DAILY COMMAND
 # ================================================================
 
@@ -614,6 +822,58 @@ def main() -> None:
     p = rev_sub.add_parser("history", help="Review history")
     p.add_argument("--last", type=int, default=8)
 
+    # ── trigger ──
+    trig_parser = sub.add_parser("trigger", help="Event/time/metric triggers")
+    trig_sub = trig_parser.add_subparsers(dest="trig_cmd")
+
+    p = trig_sub.add_parser("list", help="List trigger rules")
+    p.add_argument("--all", action="store_true", help="Show disabled rules too")
+
+    p = trig_sub.add_parser("add", help="Add a trigger rule")
+    p.add_argument("name")
+    p.add_argument("--type", default="event", choices=["event", "time", "metric"])
+    p.add_argument("--event", default="")
+    p.add_argument("--condition", default="")
+    p.add_argument("--playbook", default=None, help="Playbook ID to start")
+    p.add_argument("--action", default="")
+
+    p = trig_sub.add_parser("enable", help="Enable a trigger rule")
+    p.add_argument("rule_id", type=int)
+
+    p = trig_sub.add_parser("disable", help="Disable a trigger rule")
+    p.add_argument("rule_id", type=int)
+
+    p = trig_sub.add_parser("fire", help="Manually fire an event")
+    p.add_argument("event_type")
+
+    trig_sub.add_parser("check", help="Run all trigger checks now")
+
+    p = trig_sub.add_parser("log", help="View trigger execution log")
+    p.add_argument("--limit", type=int, default=20)
+
+    # ── funnel ──
+    fun_parser = sub.add_parser("funnel", help="Sales funnel intelligence")
+    fun_sub = fun_parser.add_subparsers(dest="fun_cmd")
+
+    fun_sub.add_parser("report", help="Full funnel analytics report")
+    fun_sub.add_parser("score", help="Lead scoring for all prospects")
+    fun_sub.add_parser("health", help="Deal health check")
+    fun_sub.add_parser("advance", help="Auto-advance deals based on signals")
+
+    # ── template ──
+    tmpl_parser = sub.add_parser("template", help="Playbook template library")
+    tmpl_sub = tmpl_parser.add_subparsers(dest="tmpl_cmd")
+
+    p = tmpl_sub.add_parser("list", help="List available templates")
+    p.add_argument("--category", default="all")
+
+    p = tmpl_sub.add_parser("show", help="Show template details")
+    p.add_argument("key")
+
+    p = tmpl_sub.add_parser("create", help="Create playbook from template")
+    p.add_argument("key")
+    p.add_argument("--name", default=None, help="Override playbook name")
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -690,6 +950,46 @@ def main() -> None:
                 _review_history(args, ops)
             else:
                 rev_parser.print_help()
+        elif args.command == "trigger":
+            cmd = args.trig_cmd
+            if cmd == "list":
+                _trigger_list(args, ops)
+            elif cmd == "add":
+                _trigger_add(args, ops)
+            elif cmd == "enable":
+                _trigger_enable(args, ops)
+            elif cmd == "disable":
+                _trigger_disable(args, ops)
+            elif cmd == "fire":
+                _trigger_fire(args, ops)
+            elif cmd == "check":
+                _trigger_check(args, ops)
+            elif cmd == "log":
+                _trigger_log(args, ops)
+            else:
+                trig_parser.print_help()
+        elif args.command == "funnel":
+            cmd = args.fun_cmd
+            if cmd == "report":
+                _funnel_report(args, ops)
+            elif cmd == "score":
+                _funnel_score(args, ops)
+            elif cmd == "health":
+                _funnel_health(args, ops)
+            elif cmd == "advance":
+                _funnel_advance(args, ops)
+            else:
+                fun_parser.print_help()
+        elif args.command == "template":
+            cmd = args.tmpl_cmd
+            if cmd == "list":
+                _template_list(args, ops)
+            elif cmd == "show":
+                _template_show(args, ops)
+            elif cmd == "create":
+                _template_create(args, ops)
+            else:
+                tmpl_parser.print_help()
     finally:
         ops.close()
 

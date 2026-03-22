@@ -37,6 +37,7 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
 from aionos.sales.engine import SalesEngine
 from aionos.sales.prospects import Pipeline
 from aionos.sales.messages import MessageGenerator
+from aionos.sales.learner import SalesLearner
 
 
 def _cli_add(args, pipe: Pipeline) -> None:
@@ -300,6 +301,82 @@ def _cli_log(args, pipe: Pipeline) -> None:
         print(f"  Logged: {args.action}")
 
 
+def _cli_outreach(args, pipe: Pipeline) -> None:
+    """Log an outreach send with tracking tags."""
+    learner = SalesLearner()
+    oid = learner.record_outreach(
+        prospect_id=args.prospect_id,
+        template=args.template or "",
+        channel=args.channel or "email",
+        persona=args.persona or "",
+        tier=args.tier or "",
+    )
+    prospect = pipe.get(args.prospect_id)
+    name = prospect["name"] if prospect else f"#{args.prospect_id}"
+    print(f"  Outreach #{oid} logged for {name} [{args.channel or 'email'}]")
+
+    # Also log in activity log for funnel tracking
+    pipe.log_action(
+        args.prospect_id,
+        action=f"Sent {args.template or 'outreach'} via {args.channel or 'email'}",
+        channel=args.channel or "email",
+    )
+    learner.close()
+
+
+def _cli_outcome(args, pipe: Pipeline) -> None:
+    """Record outcome of outreach."""
+    learner = SalesLearner()
+    learner.record_outcome(args.prospect_id, args.outcome)
+    prospect = pipe.get(args.prospect_id)
+    name = prospect["name"] if prospect else f"#{args.prospect_id}"
+    print(f"  Outcome recorded: {name} -> {args.outcome}")
+
+    # Show updated segment weights
+    segments = learner.top_segments()
+    if segments:
+        print(f"\n  Updated segment weights:")
+        for s in segments[:5]:
+            print(f"    {s['segment']:<30} weight: {s['weight']}  "
+                  f"({s['sent']} sent, {s['reply_rate']} reply)")
+    learner.close()
+
+
+def _cli_learn(args, pipe: Pipeline) -> None:
+    """Show self-improvement report."""
+    learner = SalesLearner()
+    print(learner.performance_report())
+    learner.close()
+
+
+def _cli_priority(args, pipe: Pipeline) -> None:
+    """Show prioritized prospect list based on learned weights."""
+    learner = SalesLearner()
+    vertical = args.vertical if args.vertical != "all" else "legal"
+    limit = args.limit or 15
+    priority = learner.prioritize_prospects(vertical=vertical, limit=limit)
+
+    if not priority:
+        print("  No prospects to prioritize.")
+        learner.close()
+        return
+
+    print(f"\n  === PRIORITIZED OUTREACH LIST ({vertical}) ===")
+    print(f"  {'#':>3}  {'ID':>4}  {'Name':<20} {'Company':<25} "
+          f"{'Score':>5} {'Priority':>8} {'Persona W':>9} {'Tier W':>6}")
+    print(f"  {'-'*3}  {'-'*4}  {'-'*20} {'-'*25} "
+          f"{'-'*5} {'-'*8} {'-'*9} {'-'*6}")
+    for i, p in enumerate(priority, 1):
+        print(
+            f"  {i:>3}  {p['id']:>4}  {p['name']:<20.20} {p['company']:<25.25} "
+            f"{p.get('lead_score', 0):>5} {p['priority']:>8} "
+            f"{p.get('persona_weight', 1.0):>9.2f} {p.get('tier_weight', 1.0):>6.2f}"
+        )
+    print(f"\n  Showing top {len(priority)} of {vertical} prospects")
+    print(f"  Weights adjust after 5+ outreaches per segment")
+    learner.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="python -m aionos.sales.cli",
@@ -375,6 +452,31 @@ def main() -> None:
     # funnel
     p_funnel = sub.add_parser("funnel", help="Funnel report (scoring + health)")
 
+    # outreach — log a tracked outreach send
+    p_outreach = sub.add_parser("outreach", help="Log tracked outreach (for self-improvement)")
+    p_outreach.add_argument("prospect_id", type=int)
+    p_outreach.add_argument("--template", default="")
+    p_outreach.add_argument("--channel", default="email")
+    p_outreach.add_argument("--persona", default="")
+    p_outreach.add_argument("--tier", default="")
+
+    # outcome — record what happened
+    p_outcome = sub.add_parser("outcome", help="Record outreach outcome")
+    p_outcome.add_argument("prospect_id", type=int)
+    p_outcome.add_argument("outcome", choices=[
+        "replied", "no_reply", "bounced", "unsubscribed", "objection",
+        "meeting_booked", "demo_completed", "proposal_sent",
+        "closed_won", "closed_lost",
+    ])
+
+    # learn — self-improvement report
+    sub.add_parser("learn", help="Self-improvement report (what's working)")
+
+    # priority — weighted prospect ranking
+    p_priority = sub.add_parser("priority", help="Prioritized outreach list")
+    p_priority.add_argument("--vertical", default="legal")
+    p_priority.add_argument("--limit", type=int, default=15)
+
     args = parser.parse_args()
     if not args.command:
         parser.print_help()
@@ -413,6 +515,14 @@ def main() -> None:
             from aionos.sales.funnel import FunnelEngine
             engine_f = FunnelEngine(pipe)
             print(engine_f.funnel_report())
+        elif args.command == "outreach":
+            _cli_outreach(args, pipe)
+        elif args.command == "outcome":
+            _cli_outcome(args, pipe)
+        elif args.command == "learn":
+            _cli_learn(args, pipe)
+        elif args.command == "priority":
+            _cli_priority(args, pipe)
     finally:
         pipe.close()
 

@@ -998,6 +998,273 @@
             0% { transform: scale(0.3); opacity: 0.8; }
             100% { transform: scale(1.5); opacity: 0; }
         }
+
+        /* === DEMO ENHANCEMENTS === */
+
+        /* Detection Timer */
+        .detection-timer {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 14px 22px;
+            text-align: center;
+            display: none;
+            z-index: 50;
+        }
+
+        .detection-timer.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .timer-label {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
+        }
+
+        .timer-value {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff4444;
+            transition: color 0.3s;
+        }
+
+        .timer-value.frozen {
+            color: #44ff44;
+            text-shadow: 0 0 15px rgba(68, 255, 68, 0.6);
+        }
+
+        /* Trust Score */
+        .trust-score-bar {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 10px 22px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .trust-score-bar.visible {
+            opacity: 1;
+        }
+
+        .trust-label {
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .trust-track {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            min-width: 100px;
+        }
+
+        .trust-fill {
+            height: 100%;
+            width: 100%;
+            background: #44ff44;
+            border-radius: 3px;
+            transition: width 0.6s ease-out, background 0.4s;
+        }
+
+        .trust-fill.warning {
+            background: #ffaa44;
+        }
+
+        .trust-fill.danger {
+            background: #ff4444;
+        }
+
+        .trust-fill.critical {
+            background: #ff0000;
+            animation: alertPulse 0.5s infinite;
+        }
+
+        .trust-number {
+            font-family: 'Consolas', monospace;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #44ff44;
+            min-width: 36px;
+            text-align: right;
+            transition: color 0.4s;
+        }
+
+        .trust-number.warning { color: #ffaa44; }
+        .trust-number.danger { color: #ff4444; }
+        .trust-number.critical { color: #ff0000; animation: alertPulse 0.5s infinite; }
+
+        /* Entity Card */
+        .entity-card {
+            margin-top: 18px;
+            background: rgba(15, 15, 15, 0.9);
+            border: 1px solid rgba(255, 68, 68, 0.2);
+            border-radius: 10px;
+            padding: 14px 20px;
+            display: none;
+            max-width: 440px;
+            width: 100%;
+        }
+
+        .entity-card.visible {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .entity-avatar {
+            width: 42px;
+            height: 42px;
+            background: rgba(255, 68, 68, 0.15);
+            border: 1px solid rgba(255, 68, 68, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .entity-info {
+            flex: 1;
+        }
+
+        .entity-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .entity-meta {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 3px;
+        }
+
+        .entity-risk-tag {
+            font-size: 0.6rem;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+        }
+
+        .entity-risk-tag.high {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.4);
+        }
+
+        /* Event Feed Timeline */
+        .event-feed {
+            margin-top: 14px;
+            max-width: 440px;
+            width: 100%;
+            display: none;
+        }
+
+        .event-feed.visible {
+            display: block;
+        }
+
+        .event-feed-label {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        .event-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 14px;
+            background: rgba(20, 20, 20, 0.8);
+            border-left: 3px solid #333;
+            margin-bottom: 5px;
+            border-radius: 0 6px 6px 0;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        }
+
+        .event-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .event-item.severity-low { border-left-color: #ffaa44; }
+        .event-item.severity-medium { border-left-color: #ff8800; background: rgba(255, 136, 0, 0.05); }
+        .event-item.severity-high { border-left-color: #ff4444; background: rgba(255, 68, 68, 0.05); }
+        .event-item.severity-critical {
+            border-left-color: #ff0000;
+            background: rgba(255, 0, 0, 0.08);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
+        }
+
+        .event-item.pattern-match {
+            border: 1px solid rgba(255, 0, 0, 0.4);
+            border-left: 3px solid #ff0000;
+        }
+
+        .event-time {
+            font-family: 'Consolas', monospace;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.4);
+            white-space: nowrap;
+            min-width: 55px;
+            padding-top: 2px;
+        }
+
+        .event-content { flex: 1; }
+
+        .event-source {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+
+        .event-desc {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+        }
+
+        .event-tag {
+            font-size: 0.55rem;
+            padding: 2px 7px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 5px;
+            display: inline-block;
+        }
+
+        .event-tag.correlation { background: rgba(255, 136, 0, 0.2); color: #ff8800; }
+        .event-tag.pattern { background: rgba(255, 0, 0, 0.3); color: #ff0000; animation: blink 0.8s infinite; }
+        .event-tag.critical { background: rgba(255, 0, 0, 0.3); color: #ff0000; }
     </style>
 </head>
 <body>
@@ -1010,6 +1277,12 @@
     <div class="main-container">
         <!-- Left: The Living Node -->
         <div class="node-panel">
+            <!-- Detection Timer -->
+            <div class="detection-timer" id="detectionTimer">
+                <div class="timer-label">Time to Detect</div>
+                <div class="timer-value" id="timerValue">0.0s</div>
+            </div>
+
             <div class="node-container" id="nodeContainer">
                 <!-- Threat rings -->
                 <div class="threat-ring"></div>
@@ -1057,9 +1330,31 @@
                 </div>
             </div>
 
+            <!-- Trust Score Bar -->
+            <div class="trust-score-bar" id="trustScoreBar">
+                <span class="trust-label">Entity Trust</span>
+                <div class="trust-track"><div class="trust-fill" id="trustFill"></div></div>
+                <span class="trust-number" id="trustNumber">100</span>
+            </div>
+
             <div class="node-title">
                 <h1>AION OS</h1>
                 <div class="subtitle">The Living Node</div>
+            </div>
+
+            <!-- Entity Card (shown during departure scenario) -->
+            <div class="entity-card" id="entityCard">
+                <div class="entity-avatar" id="entityAvatar">👤</div>
+                <div class="entity-info">
+                    <div class="entity-name" id="entityName">—</div>
+                    <div class="entity-meta" id="entityMeta">—</div>
+                </div>
+                <div class="entity-risk-tag high" id="entityRisk">HIGH RISK</div>
+            </div>
+
+            <!-- Event Feed Timeline -->
+            <div class="event-feed" id="eventFeed">
+                <div class="event-feed-label">Live Event Stream</div>
             </div>
 
             <div class="alert-controls">
@@ -1644,6 +1939,12 @@
                 sendToCloud(type);
             }
 
+            // Departure scenario uses enhanced event timeline
+            if (type === 'departure') {
+                runDepartureTimeline();
+                return;
+            }
+
             // Show tabs
             document.getElementById('tabNav').style.display = 'flex';
             document.getElementById('summaryGrid').style.display = 'grid';
@@ -1867,7 +2168,234 @@
             showNextBypass();
         }
 
+        // === DEPARTURE TIMELINE DATA ===
+        const departureTimeline = [
+            {
+                time: '02:34 AM',
+                source: 'iManage DMS',
+                desc: '34 files accessed on Apex Capital matter — after hours',
+                severity: 'low',
+                trust: 72,
+                delay: 1500
+            },
+            {
+                time: '02:41 AM',
+                source: 'DMS Export Monitor',
+                desc: 'Bulk export: 218 files, 890 MB across 2 matters',
+                severity: 'medium',
+                trust: 35,
+                tag: { text: 'CORRELATION: volume + after-hours', cls: 'correlation' },
+                delay: 4000
+            },
+            {
+                time: '02:43 AM',
+                source: 'Email Gateway',
+                desc: '5 attachments forwarded to personal Gmail',
+                severity: 'high',
+                trust: 8,
+                tag: { text: '⚡ PATTERN MATCH: DEPARTURE-THEFT', cls: 'pattern' },
+                patternMatch: true,
+                delay: 7000
+            },
+            {
+                time: '02:45 AM',
+                source: 'Cloud / VPN Monitor',
+                desc: '890 MB uploaded to Dropbox over split-tunnel VPN',
+                severity: 'critical',
+                tag: { text: 'CRITICAL — FULL CHAIN CONFIRMED', cls: 'critical' },
+                trust: 0,
+                delay: 10000
+            }
+        ];
+
+        // === DETECTION TIMER ===
+        let timerInterval = null;
+        let timerStartTime = null;
+
+        function startDetectionTimer() {
+            const timer = document.getElementById('detectionTimer');
+            const timerVal = document.getElementById('timerValue');
+            timer.classList.add('active');
+            timerVal.classList.remove('frozen');
+            timerVal.textContent = '0.0s';
+            timerStartTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = (Date.now() - timerStartTime) / 1000;
+                timerVal.textContent = elapsed.toFixed(1) + 's';
+            }, 100);
+        }
+
+        function freezeDetectionTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            const timerVal = document.getElementById('timerValue');
+            timerVal.textContent = '2.7s';
+            timerVal.classList.add('frozen');
+        }
+
+        // === TRUST SCORE ===
+        function updateTrustScore(targetScore) {
+            const fill = document.getElementById('trustFill');
+            const num = document.getElementById('trustNumber');
+            const bar = document.getElementById('trustScoreBar');
+            bar.classList.add('visible');
+
+            const current = parseInt(num.textContent) || 100;
+            const diff = current - targetScore;
+            const steps = 20;
+            let step = 0;
+
+            const countDown = setInterval(() => {
+                step++;
+                const val = Math.round(current - (diff * (step / steps)));
+                num.textContent = val;
+                fill.style.width = val + '%';
+                if (step >= steps) {
+                    clearInterval(countDown);
+                    num.textContent = targetScore;
+                    fill.style.width = targetScore + '%';
+                }
+            }, 25);
+
+            // Color classes
+            fill.classList.remove('warning', 'danger', 'critical');
+            num.classList.remove('warning', 'danger', 'critical');
+            if (targetScore <= 10) {
+                fill.classList.add('critical');
+                num.classList.add('critical');
+            } else if (targetScore <= 40) {
+                fill.classList.add('danger');
+                num.classList.add('danger');
+            } else if (targetScore <= 75) {
+                fill.classList.add('warning');
+                num.classList.add('warning');
+            }
+        }
+
+        // === EVENT FEED ===
+        function addEventToFeed(event) {
+            const feed = document.getElementById('eventFeed');
+            feed.classList.add('visible');
+
+            const item = document.createElement('div');
+            item.className = 'event-item severity-' + event.severity;
+            if (event.patternMatch) item.classList.add('pattern-match');
+
+            let tagHtml = '';
+            if (event.tag) {
+                tagHtml = '<div class="event-tag ' + event.tag.cls + '">' + event.tag.text + '</div>';
+            }
+
+            item.innerHTML =
+                '<div class="event-time">' + event.time + '</div>' +
+                '<div class="event-content">' +
+                    '<div class="event-source">' + event.source + '</div>' +
+                    '<div class="event-desc">' + event.desc + '</div>' +
+                    tagHtml +
+                '</div>';
+
+            feed.appendChild(item);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => { item.classList.add('visible'); });
+            });
+        }
+
+        // === DEPARTURE SCENARIO ORCHESTRATION ===
+        function runDepartureTimeline() {
+            // Show entity card
+            document.getElementById('entityAvatar').textContent = '👤';
+            document.getElementById('entityName').textContent = 'J. Chen';
+            document.getElementById('entityMeta').textContent = 'Senior Partner · 12yr tenure · 4 Fortune 500 clients';
+            document.getElementById('entityCard').classList.add('visible');
+
+            // Hide cloud config during departure
+            document.querySelector('.cloud-config').style.display = 'none';
+
+            // Initialize trust score
+            document.getElementById('trustNumber').textContent = '100';
+            document.getElementById('trustFill').style.width = '100%';
+            document.getElementById('trustFill').classList.remove('warning', 'danger', 'critical');
+            document.getElementById('trustNumber').classList.remove('warning', 'danger', 'critical');
+            document.getElementById('trustScoreBar').classList.add('visible');
+
+            // Start detection timer
+            startDetectionTimer();
+
+            // Stream events with delays
+            departureTimeline.forEach(function(event, i) {
+                setTimeout(function() {
+                    // Flash incoming signal
+                    var signal = document.getElementById('incomingSignal');
+                    signal.classList.remove('active');
+                    void signal.offsetWidth;
+                    signal.classList.add('active');
+
+                    // Add to feed
+                    addEventToFeed(event);
+
+                    // Update trust score
+                    updateTrustScore(event.trust);
+
+                    // On pattern match — freeze timer
+                    if (event.patternMatch) {
+                        freezeDetectionTimer();
+                    }
+
+                    // After last event — transition to agent analysis
+                    if (i === departureTimeline.length - 1) {
+                        setTimeout(function() {
+                            // Alert the node
+                            document.getElementById('nodeCore').classList.add('alert');
+                            document.getElementById('nodeContainer').classList.add('alert');
+                            document.getElementById('statusDot').className = 'status-dot alert';
+                            document.getElementById('statusText').textContent = 'THREAT DETECTED';
+
+                            // Show tabs + summary
+                            document.getElementById('tabNav').style.display = 'flex';
+                            document.getElementById('summaryGrid').style.display = 'grid';
+                            document.getElementById('sumSeverity').textContent = currentAlert.severity;
+                            document.getElementById('sumRisk').textContent = currentAlert.risk;
+
+                            // Show alert card
+                            document.getElementById('alertIcon').textContent = currentAlert.icon;
+                            document.getElementById('alertTitle').textContent = currentAlert.title;
+                            document.getElementById('alertDesc').textContent = currentAlert.desc;
+                            document.getElementById('alertTime').textContent = new Date().toISOString().split('T')[1].split('.')[0] + ' UTC';
+                            document.getElementById('alertSeverity').textContent = 'SEVERITY: ' + currentAlert.severity;
+                            document.getElementById('alertCard').classList.add('visible');
+
+                            // Begin agent analysis
+                            setTimeout(function() {
+                                document.getElementById('statusDot').className = 'status-dot active';
+                                document.getElementById('statusText').textContent = 'AGENTS ANALYZING...';
+                                document.getElementById('tabAgents').classList.add('has-content');
+                                cookAgents(currentAlert);
+                            }, 1500);
+                        }, 1500);
+                    }
+                }, event.delay);
+            });
+        }
+
         function resetState() {
+            // Reset enhanced elements
+            document.getElementById('detectionTimer').classList.remove('active');
+            document.getElementById('timerValue').classList.remove('frozen');
+            document.getElementById('entityCard').classList.remove('visible');
+            document.getElementById('eventFeed').classList.remove('visible');
+            // Remove dynamically added event items
+            var feedItems = document.getElementById('eventFeed').querySelectorAll('.event-item');
+            feedItems.forEach(function(el) { el.remove(); });
+            document.getElementById('trustScoreBar').classList.remove('visible');
+            document.getElementById('trustFill').style.width = '100%';
+            document.getElementById('trustFill').classList.remove('warning', 'danger', 'critical');
+            document.getElementById('trustNumber').textContent = '100';
+            document.getElementById('trustNumber').classList.remove('warning', 'danger', 'critical');
+            document.querySelector('.cloud-config').style.display = '';
+            if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+
             // Reset node
             document.getElementById('nodeCore').classList.remove('alert', 'blocking');
             document.getElementById('nodeContainer').classList.remove('alert');

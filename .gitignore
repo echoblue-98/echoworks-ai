@@ -149,7 +149,6 @@ prepare_gemini_package.py
 review_website_gemini.py
 
 # Logo source files
-docs/aion-os-logo.jpg
 docs/index_old.html
 
 # -----------------------------------------------------------------------------

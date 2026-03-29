@@ -38,6 +38,7 @@ VERTICALS = {
     "legal": "Law Firms & Legal Services",
     "healthcare": "Healthcare & Compliance",
     "realestate": "Title, Brokerage & Real Estate",
+    "creator": "Creator IP — Labels, Studios & Publishers",
 }
 
 STAGES_ACTIVE = ("cold", "engaged", "demo_scheduled", "demo_completed",

@@ -388,7 +388,7 @@ def main() -> None:
     p_add = sub.add_parser("add", help="Add a prospect")
     p_add.add_argument("name")
     p_add.add_argument("company")
-    p_add.add_argument("vertical", choices=["legal", "healthcare", "realestate"])
+    p_add.add_argument("vertical", choices=["legal", "healthcare", "realestate", "creator"])
     p_add.add_argument("--title", default="")
     p_add.add_argument("--email", default="")
     p_add.add_argument("--linkedin", default="")

@@ -1,0 +1,77 @@
+======================================================================
+  AION OS  —  CREATOR IP LINKEDIN OUTREACH
+  Generated: 2026-03-29
+  Vertical: Creator IP — Labels, Studios & Publishers
+  Strategy: GMs / operators first. Warm intros for founders later.
+  Find each person on LinkedIn. Paste message. Send.
+  Mark [X] when sent.
+======================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  WEEK 1  —  Priority Targets
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ] #106  Simone Mitchell
+    Quality Control Music  |  General Manager
+    ---
+    Hi Simone -- quick question: how does QC handle session file access when engineers or producers cycle off a project? We built a detection system that catches master file exfiltration before tracks leak -- runs on-premise, no cloud dependency. Happy to show a 3-min walkthrough if that's relevant to what you're managing day to day.
+    ---
+
+[ ] #111  Jason Geter
+    Grand Hustle Records  |  President
+    ---
+    Hi Jason -- the attorney who walks out with client files and the engineer who exports session stems before giving notice -- same threat model. We built a system that detects that exfiltration in < 3 seconds. Originally built for law firms, now adapted for catalogs and master files. We're ATL-based. 3-min demo if it's relevant.
+    ---
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  WEEK 2  —  Second Wave
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ] #112  Hannah Kang
+    Grand Hustle Records  |  General Manager
+    ---
+    Hi Hannah -- quick question: does Grand Hustle have visibility into who's pulling session files and masters across active projects? We built a system that flags unauthorized exports in real-time -- originally for law firms protecting client data, same threat model applies to unreleased catalogs. We're local (Atlanta). Happy to show a quick walkthrough.
+    ---
+
+[ ] #114  Ben Washer
+    Reach Records  |  GM / COO
+    ---
+    Hi Ben -- quick question: when a producer or engineer wraps a project at Reach, how do you handle revoking access to session files and masters? We built an on-premise system that flags file exfiltration in real-time -- before anything leaks. We're Atlanta-based. 3-min walkthrough available if relevant.
+    ---
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PARKED  —  Warm Intro Required (Founders / Creatives)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  #107  Kevin "Coach K" Lee      QC Music — Co-founder
+  #108  Pierre "Pee" Thomas      QC Music — Co-founder
+  #109  Tunde Balogun            LVRN — Co-founder (operator-ish, revisit)
+  #110  Junia Abaidoo            LVRN — Co-founder
+  #113  Lecrae Moore             Reach Records — Founder
+  #115  Carlon Ramong            Disturbing tha Peace — Producer/A&R
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Angle: "The attorney who walks with client files and the engineer who
+  leaks masters — same threat model."
+
+  DO NOT blast all 10. Music industry is small. They know each other.
+  If Simone at QC hears about us from Jason at Grand Hustle independently,
+  that's credibility. If they both got the same cold message on the same
+  day, that's spam.
+
+  DO NOT lead with "AI" or "agentic OS." Lead with leaked masters.
+
+  Channel: LinkedIn for GMs/business operators.
+  Instagram or warm intro for creative founders.
+
+  "We're local (Atlanta)" does real work. Use it.
+
+Total GM targets: 4
+Total parked (warm intro): 6

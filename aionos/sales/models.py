@@ -16,6 +16,7 @@ class VerticalID(str, Enum):
     LEGAL = "legal"
     HEALTHCARE = "healthcare"
     REALESTATE = "realestate"
+    CREATOR = "creator"
 
 
 class BuyerRole(str, Enum):

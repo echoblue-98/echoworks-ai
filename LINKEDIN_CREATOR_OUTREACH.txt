@@ -12,17 +12,19 @@
   WEEK 1  —  Priority Targets
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[ ] #106  Simone Mitchell
+[X] #106  Simone Mitchell  (sent Mar 29)
     Quality Control Music  |  General Manager
     ---
-    Hi Simone -- quick question: how does QC handle session file access when engineers or producers cycle off a project? We built a detection system that catches master file exfiltration before tracks leak -- runs on-premise, no cloud dependency. Happy to show a 3-min walkthrough if that's relevant to what you're managing day to day.
+    Hi Simone -- quick question: how does QC handle session file access when engineers cycle off a project? We catch master exfiltration before tracks leak -- on-premise, no cloud. Quick walkthrough if relevant.
     ---
+    (206 chars — fits LinkedIn 300-char connection request limit)
 
-[ ] #111  Jason Geter
+[X] #111  Jason Geter  (sent Mar 29)
     Grand Hustle Records  |  President
     ---
-    Hi Jason -- the attorney who walks out with client files and the engineer who exports session stems before giving notice -- same threat model. We built a system that detects that exfiltration in < 3 seconds. Originally built for law firms, now adapted for catalogs and master files. We're ATL-based. 3-min demo if it's relevant.
+    Hi Jason -- the attorney who walks with client files and the engineer who leaks session stems -- same threat model. We detect that exfiltration in < 3 sec, on-premise. Built for law firms, now adapted for catalogs. ATL-based. Quick demo if relevant.
     ---
+    (249 chars — fits LinkedIn 300-char connection request limit)
 
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

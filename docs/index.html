@@ -96,6 +96,32 @@
         .anti-icon { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
         .anti-card.what-we-are .anti-list li { color: var(--text); }
         .anti-card.what-we-are-not .anti-list li { color: var(--text-dim); }
+        .pricing { padding: 100px 0; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; }
+        .pricing-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 36px 28px; text-align: center; transition: all 0.4s ease; position: relative; overflow: hidden; opacity: 0; transform: translateY(30px); }
+        .pricing-card.visible { opacity: 1; transform: translateY(0); }
+        .pricing-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg,var(--primary),var(--accent)); opacity: 0; transition: opacity 0.3s; }
+        .pricing-card:hover { background: var(--bg-card-hover); transform: translateY(-6px); border-color: rgba(59,130,246,0.3); }
+        .pricing-card:hover::before { opacity: 1; }
+        .pricing-card.featured { background: linear-gradient(135deg,rgba(59,130,246,0.1) 0%,rgba(139,92,246,0.05) 100%); border-color: rgba(59,130,246,0.3); }
+        .pricing-card.featured::before { opacity: 1; }
+        .pricing-tier { font-family: 'JetBrains Mono',monospace; font-size: 0.72rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--primary-light); margin-bottom: 16px; }
+        .pricing-amount { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+        .pricing-period { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 20px; }
+        .pricing-desc { font-size: 0.92rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 24px; min-height: 80px; }
+        .pricing-features { list-style: none; text-align: left; margin-bottom: 28px; }
+        .pricing-features li { padding: 7px 0; font-size: 0.85rem; color: var(--text-dim); border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; align-items: center; gap: 10px; }
+        .pricing-features li:last-child { border-bottom: none; }
+        .pricing-check { color: var(--success); font-size: 0.9rem; flex-shrink: 0; }
+        .pricing-badge { position: absolute; top: 16px; right: 16px; padding: 4px 10px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); border-radius: 100px; font-size: 0.62rem; color: var(--primary-light); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'JetBrains Mono',monospace; }
+        .pricing-cta { padding: 12px 28px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s; cursor: pointer; border: none; width: 100%; }
+        .pricing-cta-primary { background: linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%); color: white; box-shadow: 0 4px 16px var(--glow-blue); }
+        .pricing-cta-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px var(--glow-blue); }
+        .pricing-cta-secondary { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
+        .pricing-cta-secondary:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+        .pricing-proof { margin-top: 40px; text-align: center; }
+        .pricing-proof-tag { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); border-radius: 100px; font-size: 0.78rem; color: var(--success); font-weight: 500; }
+        .pricing-proof-dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; animation: tagPulse 2s ease-in-out infinite; }
         .verticals { padding: 100px 0; }
         .vert-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; }
         .vert-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 36px; position: relative; overflow: hidden; transition: all 0.4s ease; opacity: 0; transform: translateY(30px); }
@@ -166,7 +192,7 @@
         .fade-in { opacity: 0; transform: translateY(30px); animation: fadeInUp 0.8s ease forwards; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
         .delay-1 { animation-delay: 0.1s; } .delay-2 { animation-delay: 0.2s; } .delay-3 { animation-delay: 0.3s; } .delay-4 { animation-delay: 0.4s; }
-        @media (max-width: 1024px) { .moat-grid { grid-template-columns: repeat(2,1fr) !important; } }
+        @media (max-width: 1024px) { .moat-grid { grid-template-columns: repeat(2,1fr) !important; } .pricing-grid { grid-template-columns: repeat(2,1fr); } }
         @media (max-width: 900px) {
             .arch-grid { grid-template-columns: 1fr; gap: 16px; }
             .arch-connector { transform: rotate(90deg) scale(0.8); padding: 12px 0; }
@@ -175,6 +201,7 @@
             .vert-grid { grid-template-columns: 1fr; }
             .vert-card.active-vert { grid-column: span 1; }
             .anti-grid { grid-template-columns: 1fr; }
+            .pricing-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
             .mobile-menu-btn { display: block; }
@@ -231,7 +258,8 @@
             <li><a href="#architecture">What We Are</a></li>
             <li><a href="#moat">Moats</a></li>
             <li><a href="#verticals">Verticals</a></li>
-            <li><a href="#live-ops">Live Operations</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#live-ops">Live Ops</a></li>
             <li><a href="#who-we-are">About</a></li>
             <li><a href="mailto:echoworksaillc@gmail.com?subject=Deploy%20Pilot%20%E2%80%94%20EchoWorks%20AI" style="color:var(--primary-light);">Deploy Pilot</a></li>
         </ul>
@@ -385,6 +413,70 @@
                 </div>
             </div>
         </section>
+        <section class="pricing" id="pricing">
+            <div class="section-label" style="text-align:center;">Engagement Models</div>
+            <h2 class="section-title" style="text-align:center;">Secure Agentic OS for High-Stakes Operations</h2>
+            <p class="section-desc" style="text-align:center;">From roadmap to production. Every engagement deploys sovereign infrastructure on your hardware.</p>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-tier">Sprint</div>
+                    <div class="pricing-amount">$5,000</div>
+                    <div class="pricing-period">one-time</div>
+                    <p class="pricing-desc">Strategic roadmap &#38; architecture for your agentic deployment. Understand exactly what gets built and why.</p>
+                    <ul class="pricing-features">
+                        <li><span class="pricing-check">&#10003;</span> Domain threat model assessment</li>
+                        <li><span class="pricing-check">&#10003;</span> Agentic workflow architecture</li>
+                        <li><span class="pricing-check">&#10003;</span> Deployment blueprint (on-prem spec)</li>
+                        <li><span class="pricing-check">&#10003;</span> Compliance mapping (NIST/HIPAA/SOC2)</li>
+                    </ul>
+                    <a href="mailto:echoworksaillc@gmail.com?subject=Sprint%20Engagement%20%E2%80%94%20EchoWorks%20AI" class="pricing-cta pricing-cta-secondary">Start Sprint</a>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="pricing-tier">Pilot</div>
+                    <div class="pricing-amount">$15,000</div>
+                    <div class="pricing-period">one-time</div>
+                    <p class="pricing-desc">Live agentic deployment. One domain agent running on your infrastructure, producing real results in weeks.</p>
+                    <ul class="pricing-features">
+                        <li><span class="pricing-check">&#10003;</span> Everything in Sprint</li>
+                        <li><span class="pricing-check">&#10003;</span> 1 production agent deployed on-prem</li>
+                        <li><span class="pricing-check">&#10003;</span> Domain pattern library configured</li>
+                        <li><span class="pricing-check">&#10003;</span> Trust-gated workflow integration</li>
+                        <li><span class="pricing-check">&#10003;</span> 30-day tuning &#38; validation</li>
+                    </ul>
+                    <a href="mailto:echoworksaillc@gmail.com?subject=Deploy%20Pilot%20%E2%80%94%20EchoWorks%20AI" class="pricing-cta pricing-cta-primary">Deploy Pilot</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-tier">Retainer</div>
+                    <div class="pricing-amount">$5,000</div>
+                    <div class="pricing-period">per month</div>
+                    <p class="pricing-desc">Ongoing agentic operations. Continuous monitoring, pattern expansion, and agent evolution as your needs grow.</p>
+                    <ul class="pricing-features">
+                        <li><span class="pricing-check">&#10003;</span> Continuous agent monitoring</li>
+                        <li><span class="pricing-check">&#10003;</span> Monthly pattern library updates</li>
+                        <li><span class="pricing-check">&#10003;</span> Priority incident response</li>
+                        <li><span class="pricing-check">&#10003;</span> Quarterly compliance reporting</li>
+                    </ul>
+                    <a href="mailto:echoworksaillc@gmail.com?subject=Retainer%20%E2%80%94%20EchoWorks%20AI" class="pricing-cta pricing-cta-secondary">Start Retainer</a>
+                </div>
+                <div class="pricing-card">
+                    <div class="pricing-tier">Partnership</div>
+                    <div class="pricing-amount">Custom</div>
+                    <div class="pricing-period">commission-based</div>
+                    <p class="pricing-desc">Strategic co-deployment. White-label agentic infrastructure across your client base with revenue sharing.</p>
+                    <ul class="pricing-features">
+                        <li><span class="pricing-check">&#10003;</span> White-label agent deployment</li>
+                        <li><span class="pricing-check">&#10003;</span> Multi-vertical scaling</li>
+                        <li><span class="pricing-check">&#10003;</span> Revenue share model (70/30)</li>
+                        <li><span class="pricing-check">&#10003;</span> Dedicated engineering support</li>
+                    </ul>
+                    <a href="mailto:echoworksaillc@gmail.com?subject=Partnership%20Inquiry%20%E2%80%94%20EchoWorks%20AI" class="pricing-cta pricing-cta-secondary">Discuss Partnership</a>
+                </div>
+            </div>
+            <div class="pricing-proof">
+                <span class="pricing-proof-tag"><span class="pricing-proof-dot"></span> Active pilot deployments in progress &#8212; law &#38; real estate verticals</span>
+            </div>
+        </section>
         <section class="live-ops fade-in delay-4" id="live-ops">
             <div class="section-label" style="text-align:center;">Live Operations</div>
             <h2 class="section-title" style="text-align:center; margin-bottom: 40px;">The Engine, Running Now</h2>
@@ -487,7 +579,8 @@
                 <a href="#architecture">What We Are</a>
                 <a href="#moat">Moats</a>
                 <a href="#verticals">Verticals</a>
-                <a href="#live-ops">Live Operations</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#live-ops">Live Ops</a>
                 <a href="#who-we-are">About</a>
                 <a href="mailto:echoworksaillc@gmail.com?subject=Deploy%20Pilot%20%E2%80%94%20EchoWorks%20AI">Deploy Pilot</a>
             </div>
@@ -521,7 +614,7 @@
                 if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
             });
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-        document.querySelectorAll('.arch-entity, .arch-connector, .moat-pillar, .vert-card, .anti-card, .demo-container').forEach(el => { observer.observe(el); });
+        document.querySelectorAll('.arch-entity, .arch-connector, .moat-pillar, .vert-card, .anti-card, .pricing-card, .demo-container').forEach(el => { observer.observe(el); });
         const revealObs = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObs.unobserve(entry.target); }

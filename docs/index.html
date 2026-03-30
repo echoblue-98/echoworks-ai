@@ -134,6 +134,19 @@
         .who-card p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.8; margin-bottom: 16px; }
         .who-card .who-location { font-size: 0.82rem; color: var(--text-dim); opacity: 0.7; }
 
+        /* Manifesto */
+        .manifesto { padding: 100px 0; text-align: center; }
+        .manifesto-box { max-width: 780px; margin: 0 auto; background: linear-gradient(135deg, rgba(59,130,246,0.06), rgba(139,92,246,0.04), rgba(16,185,129,0.03)); border: 1px solid rgba(59,130,246,0.15); border-radius: 28px; padding: 56px 48px; position: relative; overflow: hidden; }
+        .manifesto-box::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--primary), var(--accent), var(--success)); }
+        .manifesto-tagline { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; line-height: 1.3; margin-bottom: 28px; background: linear-gradient(135deg, #3b82f6, #8b5cf6, #10b981); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .manifesto-body { font-size: 1rem; color: var(--text-dim); line-height: 1.9; margin-bottom: 32px; text-align: left; }
+        .manifesto-pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+        .manifesto-pillar { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px; padding: 20px 14px; text-align: center; }
+        .manifesto-pillar-icon { font-size: 1.4rem; margin-bottom: 8px; }
+        .manifesto-pillar h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; }
+        .manifesto-pillar p { font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; }
+        .manifesto-close { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; font-weight: 600; color: var(--text); letter-spacing: 0.5px; }
+
         /* CTA */
         .why-now { padding: 80px 0; text-align: center; }
         .why-now-box { background: linear-gradient(135deg,rgba(59,130,246,0.1) 0%,rgba(139,92,246,0.08) 100%); border: 1px solid rgba(59,130,246,0.3); border-radius: 32px; padding: 72px 56px; position: relative; overflow: hidden; }
@@ -181,6 +194,9 @@
             .why-now-desc { font-size: 0.95rem; }
             .footer-links { gap: 16px; }
             .who-card { padding: 32px 24px; }
+            .manifesto-box { padding: 36px 24px; }
+            .manifesto-pillars { grid-template-columns: repeat(2, 1fr); }
+            .manifesto-tagline { font-size: 1.2rem; }
             .pricing-single { padding: 40px 28px; }
             .solution-box { padding: 36px 24px; }
         }
@@ -188,6 +204,8 @@
             .container { padding: 0 16px; }
             .hero-title { font-size: 1.7rem; }
             .pricing-amount { font-size: 2.5rem; }
+            .manifesto-pillars { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .manifesto-tagline { font-size: 1.1rem; }
         }
     </style>
 </head>
@@ -206,6 +224,7 @@
             <li><a href="#how">How It Works</a></li>
             <li><a href="#live-ops">See It Live</a></li>
             <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#manifesto">Our Leverage</a></li>
             <li><a href="mailto:echoworksaillc@gmail.com?subject=Schedule%20a%20Call%20%E2%80%94%20EchoWorks%20AI" style="color:var(--primary-light);">Schedule a Call</a></li>
         </ul>
     </nav></div></div>
@@ -407,6 +426,38 @@
             </div>
         </section>
 
+        <!-- Manifesto -->
+        <section class="manifesto fade-in delay-4" id="manifesto">
+            <div class="section-label">Our Leverage</div>
+            <div class="manifesto-box">
+                <div class="manifesto-tagline">We build secure, sovereign systems that help people operate with clarity, conviction, and independence.</div>
+                <p class="manifesto-body">Most AI is a distraction &#8212; chatbots, wrappers, generic promises. EchoWorks is different. We deploy agentic operating systems that execute real work inside your environment: detecting threats before they escalate, coordinating safely across high-stakes workflows, and closing the gap between intelligence and action. No clouds. No data egress. Full audit trails. Your rules enforced. Intelligence that compounds smarter over time.</p>
+                <div class="manifesto-pillars">
+                    <div class="manifesto-pillar">
+                        <div class="manifesto-pillar-icon">&#x2699;&#xFE0F;</div>
+                        <h4>Systems</h4>
+                        <p>Frameworks, not one-off outputs. One strong idea scales across users and domains.</p>
+                    </div>
+                    <div class="manifesto-pillar">
+                        <div class="manifesto-pillar-icon">&#x1F512;</div>
+                        <h4>Security</h4>
+                        <p>A secure path lets people act with confidence instead of hesitation.</p>
+                    </div>
+                    <div class="manifesto-pillar">
+                        <div class="manifesto-pillar-icon">&#x26A1;</div>
+                        <h4>Operations</h4>
+                        <p>Reduce friction in real workflows. Turn uncertainty into motion.</p>
+                    </div>
+                    <div class="manifesto-pillar">
+                        <div class="manifesto-pillar-icon">&#x1F3AF;</div>
+                        <h4>Agency</h4>
+                        <p>No more dependency on broken or generic tools. Operate with purpose.</p>
+                    </div>
+                </div>
+                <div class="manifesto-close">Escape the matrix. Deploy EchoWorks.</div>
+            </div>
+        </section>
+
         <!-- CTA -->
         <section class="why-now fade-in delay-4" id="why-now">
             <div class="why-now-box">
@@ -429,6 +480,7 @@
                 <a href="#how">How It Works</a>
                 <a href="#live-ops">See It Live</a>
                 <a href="#pricing">Pricing</a>
+                <a href="#manifesto">Our Leverage</a>
                 <a href="mailto:echoworksaillc@gmail.com?subject=Schedule%20a%20Call%20%E2%80%94%20EchoWorks%20AI">Schedule a Call</a>
             </div>
             <div class="footer-contact" style="margin: 24px 0; color: var(--text-dim); font-size: 0.92rem; line-height: 1.8;">

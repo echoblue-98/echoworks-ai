@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EchoWorks — SOC Console Demo Recording</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #030712; color: #f1f5f9; font-family: 'JetBrains Mono', monospace; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; }
+        .demo-container { width: 100%; max-width: 1100px; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; overflow: hidden; background: rgba(255,255,255,0.02); }
+        .demo-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 28px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); }
+        .demo-header-left { display: flex; align-items: center; gap: 12px; }
+        .demo-pulse { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 8px rgba(16,185,129,0.6); }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .demo-title { font-size: 0.82rem; font-weight: 600; color: rgba(241,245,249,0.7); letter-spacing: 1px; }
+        .demo-badge { font-size: 0.68rem; font-weight: 600; color: #ef4444; letter-spacing: 1.5px; padding: 4px 14px; border: 1px solid rgba(239,68,68,0.3); border-radius: 100px; background: rgba(239,68,68,0.08); }
+        #soc-terminal { background: #050508; padding: 28px 32px; min-height: 600px; font-size: 0.8rem; line-height: 1.9; overflow: hidden; position: relative; }
+        .scanline { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px); pointer-events: none; z-index: 2; }
+        .terminal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .terminal-header span { font-size: 0.72rem; }
+        .trust-label { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .trust-label span { font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+        #trust-score-val { font-weight: 700; color: #10b981; }
+        .trust-bar-bg { height: 5px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; margin-bottom: 24px; }
+        #trust-bar { height: 100%; width: 100%; background: linear-gradient(90deg, #10b981, #10b981); border-radius: 4px; transition: all 1.2s ease; }
+        #event-feed { position: relative; z-index: 1; }
+        #threat-level { position: absolute; bottom: 28px; right: 32px; text-align: right; opacity: 0; transition: opacity 0.5s; }
+        .threat-label { font-size: 0.65rem; color: rgba(255,255,255,0.3); letter-spacing: 2px; margin-bottom: 4px; }
+        #threat-level-text { font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+        .demo-footer { display: flex; justify-content: space-between; align-items: center; padding: 16px 28px; border-top: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); }
+        .demo-stats { display: flex; gap: 28px; font-size: 0.78rem; color: rgba(241,245,249,0.5); }
+        .demo-stat-val { color: #60a5fa; font-weight: 700; }
+        @keyframes demoPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .countdown { position: fixed; top: 20px; right: 20px; font-size: 1.4rem; font-weight: 700; color: rgba(255,255,255,0.15); letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <div class="countdown" id="countdown">3:30</div>
+    <div class="demo-container">
+        <div class="demo-header">
+            <div class="demo-header-left">
+                <div class="demo-pulse"></div>
+                <span class="demo-title">AION OS &#8212; SOC Command Console</span>
+            </div>
+            <span class="demo-badge">ATTORNEY DEPARTURE &#8226; LIVE</span>
+        </div>
+        <div id="soc-terminal">
+            <div class="scanline"></div>
+            <div class="terminal-header">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span id="engine-status" style="color:#10b981;">&#x25CF; ENGINE ONLINE</span>
+                    <span style="color:rgba(255,255,255,0.2);">|</span>
+                    <span style="color:rgba(255,255,255,0.3);">117 PATTERNS LOADED</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="color:rgba(255,255,255,0.3);">LATENCY: 0.04ms</span>
+                    <span style="color:rgba(255,255,255,0.2);">|</span>
+                    <span style="color:rgba(255,255,255,0.3);">ON-PREMISE</span>
+                </div>
+            </div>
+            <div class="trust-label">
+                <span>ENTITY TRUST SCORE</span>
+                <span id="trust-score-val">100</span>
+            </div>
+            <div class="trust-bar-bg">
+                <div id="trust-bar"></div>
+            </div>
+            <div id="event-feed"></div>
+            <div id="threat-level">
+                <div class="threat-label">THREAT LEVEL</div>
+                <div id="threat-level-text">LOW</div>
+            </div>
+        </div>
+        <div class="demo-footer">
+            <div class="demo-stats">
+                <span><span class="demo-stat-val">117+</span> Patterns</span>
+                <span><span class="demo-stat-val">&lt;3s</span> Detection</span>
+                <span><span class="demo-stat-val">100%</span> On-Premise</span>
+                <span><span class="demo-stat-val">&lt;2%</span> False Positives</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*
+         * TIMING MAP (matched to 3:30 voiceover)
+         *
+         * 0:00-0:15  Intro: "This is EchoWorks..."
+         * 0:10       Event stream connects
+         * 0:15-0:30  Stats: "The system just loaded..."
+         * 0:30-0:42  Setup: "Here's what it looks like..."
+         * 0:42-0:55  Matter access narration
+         * 0:55-1:15  Bulk export narration
+         * 1:15-1:40  Email forward + pattern match narration
+         * 1:42-1:55  Cloud upload narration
+         * 1:55-2:20  Summary: "That's the four-step chain..."
+         * 2:22-2:55  Containment actions + notification
+         * 2:55-3:20  Close: "This runs on your hardware..."
+         * 3:20       Detection complete
+         */
+
+        const events = [
+            { time: 10000,  type: 'INGEST',   sev: 'INFO',     color: 'rgba(255,255,255,0.4)', text: 'Event stream connected \u2014 iManage DMS + Email Gateway + Cloud Proxy', trust: 100 },
+
+            // Matter access — syncs with voiceover ~0:42
+            { time: 42000,  type: 'EVENT',    sev: 'LOW',      color: '#60a5fa', text: '\u250C\u2500 matter_access | att_jchen_042 | iManage', trust: 92 },
+            { time: 45000,  type: 'DETAIL',   sev: '',         color: 'rgba(255,255,255,0.35)', text: '\u2502  34 file accesses on Apex Capital matter M-2024-1847 \u2014 after hours', trust: 92 },
+            { time: 48000,  type: 'ENGINE',   sev: '',         color: '#8b5cf6', text: '\u2514\u2500 ProximityEngine: single-entity cluster forming | TrustScore: 92', trust: 92 },
+
+            // Bulk export — syncs with voiceover ~0:58
+            { time: 58000,  type: 'EVENT',    sev: 'MEDIUM',   color: '#f59e0b', text: '\u250C\u2500 dms_bulk_export | att_jchen_042 | iManage', trust: 68 },
+            { time: 62000,  type: 'DETAIL',   sev: '',         color: 'rgba(255,255,255,0.35)', text: '\u2502  218 files / 890 MB across 2 matters [M-2024-1847, M-2024-1901]', trust: 68 },
+            { time: 66000,  type: 'ENGINE',   sev: '',         color: '#f59e0b', text: '\u2514\u2500 PhaseEngine: departure_staging phase detected | TrustScore: 68 \u2193', trust: 68 },
+
+            // Email forward — syncs with voiceover ~1:18
+            { time: 78000,  type: 'EVENT',    sev: 'HIGH',     color: '#ef4444', text: '\u250C\u2500 email_forward | att_jchen_042 | Exchange Gateway', trust: 35 },
+            { time: 82000,  type: 'DETAIL',   sev: '',         color: 'rgba(255,255,255,0.35)', text: '\u2502  5 attachments (42 MB) \u2192 jchen.personal@gmail.com', trust: 35 },
+            { time: 86000,  type: 'PATTERN',  sev: '',         color: '#ef4444', text: '\u2514\u2500 \u26A0 PATTERN MATCH: departure_theft [matter+export+personal_email] confidence: 0.87', trust: 35 },
+            { time: 90000,  type: 'ENGINE',   sev: '',         color: '#8b5cf6', text: '   LLM BYPASSED \u2014 pure pattern match \u2014 0.04ms', trust: 35 },
+
+            // Cloud upload — syncs with voiceover ~1:42
+            { time: 102000, type: 'EVENT',    sev: 'CRITICAL', color: '#ff3b3b', text: '\u250C\u2500 cloud_upload | att_jchen_042 | Cloud Proxy', trust: 8 },
+            { time: 105000, type: 'DETAIL',   sev: '',         color: 'rgba(255,255,255,0.35)', text: '\u2502  890 MB \u2192 dropbox.com via split-tunnel VPN', trust: 8 },
+            { time: 108000, type: 'CRITICAL', sev: '',         color: '#ff3b3b', text: '\u2514\u2500 \u2588\u2588 CRITICAL: Full exfiltration chain confirmed', trust: 8 },
+            { time: 111000, type: 'CHAIN',    sev: '',         color: '#ff6b6b', text: '   Chain: matter_access \u2192 bulk_export \u2192 email_forward \u2192 cloud_upload', trust: 8 },
+
+            // Containment — syncs with voiceover ~2:22
+            { time: 142000, type: 'NIST',     sev: '',         color: '#8b5cf6', text: '\u2500\u2500\u2500 NIST 800-61 INCIDENT RESPONSE \u2500\u2500\u2500', trust: 8 },
+            { time: 147000, type: 'ACTION',   sev: '',         color: '#10b981', text: '  [CONTAIN] Revoke iManage session tokens for att_jchen_042', trust: 8 },
+            { time: 152000, type: 'ACTION',   sev: '',         color: '#10b981', text: '  [CONTAIN] Suspend split-tunnel VPN access', trust: 8 },
+            { time: 157000, type: 'ACTION',   sev: '',         color: '#10b981', text: '  [PRESERVE] Email evidence quarantined \u2014 litigation hold applied', trust: 8 },
+            { time: 162000, type: 'ACTION',   sev: '',         color: '#10b981', text: '  [NOTIFY] Ethics partner alert dispatched', trust: 8 },
+            { time: 167000, type: 'REPORT',   sev: '',         color: '#60a5fa', text: '  \u2714 Incident report generated \u2014 PDF + JSONL audit trail', trust: 8 },
+
+            // Close — syncs with voiceover ~3:20
+            { time: 200000, type: 'DONE',     sev: '',         color: 'rgba(255,255,255,0.3)', text: '\u2500\u2500\u2500 Detection complete \u2014 3.2s from first event to containment \u2500\u2500\u2500', trust: 8 },
+        ];
+
+        // Countdown timer
+        let startTime = null;
+        function updateCountdown() {
+            if (!startTime) return;
+            const elapsed = (Date.now() - startTime) / 1000;
+            const remaining = Math.max(0, 210 - elapsed);
+            const min = Math.floor(remaining / 60);
+            const sec = Math.floor(remaining % 60);
+            document.getElementById('countdown').textContent = min + ':' + String(sec).padStart(2, '0');
+            if (remaining > 0) requestAnimationFrame(updateCountdown);
+        }
+
+        function updateTrust(val) {
+            const bar = document.getElementById('trust-bar');
+            const valEl = document.getElementById('trust-score-val');
+            if (!bar || !valEl) return;
+            bar.style.width = val + '%';
+            valEl.textContent = val;
+            if (val > 70) { bar.style.background = 'linear-gradient(90deg,#10b981,#10b981)'; valEl.style.color = '#10b981'; }
+            else if (val > 40) { bar.style.background = 'linear-gradient(90deg,#f59e0b,#f59e0b)'; valEl.style.color = '#f59e0b'; }
+            else if (val > 15) { bar.style.background = 'linear-gradient(90deg,#ef4444,#ef4444)'; valEl.style.color = '#ef4444'; }
+            else { bar.style.background = 'linear-gradient(90deg,#ff3b3b,#ff3b3b)'; valEl.style.color = '#ff3b3b'; }
+        }
+
+        function updateThreatLevel(trust) {
+            const el = document.getElementById('threat-level');
+            const txt = document.getElementById('threat-level-text');
+            if (!el || !txt) return;
+            el.style.opacity = '1';
+            if (trust > 70) { txt.textContent = 'LOW'; txt.style.color = '#10b981'; }
+            else if (trust > 40) { txt.textContent = 'MEDIUM'; txt.style.color = '#f59e0b'; }
+            else if (trust > 15) { txt.textContent = 'HIGH'; txt.style.color = '#ef4444'; }
+            else { txt.textContent = 'CRITICAL'; txt.style.color = '#ff3b3b'; txt.style.textShadow = '0 0 20px rgba(255,59,59,0.6)'; }
+        }
+
+        function addEvent(ev) {
+            const feed = document.getElementById('event-feed');
+            if (!feed) return;
+            const line = document.createElement('div');
+            line.style.cssText = 'opacity:0;transform:translateX(-10px);transition:all 0.5s ease;margin-bottom:3px;';
+            const ts = new Date().toISOString().split('T')[1].split('.')[0];
+            let prefix = '';
+            if (ev.sev === 'CRITICAL') prefix = '<span style="background:#ff3b3b;color:#fff;padding:1px 6px;border-radius:3px;font-size:0.65rem;font-weight:700;margin-right:8px;animation:demoPulse 1s ease-in-out infinite;">CRITICAL</span>';
+            else if (ev.sev === 'HIGH') prefix = '<span style="color:#ef4444;font-weight:600;margin-right:8px;">[HIGH]</span>';
+            else if (ev.sev === 'MEDIUM') prefix = '<span style="color:#f59e0b;font-weight:600;margin-right:8px;">[MEDIUM]</span>';
+            else if (ev.sev === 'LOW') prefix = '<span style="color:#60a5fa;font-weight:600;margin-right:8px;">[LOW]</span>';
+            else if (ev.sev === 'INFO') prefix = '<span style="color:rgba(255,255,255,0.3);margin-right:8px;">[INFO]</span>';
+            const isIndent = ['DETAIL','ENGINE','PATTERN','ACTION','CHAIN','REPORT','DONE','NIST'].includes(ev.type);
+            const timestamp = isIndent
+                ? '<span style="color:transparent;font-size:0.72rem;">          </span>'
+                : '<span style="color:rgba(255,255,255,0.2);font-size:0.72rem;">' + ts + '</span> ';
+            line.innerHTML = timestamp + prefix + '<span style="color:' + ev.color + ';">' + ev.text + '</span>';
+            if (ev.type === 'CRITICAL') {
+                const terminal = document.getElementById('soc-terminal');
+                if (terminal) { terminal.style.boxShadow = '0 0 60px rgba(255,59,59,0.3)'; setTimeout(() => { terminal.style.boxShadow = 'none'; }, 1200); }
+            }
+            feed.appendChild(line);
+            requestAnimationFrame(() => { line.style.opacity = '1'; line.style.transform = 'translateX(0)'; });
+            updateTrust(ev.trust);
+            updateThreatLevel(ev.trust);
+        }
+
+        // Click anywhere to start — gives you time to set up OBS
+        document.addEventListener('click', function startOnce() {
+            document.removeEventListener('click', startOnce);
+            startTime = Date.now();
+            updateCountdown();
+            events.forEach(ev => {
+                setTimeout(() => addEvent(ev), ev.time);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+SEAN LARSON CALL — MON MAR 31
+Hathaway & Coons | Wyoming | 24 attorneys, Cheyenne
+Commercial Lit, Business, IP/Crypto, Insurance, Non-Competes
+=============================================================
+
+FLOW: 6 MOVES (CONVERSATION, NOT A PITCH)
+------------------------------------------
+
+1. OPEN — GET TO KNOW HIM (3-5 min)
+   "Dan connected us — appreciate you making time."
+   "How long have you been in the litigation space?"
+   "What drew you to Hathaway & Coons?"
+   "What does your practice look like day to day?"
+
+   → Just listen. Build rapport. Learn how he talks about
+     his work. His language becomes your language later.
+
+2. PROBE THE PAIN (5 min)
+   Let him surface it. Don't lead him there.
+
+   "Have you ever lost an attorney to a competitor?"
+   "What happened to the client relationships?"
+   "In commercial lit — when someone leaves, how do you
+    know what they accessed in their last few weeks?"
+   "On the energy side — those lease docs, mineral rights —
+    who has access and who's watching?"
+   "Has anything ever walked out the door that you found
+    out about too late?"
+
+   → Whatever he says, go deeper: "How did that play out?"
+     The pain is in the details he tells you.
+
+3. CONTEXTUALIZE FOR A REGIONAL FIRM (3 min)
+   Ground it in his world, not Big Law stats.
+
+   "At the national level, firms average 77 days to detect
+    insider theft. For a regional firm without a dedicated
+    security team, it's usually longer — because nobody's
+    watching."
+
+   "Most firms your size either don't have DLP or have it
+    turned off because 90% of the alerts are noise."
+
+   Don't quote $8M. Instead:
+   "What's your biggest client relationship worth annually?"
+   Whatever he says → "That's what's at stake if someone
+   stages files for two weeks and you don't see it."
+
+4. HANDLE HIDDEN OBJECTIONS WITH CONVICTION (2-3 min)
+   If "we're too small" or "never had a problem" surfaces:
+
+   "AI isn't coming — it's already here. 365, all the way
+    live. The question is whether it's working for your
+    firm or you're just hoping nothing happens."
+
+   "The firms that wait find out 77 days later. The ones
+    that act find out in 3 seconds. The difference isn't
+    budget — it's awareness."
+
+   "One departure crisis — the legal fees, the client
+    recovery, the reputational hit — costs more than
+    years of prevention. This saves that."
+
+5. SEGUE INTO THEIR CURRENT SECURITY (3 min)
+   This is the bridge to the close.
+
+   "What does Hathaway & Coons use right now for security
+    and compliance around client confidentiality?"
+
+   "Who manages that — internal IT, an MSP, or is it
+    more ad hoc?"
+
+   "How do you handle data governance for things like
+    attorney-client privilege and work product?"
+
+   → Whatever the answer, the gap reveals itself.
+     If they have tools → "Those tools watch files.
+     We watch behavior. Different layer entirely."
+     If they have nothing → "That's actually common.
+     And it's exactly why we built this to deploy in
+     48 hours with zero disruption."
+
+   THE MOAT (say this clearly):
+   "Everything runs 100% on your hardware. Zero data
+    egress. No client files, no PII, no matter data
+    ever leaves your network. That's not a feature —
+    that's the architecture."
+
+6. CLOSE — STATE IT AND STOP TALKING
+   "$5,000 a month. We deploy in 48 hours, read-only.
+    We baseline every attorney's access patterns. If we
+    don't prove value in 90 days, you don't pay."
+
+   Then silence. Let him respond.
+
+   If yes → "I'll send the retainer agreement tonight."
+   If needs time → "When's good to follow up this week?"
+   If partners → "What would they need to see? I'll build
+     something for that conversation."
+   If not now → "No pressure. I'll send the one-pager."
+
+-------------------------------------------------------------
+STATS (USE HONESTLY — CONTEXTUALIZE, DON'T INFLATE)
+  77 days    — Ponemon. Avg detection. Longer for small firms.
+  90%+ DLP   — Industry consensus. Don't say 97%.
+  <3 seconds — Your engine benchmark. Back it with guarantee.
+  117 patterns — Your library. Verifiable.
+  48 hours   — Deployment SLA.
+  $5,000/mo  — The price. Don't flinch.
+
+IF HE ASKS ABOUT CREDENTIALS:
+  "I'll be straight — we're early. The system is built and
+  tested. Dan trusted it enough to connect us. The guarantee
+  exists because I'd rather prove it on your network than
+  sell you a slide deck."
+
+REMEMBER:
+  - His language becomes your language. Listen first.
+  - Don't quote Big Law stats at a Wyoming firm.
+  - The moat is on-prem, zero egress, client confidentiality.
+  - Ask what they use now — the gap sells itself.
+  - State the price with conviction. Then shut up.
+

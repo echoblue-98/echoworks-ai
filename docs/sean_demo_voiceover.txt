@@ -1,0 +1,88 @@
+ECHOWORKS DEMO — VOICEOVER SCRIPT
+Law Firm Attorney Departure Detection | 3 minutes
+====================================================
+
+[SCREEN: SOC console boot / dashboard loading]
+
+This is EchoWorks — real-time insider threat detection 
+built for law firms.
+
+Everything you're about to see runs one hundred percent 
+on-premise. No client data, no case files, no privileged 
+information ever leaves your network.
+
+---
+
+[SCREEN: Stats loading — patterns, events, latency]
+
+The system just loaded over a hundred behavioral detection 
+patterns across your document management system, email 
+gateway, and cloud proxy.
+
+It's watching every file access, every email, every cloud 
+upload — live. Sub-millisecond latency.
+
+---
+
+[SCREEN: Attorney departure scenario begins]
+
+Here's what it looks like when an attorney starts staging 
+files before a departure.
+
+First — unusual matter access. An attorney pulls thirty-four 
+files on a client matter after hours. Trust score drops.
+
+Then — bulk export. Two hundred eighteen files, almost nine 
+hundred megabytes across two matters. The system flags 
+departure staging.
+
+Next — email forward. Five attachments sent to a personal 
+Gmail account. Pattern match fires. Confidence: eighty-seven 
+percent. Pure pattern correlation — no cloud, no API call, 
+four hundredths of a millisecond.
+
+Finally — cloud upload. The full file set hits Dropbox 
+through a split-tunnel VPN. Trust score collapses to eight. 
+Full exfiltration chain confirmed.
+
+---
+
+[PAUSE — let the red flash and CRITICAL hit]
+
+That's the four-step chain. Matter access, bulk export, 
+email forward, cloud upload. Detected and confirmed in 
+three point two seconds.
+
+In most firms, this goes undetected for seventy-seven days. 
+By then the attorney has resigned, the clients are gone, 
+and you're reconstructing what happened from email logs.
+
+---
+
+[SCREEN: Containment actions firing]
+
+When the chain fires, containment is automatic. Session 
+revoked. VPN suspended. Evidence quarantined with a 
+litigation hold. Ethics partner notified. Full audit trail 
+generated — PDF and JSONL. Litigation ready.
+
+The alert goes directly to the people who need to act — 
+managing partner, ethics committee, IT. They don't have 
+to check a dashboard. The system comes to them.
+
+---
+
+[SCREEN: Return to dashboard / detection complete]
+
+This runs on your hardware. Nothing leaves your building. 
+It watches behavior, not just files — which is why it 
+catches what DLP tools miss.
+
+We deploy in forty-eight hours, read-only, no disruption.
+If we don't prove value in ninety days, you don't pay.
+
+====================================================
+TOTAL: ~2.5 to 3 minutes at natural pace
+ONE DEMO — WORKS FOR EVERY LAW FIRM PROSPECT
+RECORD: Win + G (Xbox Game Bar) — screen + mic
+OUTPUT: MP4 from Videos/Captures

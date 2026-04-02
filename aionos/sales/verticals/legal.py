@@ -184,7 +184,7 @@ LEGAL_VERTICAL = Vertical(
             objection="This seems expensive for a mid-size firm.",
             response="One lateral partner departure can cost $2M-$50M in client "
                      "revenue. One privilege waiver from undetected exfiltration "
-                     "can exceed $10M in malpractice exposure. $3,750/month is "
+                     "can exceed $10M in malpractice exposure. $5,000/month is "
                      "insurance against a 7-figure loss.",
         ),
         Objection(
@@ -197,38 +197,19 @@ LEGAL_VERTICAL = Vertical(
     ],
 
     # ── Pricing ───────────────────────────────────────────────────
+    # Single offer. One price. No tiers. Per advisor strategy.
     pricing=[
         PricingTier(
-            tier_name="Baseline",
-            monthly=3750,
+            tier_name="AION OS",
+            monthly=5000,
             includes=[
-                "Detection engine (attorney departure + privilege exfiltration)",
+                "Full detection engine (attorney departure + privilege exfiltration)",
                 "117+ behavioral pattern library",
                 "NIST 800-61 incident response automation",
                 "iManage/NetDocuments integration",
                 "Monthly pattern updates",
-            ],
-        ),
-        PricingTier(
-            tier_name="Intelligence",
-            monthly=7500,
-            includes=[
-                "Everything in Baseline",
-                "Multi-office coverage",
-                "Custom pattern development (firm-specific)",
-                "Advanced analytics dashboard",
-                "Quarterly threat briefings",
-            ],
-        ),
-        PricingTier(
-            tier_name="Sentinel",
-            monthly=12500,
-            includes=[
-                "Everything in Intelligence",
-                "Dedicated threat analyst",
-                "24/7 monitoring",
-                "Regulatory reporting automation",
-                "Annual red team exercise",
+                "On-premise deployment — zero data egress",
+                "90-day performance guarantee",
             ],
         ),
     ],

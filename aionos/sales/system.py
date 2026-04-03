@@ -772,6 +772,50 @@ def _interactive_menu(pipe: Pipeline, gen: MessageGenerator,
                 path = report.open_in_browser()
                 print(f"  Dashboard opened: {path}")
 
+        elif cmd == "capture":
+            from aionos.sales.social_capture import SocialCapture
+            cap = SocialCapture()
+            cap.interactive_capture()
+
+        elif cmd == "content":
+            from aionos.sales.content_engine import ContentEngine, _print_post
+            engine = ContentEngine()
+            if len(parts) >= 2 and parts[1] == "--week":
+                platform = "linkedin"
+                if "--ig" in parts:
+                    platform = "instagram"
+                posts = engine.get_week(platform=platform)
+                print(f"\n  CONTENT CALENDAR — {platform.upper()}")
+                for p in posts:
+                    _print_post(p)
+            elif len(parts) >= 2 and parts[1] == "--ig":
+                post = engine.get_todays_post("instagram")
+                _print_post(post)
+            else:
+                post = engine.get_todays_post("linkedin")
+                print(f"\n  TODAY'S POST — LINKEDIN")
+                _print_post(post)
+
+        elif cmd == "enrich":
+            from aionos.sales.enrichment import EnrichmentTool
+            tool = EnrichmentTool()
+            if "--update" in parts:
+                tool.interactive_update()
+            elif "--lookup" in parts:
+                pid = None
+                for p in parts:
+                    if p.isdigit():
+                        pid = int(p)
+                        break
+                if pid:
+                    tool.lookup_prospect(pid)
+                else:
+                    tool.lookup_top()
+            elif "--template" in parts:
+                tool.generate_template_csv()
+            else:
+                tool.print_gap_report()
+
         elif cmd == "refresh":
             print("  Refreshing...")
             _run_system(interactive=True)
@@ -780,7 +824,8 @@ def _interactive_menu(pipe: Pipeline, gen: MessageGenerator,
         else:
             print(f"  Unknown: {raw}")
             print(f"  Try: [number], done [#], sent [id], replied [id], "
-                  f"advance [id], enroll, send, linkedin, export, report, q")
+                  f"advance [id], enroll, send, linkedin, export, report, "
+                  f"capture, content, enrich, q")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -905,6 +950,83 @@ def main() -> None:
             path = report.open_in_browser()
             print(f"  Dashboard opened: {path}")
 
+    elif cmd == "capture":
+        from aionos.sales.social_capture import SocialCapture
+        cap = SocialCapture()
+        if len(args) >= 3:
+            # CLI: capture "Name" "Company" platform --notes "..." --email "..." --title "..." --type "..."
+            name = args[1]
+            company = args[2]
+            platform = args[3] if len(args) > 3 and not args[3].startswith("--") else "linkedin"
+            notes = ""
+            email = ""
+            title = ""
+            eng_type = "connection"
+            for i, a in enumerate(args):
+                if a == "--notes" and i + 1 < len(args):
+                    notes = args[i + 1]
+                elif a == "--email" and i + 1 < len(args):
+                    email = args[i + 1]
+                elif a == "--title" and i + 1 < len(args):
+                    title = args[i + 1]
+                elif a == "--type" and i + 1 < len(args):
+                    eng_type = args[i + 1]
+            result = cap.capture(
+                name=name, company=company, platform=platform,
+                engagement_type=eng_type, notes=notes, email=email, title=title,
+            )
+            status = "NEW" if result["new"] else "EXISTING"
+            print(f"  [{status}] #{result['prospect_id']} {name} @ {company}")
+        else:
+            cap.interactive_capture()
+
+    elif cmd == "content":
+        from aionos.sales.content_engine import ContentEngine, _print_post
+        engine = ContentEngine()
+        platform = "instagram" if "--ig" in args else "linkedin"
+        topic = None
+        for i, a in enumerate(args):
+            if a == "--topic" and i + 1 < len(args):
+                topic = args[i + 1]
+        if "--week" in args:
+            posts = engine.get_week(platform=platform)
+            print(f"\n  CONTENT CALENDAR — {platform.upper()}")
+            for p in posts:
+                _print_post(p)
+        elif topic:
+            post = engine.get_by_topic(topic, platform=platform)
+            _print_post(post)
+        else:
+            post = engine.get_todays_post(platform=platform)
+            print(f"\n  TODAY'S POST — {platform.upper()}")
+            _print_post(post)
+
+    elif cmd == "enrich":
+        from aionos.sales.enrichment import EnrichmentTool
+        tool = EnrichmentTool()
+        if "--update" in args:
+            tool.interactive_update()
+        elif "--csv" in args:
+            idx = args.index("--csv")
+            if idx + 1 < len(args):
+                tool.batch_update_from_csv(args[idx + 1])
+            else:
+                print("  Usage: python sell.py enrich --csv PATH")
+        elif "--lookup" in args:
+            pid = None
+            for a in args:
+                if a.isdigit():
+                    pid = int(a)
+                    break
+            if pid:
+                tool.lookup_prospect(pid)
+            else:
+                tool.lookup_top()
+        elif "--template" in args:
+            tool.generate_template_csv()
+        else:
+            tool.print_gap_report()
+
     elif cmd == "help":
         print("""
   EchoWorks Sales System
@@ -924,6 +1046,16 @@ def main() -> None:
   python sell.py export --sheets Tab-separated for Google Sheets
   python sell.py report         Open visual dashboard in browser
   python sell.py report --file  Save dashboard to ~/Downloads
+  python sell.py capture        Capture social media lead (interactive)
+  python sell.py capture "Name" "Company" linkedin  Quick capture
+  python sell.py content        Today's LinkedIn post
+  python sell.py content --week Full week content calendar
+  python sell.py content --ig   Today's Instagram post
+  python sell.py enrich         Show enrichment gaps
+  python sell.py enrich --update  Interactive email entry
+  python sell.py enrich --lookup  Open search for top prospects
+  python sell.py enrich --template  Generate CSV template
+  python sell.py enrich --csv FILE  Batch update from CSV
   python sell.py score          Weekly scorecard
   python sell.py objections     Objection playbook
   python sell.py help           This help
@@ -940,6 +1072,9 @@ def main() -> None:
     linkedin       Open LinkedIn actions
     export         Export CSV to Downloads
     report         Open visual dashboard
+    capture        Capture social media lead
+    content        Today's content post
+    enrich         Show enrichment gaps
     cadence        Show cadence stats
     score          Weekly scorecard
     objections     Show objection playbook

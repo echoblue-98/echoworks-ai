@@ -153,6 +153,15 @@ LEGAL_VERTICAL = Vertical(
             relevance="Firms have duty to supervise technology use. "
                       "Failure to detect departure theft = supervisory failure.",
         ),
+        RegulatoryHook(
+            name="Compliance-First Innovation",
+            citation="Best practice — align security innovations with compliance from the outset",
+            penalty_range="Reputational damage, audit failures, regulatory sanctions",
+            relevance="Any detection or monitoring system deployed without compliance "
+                      "alignment risks creating more liability than it prevents. "
+                      "AION OS is built compliance-first: on-premise data residency, "
+                      "privilege-aware detection, litigation-ready audit trails.",
+        ),
     ],
 
     # ── How we handle pushback ────────────────────────────────────
@@ -206,6 +215,7 @@ LEGAL_VERTICAL = Vertical(
                 "Full detection engine (attorney departure + privilege exfiltration)",
                 "117+ behavioral pattern library",
                 "NIST 800-61 incident response automation",
+                "Compliance-first architecture — innovation aligned with regulatory requirements from the outset",
                 "iManage/NetDocuments integration",
                 "Monthly pattern updates",
                 "On-premise deployment — zero data egress",

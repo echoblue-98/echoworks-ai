@@ -262,6 +262,12 @@ def get_step_message(
                 f"start staging files 2-4 weeks before the resignation letter.\n\n"
                 f"That's a window where client files, billing data, and "
                 f"privileged documents walk out quietly.\n\n"
+                f"One thing we've learned from working with firms: security "
+                f"innovation has to be aligned with compliance from the outset — "
+                f"not bolted on after the fact. That's why AION OS is built "
+                f"compliance-first: on-premise data residency, privilege-aware "
+                f"detection, litigation-ready audit trails. No regulatory "
+                f"exposure created by the tool meant to reduce it.\n\n"
                 f"Let me know if you'd like to see how we close that gap.\n\n"
                 f"Moe"
             )

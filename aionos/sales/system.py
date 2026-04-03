@@ -558,6 +558,13 @@ def _interactive_menu(pipe: Pipeline, gen: MessageGenerator,
     print(f"  replied [id]   Prospect replied (pauses cadence)")
     print(f"  advance [id]   Move prospect to next stage (+new cadence)")
     print(f"  enroll [n]     Enroll n cold prospects into cadence (default: 5)")
+    print(f"  send           Send cadence emails due today (dry-run)")
+    print(f"  send --live    Actually send emails via Gmail")
+    print(f"  send [id]      Send email to one prospect (dry-run)")
+    print(f"  linkedin       Open LinkedIn actions in browser")
+    print(f"  linkedin [id]  Open one prospect's LinkedIn")
+    print(f"  export         Export pipeline to CSV (Downloads)")
+    print(f"  report         Open visual dashboard in browser")
     print(f"  cadence        Show cadence stats")
     print(f"  score          Weekly scorecard")
     print(f"  objections     Objection playbook")
@@ -704,6 +711,67 @@ def _interactive_menu(pipe: Pipeline, gen: MessageGenerator,
         elif cmd == "obj" and len(parts) >= 2:
             objection_lookup(" ".join(parts[1:]))
 
+        elif cmd == "send":
+            from aionos.sales.email_sender import EmailSender
+            live = "--live" in parts
+            sender = EmailSender(dry_run=not live)
+            if not live:
+                print("  [DRY RUN] Add '--live' to actually send.")
+            # Check if a prospect ID was given
+            pid = None
+            for p in parts[1:]:
+                if p.isdigit():
+                    pid = int(p)
+                    break
+            if pid:
+                sender.send_one(pid)
+            else:
+                sender.send_due_today()
+
+        elif cmd == "linkedin":
+            from aionos.sales.linkedin_assist import LinkedInAssist
+            assist = LinkedInAssist()
+            if len(parts) >= 2 and parts[1].isdigit():
+                assist.open_one(int(parts[1]))
+            else:
+                assist.open_due_today()
+
+        elif cmd == "export":
+            from aionos.sales.crm_export import CRMExport
+            exp = CRMExport()
+            fmt = "csv"
+            if "--json" in parts:
+                fmt = "json"
+            elif "--sheets" in parts:
+                fmt = "sheets"
+            import os
+            from datetime import date as _date
+            today = _date.today().isoformat()
+            dl = os.path.join(os.path.expanduser("~"), "Downloads")
+            if fmt == "json":
+                path = os.path.join(dl, f"pipeline_{today}.json")
+                exp.to_json(file_path=path)
+            elif fmt == "sheets":
+                path = os.path.join(dl, f"pipeline_{today}.tsv")
+                exp.to_sheets(file_path=path)
+            else:
+                path = os.path.join(dl, f"pipeline_{today}.csv")
+                exp.to_csv(file_path=path)
+
+        elif cmd == "report":
+            from aionos.sales.dashboard import DashboardReport
+            report = DashboardReport()
+            if "--file" in parts:
+                import os
+                from datetime import date as _date
+                today = _date.today().isoformat()
+                path = os.path.join(os.path.expanduser("~"), "Downloads",
+                                    f"sales_dashboard_{today}.html")
+                report.save(path)
+            else:
+                path = report.open_in_browser()
+                print(f"  Dashboard opened: {path}")
+
         elif cmd == "refresh":
             print("  Refreshing...")
             _run_system(interactive=True)
@@ -712,7 +780,7 @@ def _interactive_menu(pipe: Pipeline, gen: MessageGenerator,
         else:
             print(f"  Unknown: {raw}")
             print(f"  Try: [number], done [#], sent [id], replied [id], "
-                  f"advance [id], enroll, cadence, score, q")
+                  f"advance [id], enroll, send, linkedin, export, report, q")
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -783,6 +851,60 @@ def main() -> None:
         keyword = " ".join(args[1:]) if len(args) > 1 else ""
         objection_lookup(keyword)
 
+    elif cmd == "send":
+        from aionos.sales.email_sender import EmailSender
+        live = "--live" in args
+        sender = EmailSender(dry_run=not live)
+        if not live:
+            print("\n  === DRY RUN === (add --live to actually send)")
+        pid = None
+        for a in args[1:]:
+            if a.isdigit():
+                pid = int(a)
+                break
+        if pid:
+            sender.send_one(pid)
+        else:
+            sender.send_due_today()
+
+    elif cmd == "linkedin":
+        from aionos.sales.linkedin_assist import LinkedInAssist
+        assist = LinkedInAssist()
+        if len(args) >= 2 and args[1].isdigit():
+            assist.open_one(int(args[1]))
+        else:
+            assist.open_due_today()
+
+    elif cmd == "export":
+        from aionos.sales.crm_export import CRMExport
+        exp = CRMExport()
+        if "--json" in args:
+            path = os.path.join(os.path.expanduser("~"), "Downloads",
+                                f"pipeline_{date.today().isoformat()}.json")
+            exp.to_json(file_path=path)
+        elif "--sheets" in args:
+            path = os.path.join(os.path.expanduser("~"), "Downloads",
+                                f"pipeline_{date.today().isoformat()}.tsv")
+            exp.to_sheets(file_path=path)
+        elif "--summary" in args:
+            import json
+            print(json.dumps(exp.summary(), indent=2))
+        else:
+            path = os.path.join(os.path.expanduser("~"), "Downloads",
+                                f"pipeline_{date.today().isoformat()}.csv")
+            exp.to_csv(file_path=path)
+
+    elif cmd == "report":
+        from aionos.sales.dashboard import DashboardReport
+        report = DashboardReport()
+        if "--file" in args:
+            path = os.path.join(os.path.expanduser("~"), "Downloads",
+                                f"sales_dashboard_{date.today().isoformat()}.html")
+            report.save(path)
+        else:
+            path = report.open_in_browser()
+            print(f"  Dashboard opened: {path}")
+
     elif cmd == "help":
         print("""
   EchoWorks Sales System
@@ -792,6 +914,16 @@ def main() -> None:
   python sell.py actions        Today's cadence actions
   python sell.py message [id]   Message for prospect (cadence-aware)
   python sell.py enroll [n]     Enroll n cold prospects into cadence
+  python sell.py send           Dry-run email send (all due today)
+  python sell.py send --live    Actually send emails via Gmail
+  python sell.py send [id]      Send email to one prospect
+  python sell.py linkedin       Open LinkedIn actions in browser
+  python sell.py linkedin [id]  Open one prospect's LinkedIn
+  python sell.py export         Export pipeline to CSV (~/Downloads)
+  python sell.py export --json  Export as JSON
+  python sell.py export --sheets Tab-separated for Google Sheets
+  python sell.py report         Open visual dashboard in browser
+  python sell.py report --file  Save dashboard to ~/Downloads
   python sell.py score          Weekly scorecard
   python sell.py objections     Objection playbook
   python sell.py help           This help
@@ -803,6 +935,11 @@ def main() -> None:
     replied [id]   Prospect replied (pauses cadence)
     advance [id]   Move to next stage (+new cadence)
     enroll [n]     Enroll n cold prospects
+    send           Send cadence emails (dry-run)
+    send --live    Send for real
+    linkedin       Open LinkedIn actions
+    export         Export CSV to Downloads
+    report         Open visual dashboard
     cadence        Show cadence stats
     score          Weekly scorecard
     objections     Show objection playbook

@@ -214,6 +214,17 @@ class Pipeline:
         ).fetchall()
         return [dict(r) for r in rows]
 
+    def recent_actions(self, limit: int = 200) -> List[Dict]:
+        """Recent actions across all prospects."""
+        rows = self._conn.execute(
+            """SELECT a.*, p.name, p.company
+               FROM activity_log a
+               LEFT JOIN prospects p ON a.prospect_id = p.id
+               ORDER BY a.timestamp DESC LIMIT ?""",
+            (limit,),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
     # ── Daily action queue ────────────────────────────────────────
 
     def set_next_action(

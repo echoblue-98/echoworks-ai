@@ -250,6 +250,83 @@ CONTENT_PILLARS = [
             },
         ],
     },
+    {
+        "topic": "strategy",
+        "label": "Strategic Insight",
+        "posts": [
+            {
+                "linkedin": (
+                    "Most cybersecurity vendors compete on product features.\n\n"
+                    "But features get copied. Every time something works, 20 competitors "
+                    "show up doing the exact same thing within 6 months.\n\n"
+                    "What doesn't get copied:\n"
+                    "• Distribution — the engine that gets you to every law firm in America\n"
+                    "• Domain depth — 117 behavioral patterns built from studying how attorneys "
+                    "actually exfiltrate data\n"
+                    "• Compliance architecture — built for ABA rules from day one, not bolted on\n\n"
+                    "Product moats are temporary. Distribution moats compound.\n\n"
+                    "We're not building a feature. We're building the category.\n\n"
+                    "#Strategy #CyberSecurity #LawFirm #InsiderThreat #EchoWorksAI"
+                ),
+                "instagram": (
+                    "Features get copied.\n"
+                    "Distribution doesn't.\n\n"
+                    "We're not building a product.\n"
+                    "We're building the category.\n\n"
+                    "117 detection patterns. Compliance-first. On-premise.\n\n"
+                    "#Strategy #CyberSecurity #LawFirm #EchoWorksAI"
+                ),
+            },
+            {
+                "linkedin": (
+                    "\"Just price it cheap and the market will come.\"\n\n"
+                    "This is the most dangerous startup advice in Silicon Valley.\n\n"
+                    "Marc Andreessen: \"Higher prices equals faster growth. If you price high, "
+                    "you can fund a much more expensive sales and marketing effort, which means "
+                    "you're much more likely to win the market.\"\n\n"
+                    "We charge $5,000/month. Not because we want to be expensive. Because:\n\n"
+                    "1. It funds the R&D that keeps us 2 years ahead\n"
+                    "2. It funds the support your firm actually needs during incidents\n"
+                    "3. It proves the moat — if your detection system is irreplaceable, "
+                    "the price reflects it\n\n"
+                    "The definition of a moat is the ability to charge more.\n\n"
+                    "#Pricing #Strategy #CyberSecurity #LawFirm #EchoWorksAI"
+                ),
+                "instagram": (
+                    "\"Price it cheap and the market will come.\"\n\n"
+                    "The most dangerous advice in tech.\n\n"
+                    "Higher price = faster growth.\n"
+                    "Higher price = better R&D.\n"
+                    "Higher price = better support.\n\n"
+                    "The definition of a moat is the ability to charge more.\n\n"
+                    "#Strategy #Pricing #CyberSecurity #LawFirm #EchoWorksAI"
+                ),
+            },
+            {
+                "linkedin": (
+                    "Early adopters will find you.\n\n"
+                    "The other 95% of the market won't.\n\n"
+                    "This is the gap that kills most cybersecurity startups. They get a "
+                    "handful of enthusiastic firms who sought them out — then wonder why "
+                    "growth stalls.\n\n"
+                    "The firms that need insider threat detection the most aren't on "
+                    "product hunt sites. They're running 50-attorney practices, dealing "
+                    "with partner departures in real time, and they've never heard of you.\n\n"
+                    "You have to go to them. With the right message. At the right time. "
+                    "Through the right channel.\n\n"
+                    "Product gets you in the door. Distribution gets you the market.\n\n"
+                    "#Distribution #Sales #CyberSecurity #LawFirm #InsiderThreat #EchoWorksAI"
+                ),
+                "instagram": (
+                    "Early adopters find you.\n"
+                    "The other 95% won't.\n\n"
+                    "Product gets you in the door.\n"
+                    "Distribution gets you the market.\n\n"
+                    "#Distribution #Strategy #CyberSecurity #LawFirm #EchoWorksAI"
+                ),
+            },
+        ],
+    },
 ]
 
 # Weekly posting schedule
@@ -259,7 +336,7 @@ WEEKLY_SCHEDULE = {
     2: "compliance",     # Wednesday: Compliance angle
     3: "differentiation", # Thursday: Product diff
     4: "social_proof",   # Friday: Authority
-    5: "pain",           # Saturday: Pain (IG-heavy day)
+    5: "strategy",       # Saturday: Strategic insight
     6: "stats",          # Sunday: Stat recap
 }
 

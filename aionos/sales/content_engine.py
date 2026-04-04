@@ -327,6 +327,99 @@ CONTENT_PILLARS = [
             },
         ],
     },
+    {
+        "topic": "sovereignty",
+        "label": "Data Sovereignty",
+        "posts": [
+            {
+                "linkedin": (
+                    "Cloud AI is a community kitchen.\n\n"
+                    "Everyone's grandma dumps recipes into the same pot. Your sauce becomes "
+                    "their sauce.\n\n"
+                    "Data sovereignty is your kitchen. Only your cooks touch your recipes.\n\n"
+                    "Law firms upload case files to cloud AI tools every day. Instant drafting "
+                    "magic. No one asks \"where'd my patterns go?\"\n\n"
+                    "Here's where they go:\n"
+                    "• Into model weights that serve other tenants\n"
+                    "• Into telemetry pipelines feeding vendor data lakes\n"
+                    "• Into training sets that make competitors' tools smarter\n\n"
+                    "SOC2 badges don't address model inversion — where your behavioral patterns "
+                    "leak through outputs to other tenants. Encryption doesn't help when the "
+                    "decrypted data trains the model.\n\n"
+                    "The tool that's supposed to protect your firm shouldn't be the extraction "
+                    "machine underneath.\n\n"
+                    "On-premise or nothing.\n\n"
+                    "#DataSovereignty #AI #LawFirm #Privacy #CyberSecurity #EchoWorksAI"
+                ),
+                "instagram": (
+                    "Cloud AI = community kitchen.\n"
+                    "Your sauce becomes their sauce.\n\n"
+                    "Sovereignty = your kitchen.\n"
+                    "Only your cooks touch your recipes.\n\n"
+                    "On-premise or nothing.\n\n"
+                    "#DataSovereignty #AI #LawFirm #Privacy #EchoWorksAI"
+                ),
+            },
+            {
+                "linkedin": (
+                    "Nobody sees a sovereignty breach.\n\n"
+                    "A ransomware attack makes headlines. A departing attorney makes the "
+                    "trade press. But when your cloud AI vendor feeds your patterns into "
+                    "a model that serves your competitor — that's invisible.\n\n"
+                    "It shows up as margin erosion. As a competitor who suddenly knows your "
+                    "pricing signals. As a rival firm that drafts motions that sound eerily "
+                    "familiar.\n\n"
+                    "There's no breach notification for this. No incident report. No headline.\n\n"
+                    "Just a slow bleed you can't trace.\n\n"
+                    "This is why \"it just works\" isn't good enough. Speed isn't the question. "
+                    "Ownership is.\n\n"
+                    "Your detection system should learn from YOUR history, not a shared model "
+                    "trained on everyone's data.\n\n"
+                    "#DataSovereignty #InsiderThreat #AI #LawFirm #CyberSecurity #EchoWorksAI"
+                ),
+                "instagram": (
+                    "Ransomware makes headlines.\n"
+                    "Sovereignty breaches don't.\n\n"
+                    "They show up as margin erosion.\n"
+                    "As competitors who suddenly know your pricing.\n"
+                    "As rival firms drafting motions that sound familiar.\n\n"
+                    "No breach notification. No headline.\n"
+                    "Just a slow bleed you can't trace.\n\n"
+                    "#DataSovereignty #AI #LawFirm #CyberSecurity #EchoWorksAI"
+                ),
+            },
+            {
+                "linkedin": (
+                    "5 reasons the majority misses data sovereignty:\n\n"
+                    "1. \"It just works\" illusion — Cloud AI demos flawlessly. Upload case "
+                    "files, get instant magic. No one asks where their patterns went.\n\n"
+                    "2. Complexity hides extraction — Understanding the pipeline from LoRA "
+                    "fine-tuning to model weights to vendor data lakes requires depth most "
+                    "buyers don't have.\n\n"
+                    "3. Hype cycle drowns warnings — \"AI = future\" drowns out \"your IP = "
+                    "their training data.\" CISOs raising flags sound like dinosaurs.\n\n"
+                    "4. No immediate pain trigger — Data mixing is invisible. You don't see "
+                    "the competitor undercutting you because the model learned your signals.\n\n"
+                    "5. Security theater — SOC2 badges, encryption claims, \"enterprise-grade.\" "
+                    "None address model inversion where your patterns leak through outputs to "
+                    "other tenants.\n\n"
+                    "The people who see it are talking to operators, not marketers.\n\n"
+                    "What's your take — is cloud convenience worth the extraction tradeoff?\n\n"
+                    "#DataSovereignty #AI #CyberSecurity #LawFirm #Privacy #EchoWorksAI"
+                ),
+                "instagram": (
+                    "Why nobody sees the sovereignty problem:\n\n"
+                    "1. \"It just works\" — no one asks where patterns go\n"
+                    "2. Complexity hides extraction\n"
+                    "3. Hype drowns warnings\n"
+                    "4. No immediate pain trigger\n"
+                    "5. Security theater (SOC2 ≠ sovereignty)\n\n"
+                    "The people who see it talk to operators, not marketers.\n\n"
+                    "#DataSovereignty #AI #LawFirm #CyberSecurity #EchoWorksAI"
+                ),
+            },
+        ],
+    },
 ]
 
 # Weekly posting schedule
@@ -337,7 +430,7 @@ WEEKLY_SCHEDULE = {
     3: "differentiation", # Thursday: Product diff
     4: "social_proof",   # Friday: Authority
     5: "strategy",       # Saturday: Strategic insight
-    6: "stats",          # Sunday: Stat recap
+    6: "sovereignty",    # Sunday: Data sovereignty
 }
 
 

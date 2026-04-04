@@ -1,0 +1,51 @@
+ECHOWORKS AI — ONE-PAGE SUMMARY
+================================
+
+WHAT WE DO
+Law firms lose $2M-$50M when departing attorneys steal client files.
+We detect it in under 3 seconds. On their hardware. No data leaves.
+
+THE OFFER
+$5,000/month. One price. One vertical. 90-day money-back guarantee.
+Deployed in 48 hours. No cloud. No data egress. Compliance-first.
+
+WHAT THEY GET
+- 117+ behavioral detection patterns
+- Sub-3-second exfiltration chain detection
+- Automated incident response (NIST 800-61)
+- Litigation-ready evidence (PDF + JSONL)
+- ABA Rule 1.6 / CFAA / DTSA compliant
+
+WHY US vs. EVERYONE ELSE
+- DLP tools: 97% false positives. We run <2%.
+- Cloud vendors: Data leaves the network. Ours never does.
+- Manual forensics: $500-800/hr, weeks to act. We fire in seconds.
+- No direct competitor does on-premise pattern correlation for law firms.
+
+HOW WE GET CLIENTS
+1. Daily content (LinkedIn + IG) — 6 pillars, auto-scheduled
+2. Engagement captured into pipeline with one command
+3. Cadence engine runs 3 automated sequences (cold → demo → proposal)
+4. Website inbound form routes to assistant for 24hr follow-up
+5. Daily system shows exactly who to contact, what to say, which channel
+
+REVENUE MATH
+ 1 client  =  $60K/year
+ 2 clients/month target (next 60 days)
+ $10K/month → $120K annual run rate by end of 2026
+
+CURRENT PIPELINE
+- 115 prospects (law firms only)
+- 1 closed won ($5K/mo)
+- 1 proposal sent
+- 1 demo scheduled
+
+MOAT
+Owned intelligence, not rented. Detection patterns built from real
+departure behavior. On-premise lock-in. Compliance architecture that
+cloud competitors can't replicate without rebuilding from scratch.
+Distribution engine compounds — product features get copied, the
+machine that gets you to every law firm in America does not.
+
+WEBSITE: echoblue-98.github.io/echoworks-ai
+ENTITY:  EchoBlue Holdings LLC — Atlanta, GA

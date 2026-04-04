@@ -420,18 +420,53 @@ CONTENT_PILLARS = [
             },
         ],
     },
+    {
+        "topic": "buyer_education",
+        "label": "Buyer Education",
+        "posts": [
+            {
+                "linkedin": (
+                    "3 questions every managing partner should ask before buying cybersecurity\n\n"
+                    "Most law firms buy based on features. That's the wrong filter.\n\n"
+                    "Ask these instead:\n\n"
+                    "1. \"Where does our client data go when your system analyzes it?\"\n"
+                    "If the answer is \"our cloud\" — you just gave a third party access to "
+                    "privileged communications.\n\n"
+                    "2. \"What happens when an attorney gives two weeks notice?\"\n"
+                    "If they can't answer in specifics — they're selling generic IT security, "
+                    "not insider threat detection.\n\n"
+                    "3. \"Does this satisfy ABA Model Rule 1.6 and Formal Opinion 477R?\"\n"
+                    "If they pause — they didn't build for law firms. They bolted on a "
+                    "compliance checkbox.\n\n"
+                    "The right vendor answers all three without hesitating.\n\n"
+                    "#CyberSecurity #LawFirm #InsiderThreat #ABA #DataProtection"
+                ),
+                "instagram": (
+                    "3 questions before you buy cybersecurity:\n\n"
+                    "1. Where does our client data go?\n"
+                    "2. What happens when an attorney gives notice?\n"
+                    "3. Does this satisfy ABA Model Rule 1.6?\n\n"
+                    "If your vendor pauses on any of these — they didn't build for law firms.\n\n"
+                    "#CyberSecurity #LawFirm #InsiderThreat #EchoWorksAI"
+                ),
+            },
+        ],
+    },
 ]
 
 # Weekly posting schedule
 WEEKLY_SCHEDULE = {
-    0: "stats",          # Monday: Industry stat
-    1: "pain",           # Tuesday: Pain point
-    2: "compliance",     # Wednesday: Compliance angle
+    0: "stats",           # Monday: Industry stat
+    1: "pain",            # Tuesday: Pain point
+    2: "compliance",      # Wednesday: Compliance angle
     3: "differentiation", # Thursday: Product diff
-    4: "social_proof",   # Friday: Authority
-    5: "strategy",       # Saturday: Strategic insight
-    6: "sovereignty",    # Sunday: Data sovereignty
+    4: "social_proof",    # Friday: Authority
+    5: "strategy",        # Saturday: Strategic insight
+    6: "sovereignty",     # Sunday: Data sovereignty
 }
+
+# Bonus rotation — buyer education posts cycle in on Wednesdays (alternates with compliance)
+BONUS_PILLARS = ["buyer_education"]
 
 
 # ═══════════════════════════════════════════════════════════════

@@ -1,0 +1,73 @@
+ECHOWORKS — "YOUR KITCHEN" VIDEO SCRIPT
+========================================
+Duration: 45-50 seconds
+Format: LinkedIn native video + Instagram Reel
+Concept: Rented chaos vs owned calm (kitchen metaphor for data sovereignty)
+
+SCRIPT
+------
+
+[SCENE: Chaotic kitchen footage — noise, crowding, too many hands]
+
+VOICEOVER:
+"This is how most law firms run their cybersecurity.
+Borrowed tools. Shared infrastructure. Someone else's kitchen."
+
+[Quick cut — even more chaos, plates crashing or near-misses]
+
+VOICEOVER:
+"Your client data sits on someone else's servers.
+Their cooks touch your recipes.
+And when something goes wrong — you're the last to know."
+
+[Hard cut to silence. You, alone in a clean kitchen. Calm. Focused. Cooking.]
+
+VOICEOVER:
+"We built something different."
+
+[Slow, deliberate shots of you cooking — controlled, precise movements]
+
+VOICEOVER:
+"One kitchen. One chef. No outside hands.
+Everything stays on your servers.
+Every detection pattern built for how your firm actually works."
+
+[Final shot — you plating the dish, clean and composed]
+
+VOICEOVER:
+"Your data. Your kitchen. Nobody else touches it."
+
+
+PRODUCTION NOTES
+----------------
+- Chaos footage: Royalty-free stock (Pexels, Pixabay — search "busy restaurant kitchen")
+  Zero copyright risk. Same emotional effect as TV clips.
+- Solo kitchen scene: Film on phone. Natural light, clean counter, simple dish.
+- Audio: No background music during your kitchen scene — silence IS the point.
+  Optional low bass hum during chaos clips for contrast.
+- Keep total runtime under 60 seconds for LinkedIn algorithm.
+- Post as native video (upload directly, don't share a YouTube link).
+
+LINKEDIN CAPTION
+----------------
+Most law firms run their cybersecurity in someone else's kitchen.
+
+Borrowed tools. Shared servers. Third-party access to privileged data.
+
+We built a different model.
+
+One kitchen. One chef. Everything on-premise. Nothing leaves your network.
+
+Your data. Your kitchen.
+
+#CyberSecurity #LawFirm #DataSovereignty #InsiderThreat #EchoWorksAI
+
+INSTAGRAM CAPTION
+-----------------
+Rented kitchen vs. your own.
+
+That's the difference between cloud cybersecurity and on-premise.
+
+Your data. Your kitchen. Nobody else touches it.
+
+#CyberSecurity #LawFirm #DataSovereignty #EchoWorksAI

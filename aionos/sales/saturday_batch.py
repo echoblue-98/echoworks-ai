@@ -1,7 +1,10 @@
 """
-EchoWorks — Saturday Batch: 10 LinkedIn DMs
-============================================
+EchoWorks — Saturday Batch #2: 10 LinkedIn DMs
+================================================
 Generated April 4, 2026
+
+Batch 1 (85-96) already sent.
+Batch 2: Remaining LinkedIn connections + engaged law firm partners
 
 Framework: PAIN opens → don't pitch sovereignty or compliance yet.
 Goal: Get a response. That's it.
@@ -17,123 +20,131 @@ After sending all 10, run: python sell.py report
 """
 
 BATCH = [
+    # ─── Remaining LinkedIn connections (not yet DM'd) ─────────
     {
-        "id": 85,
-        "name": "Emmanuel Dressie",
-        "firm": "Dressie Law Firm",
+        "id": 97,
+        "name": "Sean Fogarty",
+        "firm": "Arnall Golden Gregory",
         "dm": (
-            "Hey Emmanuel — saw you're running Dressie Law Firm out of Atlanta. "
-            "Quick question: do you have visibility into what happens with client "
-            "files when an attorney transitions out of your firm?\n\n"
-            "It's the #1 blind spot we're seeing at firms your size right now. "
-            "Happy to share what we're finding if it's useful."
+            "Hey Sean — Arnall Golden Gregory has a strong healthcare and real estate "
+            "practice. That means sensitive deal data moving through a lot of hands.\n\n"
+            "Quick question: if an attorney in one of those groups left tomorrow, "
+            "would you know what files they accessed this month?\n\n"
+            "That's the exact problem we solve for firms like yours. Worth a quick chat?"
         ),
     },
     {
-        "id": 86,
-        "name": "Michael Day",
-        "firm": "Michael D Law Firm",
+        "id": 98,
+        "name": "Anuj Desai",
+        "firm": "Trusted Counsel",
         "dm": (
-            "Hey Michael — curious: if one of your attorneys gave notice tomorrow, "
-            "would you know what client files they accessed in the last 30 days?\n\n"
-            "Most firms we talk to can't answer that. We built something that solves it. "
-            "Happy to show you if it's relevant."
+            "Hey Anuj — the name Trusted Counsel says it all. Trust is the product.\n\n"
+            "So here's a question: what happens to that trust when an attorney "
+            "leaves and client data walks out with them? Most firms find out 2 months "
+            "too late.\n\n"
+            "We built a system that catches it in real time. All on-premise — no "
+            "data leaves your network. Want to see it?"
         ),
     },
     {
-        "id": 87,
-        "name": "David Danda",
-        "firm": "David Danda P.C.",
+        "id": 99,
+        "name": "Ben Mathis",
+        "firm": "Freeman Mathis & Gary",
         "dm": (
-            "Hey David — I work with law firms on insider threat detection. "
-            "One pattern we keep seeing: attorneys stage files 2-4 weeks before "
-            "a resignation letter. By the time the firm notices, it's too late.\n\n"
-            "Worth a quick conversation? No pitch — just sharing what we're seeing."
+            "Hey Ben — Freeman Mathis has 200+ attorneys and rapid growth. "
+            "That's great for the business — but growth also means more lateral "
+            "movement and more data exposure.\n\n"
+            "Are you monitoring what attorneys access in the weeks before "
+            "a departure? That's the window where data walks out.\n\n"
+            "Happy to share what we're seeing at firms your size."
         ),
     },
     {
-        "id": 88,
-        "name": "Shannon Pawley",
-        "firm": "The Estate & Asset Protection Law Firm",
+        "id": 100,
+        "name": "Paul Nolette",
+        "firm": "Freeman Mathis & Gary",
         "dm": (
-            "Hey Shannon — estate and asset protection means your firm handles "
-            "some of the most sensitive financial data in legal. Quick question: "
-            "what happens to that data when someone leaves your team?\n\n"
-            "We're helping firms answer that question before it becomes a crisis. "
-            "Happy to share more if it's useful."
+            "Hey Paul — as Director of IT at a 200+ attorney firm, you probably "
+            "see the gap firsthand: tons of data moving through endpoints, but "
+            "limited visibility into who's accessing what before they give notice.\n\n"
+            "We built insider threat detection specifically for law firms. "
+            "On-premise, no client data leaves your servers. Would that be worth "
+            "a 10-minute look?"
         ),
     },
     {
-        "id": 89,
-        "name": "Jessica Tehlirian",
-        "firm": "Tehlirian Law Group",
+        "id": 101,
+        "name": "Lance Edwards",
+        "firm": "Arnall Golden Gregory LLP",
         "dm": (
-            "Hey Jessica — I saw you're leading Tehlirian Law Group in Atlanta. "
-            "We work with law firms on a problem most don't think about until it "
-            "hits them: data walking out the door when attorneys leave.\n\n"
-            "Average detection time? 77 days. By then, the damage is done. "
-            "Worth a 10-minute conversation?"
+            "Hey Lance — as CAO you're looking at both the operational and risk "
+            "side. Quick question: what's the current protocol when an attorney "
+            "gives notice? Do you have visibility into their file access history?\n\n"
+            "We're helping firms close that gap before it becomes a malpractice "
+            "issue. Happy to walk you through what we've built."
+        ),
+    },
+    # ─── Engaged law firm partners (warm — they already know you) ─────
+    {
+        "id": 3,
+        "name": "Charlie Peeler",
+        "firm": "Troutman Pepper Locke",
+        "dm": (
+            "Hey Charlie — wanted to circle back. I've been working with Atlanta "
+            "firms on insider threat detection. Specifically, catching when attorneys "
+            "stage client files before a departure.\n\n"
+            "Given the size of Troutman Pepper, I'd imagine lateral movement is "
+            "constant. Would it be worth a quick conversation about what we're seeing?"
         ),
     },
     {
-        "id": 91,
-        "name": "Gerard Briceno",
-        "firm": "Bridger Law Group",
+        "id": 4,
+        "name": "Michael Hollingsworth II",
+        "firm": "Nelson Mullins",
         "dm": (
-            "Hey Gerard — quick question for you: if an attorney at Bridger Law "
-            "started downloading client files before giving notice, would your "
-            "current systems flag it?\n\n"
-            "Most firms we talk to say no. That's the gap we close. "
-            "Happy to share how if it's on your radar."
+            "Hey Michael — quick question for you at Nelson Mullins: do you have "
+            "real-time visibility into attorney file access patterns? Specifically "
+            "around the notice period?\n\n"
+            "We keep hearing from managing partners that this is the biggest blind "
+            "spot. Built something that solves it. Worth a look?"
         ),
     },
     {
-        "id": 92,
-        "name": "Lorena Saedi",
-        "firm": "Saedi Law Group",
+        "id": 5,
+        "name": "Burleigh Singleton",
+        "firm": "Kilpatrick Townsend",
         "dm": (
-            "Hey Lorena — I work with Atlanta law firms on a specific problem: "
-            "protecting client data when attorneys transition. Did you know the "
-            "average firm takes 77 days to discover insider data theft?\n\n"
-            "We cut that to under 3 seconds. No cloud. Everything stays on your "
-            "servers. Worth a quick look?"
+            "Hey Burleigh — Kilpatrick Townsend has major IP and tech practices. "
+            "That means your case files are high-value targets when attorneys "
+            "make lateral moves.\n\n"
+            "We detect file staging behavior in real time — before the resignation "
+            "letter. Everything runs on-premise. Would it be useful to see how it works?"
         ),
     },
     {
-        "id": 93,
-        "name": "Donald P. Edwards",
-        "firm": "The Law Office of Don Edwards",
+        "id": 6,
+        "name": "Jenny Lambert",
+        "firm": "Eversheds Sutherland",
         "dm": (
-            "Hey Don — I noticed your practice in Atlanta. Quick question that "
-            "keeps coming up with managing partners: what's your plan if an "
-            "attorney leaves and takes client contacts with them?\n\n"
-            "It's the most common insider threat in legal and the least monitored. "
-            "Happy to share what we're building to solve it."
+            "Hey Jenny — given your focus on AI, cybersecurity and data privacy, "
+            "you'd probably appreciate this: we built insider threat detection "
+            "specifically for law firms. 117 behavioral patterns tuned to how "
+            "attorneys actually exfiltrate data.\n\n"
+            "All on-premise. No client data leaves the firm's network. "
+            "Would love your take on it."
         ),
     },
     {
-        "id": 95,
-        "name": "Ronan Doherty",
-        "firm": "Bondurant Mixson & Elmore",
+        "id": 90,
+        "name": "Tunde Ezekiel",
+        "firm": "The Ezekiel Law Firm",
         "dm": (
-            "Hey Ronan — Bondurant handles some of the highest-value litigation "
-            "in Atlanta. That means your case files are exactly what competitors "
-            "want when an attorney makes a lateral move.\n\n"
-            "We help firms like yours detect data staging before the resignation "
-            "letter arrives. Worth a conversation?"
-        ),
-    },
-    {
-        "id": 96,
-        "name": "Henry Warnock",
-        "firm": "FordHarrison LLP",
-        "dm": (
-            "Hey Henry — FordHarrison has 200+ attorneys across multiple offices. "
-            "That's a lot of endpoints and a lot of lateral movement in employment "
-            "law.\n\n"
-            "Question: do you have real-time visibility into attorney file access "
-            "patterns? When someone gives notice, do you know what they touched?\n\n"
-            "That's what we solve. Happy to show you."
+            "Hey Tunde — wanted to follow up. I'm working with Atlanta law firms "
+            "on a problem that keeps flying under the radar: data walking out "
+            "the door when attorneys leave.\n\n"
+            "77 days is the average detection time. We cut it to 3 seconds. "
+            "Worth a quick 10-minute demo? No pressure — just want to show you "
+            "what we've built."
         ),
     },
 ]

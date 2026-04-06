@@ -421,6 +421,103 @@ CONTENT_PILLARS = [
         ],
     },
     {
+        "topic": "agent_first",
+        "label": "Agent-First / Depreciating Assets",
+        "posts": [
+            {
+                "linkedin": (
+                    "Google DeepMind says anything you build around the model is a \"massively "
+                    "depreciating asset.\"\n\n"
+                    "They're right. Dashboards depreciate. Wrappers depreciate. Features depreciate.\n\n"
+                    "But detection patterns — behavioral baselines learned from YOUR network, YOUR "
+                    "attorneys, YOUR workflows — those appreciate. Every week the system runs, it "
+                    "gets sharper.\n\n"
+                    "That's why we built AION OS as a pattern engine, not a feature list.\n\n"
+                    "The model gets smarter. The patterns compound. And because it runs on your "
+                    "hardware, the value stays yours.\n\n"
+                    "#AI #InsiderThreat #LawFirm #CyberSecurity #DataSovereignty #AgentFirst"
+                ),
+                "instagram": (
+                    "Google DeepMind: \"Anything you build around the model is a depreciating "
+                    "asset.\"\n\n"
+                    "Dashboards depreciate. Wrappers depreciate.\n\n"
+                    "Detection patterns? They compound.\n\n"
+                    "Every week on your network, the system gets sharper. And because it's "
+                    "on-premise, the value stays yours.\n\n"
+                    "#AI #AgentFirst #InsiderThreat #CyberSecurity #EchoWorksAI"
+                ),
+            },
+            {
+                "linkedin": (
+                    "\"If you cannot get your agent to debug itself, to create features without "
+                    "you holding its hand — you will get left behind.\"\n"
+                    "— Kevin Hou, Google DeepMind\n\n"
+                    "This is exactly why we built AION OS the way we did.\n\n"
+                    "No analyst babysitting a dashboard. No SOC team triaging 4,200 false positives. "
+                    "The system detects insider threats autonomously — pattern correlation across DMS, "
+                    "email, and cloud activity — while you practice law.\n\n"
+                    "Your security shouldn't need hand-holding any more than your AI should.\n\n"
+                    "#AgentFirst #InsiderThreat #LawFirm #AI #Automation #CyberSecurity"
+                ),
+                "instagram": (
+                    "Google DeepMind: \"If your agent can't debug itself without you holding its "
+                    "hand, you'll get left behind.\"\n\n"
+                    "We built a security agent that doesn't need hand-holding.\n\n"
+                    "It detects insider threats autonomously. On your hardware. While you "
+                    "practice law.\n\n"
+                    "#AgentFirst #AI #InsiderThreat #LawFirm #EchoWorksAI"
+                ),
+            },
+            {
+                "linkedin": (
+                    "\"The productivity gains of AI need to outpace headcount.\"\n"
+                    "— Varun Mohan, Google DeepMind\n\n"
+                    "Law firms with 50 attorneys don't have a 5-person security team.\n"
+                    "They don't have a CISO.\n"
+                    "They don't have a SOC.\n\n"
+                    "They have a managing partner who also handles IT decisions.\n\n"
+                    "AION OS is headcount that doesn't quit, doesn't steal client data, and "
+                    "doesn't sleep. One system replacing the need for a team that was never "
+                    "getting hired anyway.\n\n"
+                    "That's what agent-first actually means for mid-market firms.\n\n"
+                    "#AI #LawFirm #CyberSecurity #InsiderThreat #Productivity #AgentFirst"
+                ),
+                "instagram": (
+                    "\"AI productivity gains need to outpace headcount.\"\n"
+                    "— Google DeepMind\n\n"
+                    "50-attorney firms don't have a CISO.\n"
+                    "Don't have a SOC team.\n\n"
+                    "AION OS is headcount that doesn't quit, doesn't steal, "
+                    "and doesn't sleep.\n\n"
+                    "#AgentFirst #AI #LawFirm #CyberSecurity #EchoWorksAI"
+                ),
+            },
+            {
+                "linkedin": (
+                    "If the wrapper depreciates but the data appreciates — who owns the data "
+                    "is the only question that matters.\n\n"
+                    "Every cloud security vendor is building wrappers around models.\n"
+                    "Every year, those wrappers lose value as models improve.\n\n"
+                    "But the behavioral baselines learned from YOUR attorneys? The departure "
+                    "risk patterns built from YOUR network activity? Those get more valuable "
+                    "every single day.\n\n"
+                    "On-premise means those patterns are yours. Not ours. Not a cloud "
+                    "provider's. Yours.\n\n"
+                    "That's not a feature. That's a moat.\n\n"
+                    "#DataSovereignty #AI #InsiderThreat #LawFirm #OnPremise #CyberSecurity"
+                ),
+                "instagram": (
+                    "The wrapper depreciates. The data appreciates.\n\n"
+                    "So who owns the data?\n\n"
+                    "Cloud vendor? Their investors?\n\n"
+                    "Or you — on your hardware, in your building, under your control.\n\n"
+                    "That's why on-premise isn't a feature. It's a moat.\n\n"
+                    "#DataSovereignty #OnPremise #AI #InsiderThreat #EchoWorksAI"
+                ),
+            },
+        ],
+    },
+    {
         "topic": "buyer_education",
         "label": "Buyer Education",
         "posts": [
@@ -466,7 +563,7 @@ WEEKLY_SCHEDULE = {
 }
 
 # Bonus rotation — buyer education posts cycle in on Wednesdays (alternates with compliance)
-BONUS_PILLARS = ["buyer_education"]
+BONUS_PILLARS = ["buyer_education", "agent_first"]
 
 
 # ═══════════════════════════════════════════════════════════════

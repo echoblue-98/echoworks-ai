@@ -440,6 +440,11 @@ class SecurityManager:
         if ip in self.blocked_ips:
             return False
         
+        # Localhost gets higher rate limit for demo/testing
+        limit = self.max_requests_per_minute
+        if ip in ("127.0.0.1", "::1"):
+            limit = 600
+        
         now = time.time()
         minute_ago = now - 60
         
@@ -447,7 +452,7 @@ class SecurityManager:
         self.rate_limits[ip] = [t for t in self.rate_limits[ip] if t > minute_ago]
         
         # Check limit
-        if len(self.rate_limits[ip]) >= self.max_requests_per_minute:
+        if len(self.rate_limits[ip]) >= limit:
             return False
         
         # Record this request
@@ -513,6 +518,10 @@ if FLASK_AVAILABLE:
         "unusual_login": EventType.VPN_ACCESS,
         "file_download": EventType.FILE_DOWNLOAD,
         "bulk_download": EventType.FILE_DOWNLOAD,
+        "file_created": EventType.FILE_DOWNLOAD,
+        "file_modified": EventType.FILE_DOWNLOAD,
+        "file_moved": EventType.FILE_DOWNLOAD,
+        "file_deleted": EventType.BULK_OPERATION,
         "file_upload": EventType.FILE_UPLOAD,
         "database_query": EventType.DATABASE_QUERY,
         "sql_query": EventType.DATABASE_QUERY,
@@ -543,6 +552,10 @@ if FLASK_AVAILABLE:
         behavior_mapping = {
             "file_download": "file_download",
             "bulk_download": "file_download",
+            "file_created": "file_download",
+            "file_modified": "file_download",
+            "file_moved": "file_download",
+            "file_deleted": "file_download",
             "database_query": "database_query",
             "sql_query": "database_query",
             "email_forward": "email_forward",
@@ -564,16 +577,17 @@ if FLASK_AVAILABLE:
         if not behavior:
             behavior = alert_type  # Use raw type if no mapping
         
-        # Parse timestamp
+        # Parse timestamp — use local naive time for consistency
         timestamp_str = alert.get("timestamp")
         if timestamp_str:
             try:
                 timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
-                timestamp = timestamp.replace(tzinfo=None)
+                if timestamp.tzinfo is not None:
+                    timestamp = timestamp.astimezone().replace(tzinfo=None)
             except ValueError:
-                timestamp = datetime.utcnow()
+                timestamp = datetime.now()
         else:
-            timestamp = datetime.utcnow()
+            timestamp = datetime.now()
         
         # Extract details
         details = alert.get("details", {})
@@ -608,16 +622,19 @@ if FLASK_AVAILABLE:
         if not event_type:
             return None  # Unknown alert type
         
-        # Parse timestamp
+        # Parse timestamp — use LOCAL naive time so ts_epoch matches time.time()
         timestamp_str = alert.get("timestamp")
         if timestamp_str:
             try:
                 timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
-                timestamp = timestamp.replace(tzinfo=None)  # Store as naive UTC
+                # Convert to local naive time for consistent epoch comparison
+                if timestamp.tzinfo is not None:
+                    timestamp = timestamp.astimezone().replace(tzinfo=None)
+                # else: already naive local time, keep as-is
             except ValueError:
-                timestamp = datetime.utcnow()
+                timestamp = datetime.now()
         else:
-            timestamp = datetime.utcnow()
+            timestamp = datetime.now()
         
         return SecurityEvent(
             event_id=str(uuid.uuid4()),
@@ -701,8 +718,9 @@ if FLASK_AVAILABLE:
                     )
                 
                 # LLM reasoning - detect novel semantic patterns
-                # Only run if we have enough events and no other alerts triggered
-                if not temporal_alerts and not deviation_alerts:
+                # Only run if LLM is available and configured (skip in demo/sim mode)
+                if (not temporal_alerts and not deviation_alerts
+                        and alert.get("source") != "aion_file_watcher"):
                     try:
                         reasoning_engine = get_reasoning_engine()
                         temporal_engine = get_temporal_engine()

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AION OS — Offline Architecture Proof</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0a0a0f; color: #e0e0e0; padding: 40px; max-width: 1000px; margin: 0 auto; }
+  
+  .header { text-align: center; margin-bottom: 36px; border-bottom: 2px solid #00ffd5; padding-bottom: 24px; }
+  .header h1 { font-size: 32px; color: #00ffd5; letter-spacing: 2px; margin-bottom: 6px; }
+  .header .subtitle { font-size: 16px; color: #888; letter-spacing: 1px; }
+  .header .company { font-size: 13px; color: #555; margin-top: 8px; }
+  
+  .proof-badge { display: inline-block; background: #00ffd510; border: 1px solid #00ffd5; color: #00ffd5; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; letter-spacing: 1px; margin-bottom: 24px; }
+  
+  .section { margin-bottom: 28px; }
+  .section h2 { font-size: 18px; color: #00ffd5; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  
+  .core-claim { background: #111118; border-left: 4px solid #00ffd5; padding: 20px 24px; margin-bottom: 28px; font-size: 17px; line-height: 1.7; }
+  .core-claim strong { color: #fff; }
+  
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .card { background: #111118; border: 1px solid #1a1a2e; border-radius: 8px; padding: 18px; }
+  .card h3 { font-size: 14px; color: #00ffd5; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .card .number { font-size: 32px; font-weight: 700; color: #fff; }
+  .card .label { font-size: 12px; color: #888; margin-top: 4px; }
+  
+  table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+  th { text-align: left; font-size: 11px; color: #00ffd5; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 12px; border-bottom: 1px solid #1a1a2e; }
+  td { padding: 8px 12px; font-size: 13px; border-bottom: 1px solid #0d0d15; }
+  .local { color: #00ff88; font-weight: 600; }
+  .optional { color: #888; }
+  .none { color: #00ff88; }
+  
+  .demo-box { background: #0d1a0d; border: 1px solid #00ff8840; border-radius: 8px; padding: 20px; margin-bottom: 28px; }
+  .demo-box h3 { color: #00ff88; margin-bottom: 12px; font-size: 14px; text-transform: uppercase; }
+  .demo-box code { display: block; background: #0a0a0f; padding: 12px 16px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: 13px; color: #00ffd5; margin: 8px 0; }
+  .demo-box .result { font-size: 13px; color: #ccc; line-height: 1.8; }
+  .demo-box .result strong { color: #00ff88; }
+  
+  .engine-row { display: flex; align-items: center; gap: 12px; padding: 6px 0; }
+  .engine-dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; flex-shrink: 0; }
+  .engine-name { font-size: 13px; color: #fff; min-width: 180px; }
+  .engine-desc { font-size: 12px; color: #888; }
+  
+  .architecture-flow { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 20px 0; flex-wrap: wrap; }
+  .flow-box { background: #111118; border: 1px solid #1a1a2e; padding: 10px 16px; border-radius: 6px; font-size: 12px; text-align: center; }
+  .flow-box.local-box { border-color: #00ff8860; }
+  .flow-box .flow-label { color: #00ffd5; font-weight: 600; font-size: 11px; text-transform: uppercase; }
+  .flow-box .flow-detail { color: #888; font-size: 10px; margin-top: 2px; }
+  .flow-arrow { color: #00ffd5; font-size: 18px; }
+  
+  .bottom-line { text-align: center; margin-top: 32px; padding-top: 24px; border-top: 1px solid #1a1a2e; }
+  .bottom-line p { font-size: 14px; color: #888; }
+  .bottom-line .tagline { font-size: 20px; color: #fff; font-weight: 600; margin-bottom: 8px; }
+  
+  .no-cloud { display: inline-flex; align-items: center; gap: 6px; background: #1a0d0d; border: 1px solid #ff444440; color: #ff6666; padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+  
+  @media print {
+    body { background: #fff; color: #222; padding: 20px; }
+    .header h1 { color: #0a0a0f; }
+    .card { border: 1px solid #ddd; }
+    .core-claim { border-left-color: #333; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>AION OS</h1>
+  <div class="subtitle">Offline Architecture Proof</div>
+  <div class="company">EchoWorks AI &mdash; Behavioral Insider Threat Detection</div>
+</div>
+
+<div style="text-align:center">
+  <span class="proof-badge">100% LOCAL DETECTION &mdash; ZERO CLOUD DEPENDENCY</span>
+</div>
+
+<div class="core-claim">
+  AION OS runs a <strong>complete insider threat detection pipeline</strong> entirely on-premise. 
+  The core detection path &mdash; temporal attack correlation, behavioral baselines, and 4 pattern engines &mdash; 
+  makes <strong>zero external API calls</strong>. No data leaves the machine. No internet required. 
+  Sub-millisecond detection latency per event.
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h3>Attack Patterns</h3>
+    <div class="number">69</div>
+    <div class="label">Named temporal sequences across 14 categories</div>
+  </div>
+  <div class="card">
+    <h3>Detection Engines</h3>
+    <div class="number">6</div>
+    <div class="label">All pure Python, no external dependencies</div>
+  </div>
+  <div class="card">
+    <h3>Detection Latency</h3>
+    <div class="number">&lt;1ms</div>
+    <div class="label">Per event, per engine &mdash; microsecond-level</div>
+  </div>
+  <div class="card">
+    <h3>External API Calls</h3>
+    <div class="number">0</div>
+    <div class="label">In the core detection hot path</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Detection Pipeline &mdash; All Local</h2>
+  <div class="architecture-flow">
+    <div class="flow-box local-box"><div class="flow-label">File Watcher</div><div class="flow-detail">watchdog &mdash; local FS</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box local-box"><div class="flow-label">API Ingestion</div><div class="flow-detail">Flask localhost:8080</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box local-box"><div class="flow-label">Temporal Engine</div><div class="flow-detail">69 attack sequences</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box local-box"><div class="flow-label">Baseline Engine</div><div class="flow-detail">behavioral deviation</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box local-box"><div class="flow-label">Pattern Engines</div><div class="flow-detail">4 engines + fusion</div></div>
+    <span class="flow-arrow">&rarr;</span>
+    <div class="flow-box local-box"><div class="flow-label">Alert</div><div class="flow-detail">CRITICAL / HIGH / MED</div></div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Engine Verification</h2>
+  <table>
+    <tr><th>Engine</th><th>External Calls</th><th>Dependencies</th><th>Status</th></tr>
+    <tr><td>Temporal Correlation (69 patterns)</td><td class="none">None</td><td>Pure Python stdlib</td><td class="local">LOCAL</td></tr>
+    <tr><td>Behavioral Baseline (exp. decay)</td><td class="none">None</td><td>Pure Python stdlib</td><td class="local">LOCAL</td></tr>
+    <tr><td>Proximity Engine (cosine sim)</td><td class="none">None</td><td>Pure Python math</td><td class="local">LOCAL</td></tr>
+    <tr><td>Trust Engine (decay model)</td><td class="none">None</td><td>Pure Python math</td><td class="local">LOCAL</td></tr>
+    <tr><td>Phase Engine (time multipliers)</td><td class="none">None</td><td>Pure Python datetime</td><td class="local">LOCAL</td></tr>
+    <tr><td>VibeSynergy Fusion</td><td class="none">None</td><td>Pure Python math</td><td class="local">LOCAL</td></tr>
+    <tr><td style="color:#888">LLM Reasoning (optional enrichment)</td><td class="optional">Optional &mdash; Ollama local</td><td class="optional">Only when zero alerts detected</td><td class="optional">OPTIONAL</td></tr>
+  </table>
+</div>
+
+<div class="demo-box">
+  <h3>Live Proof &mdash; Run With WiFi Off</h3>
+  <code>python -m aionos.sim.run_demo</code>
+  <div class="result">
+    <strong>Simulated firm:</strong> Mitchell Patel &amp; Garcia LLP &mdash; 8 attorneys, 8 matters ($33.1M), 210+ files<br>
+    <strong>Departing attorney:</strong> Robert Garcia (Partner, 14 yrs, 3 matters worth $18.3M)<br>
+    <strong>Attack:</strong> 14-day, 4-phase exfiltration (Recon &rarr; Staging &rarr; Acceleration &rarr; Cover-up)<br>
+    <strong>Result:</strong> 11 attack patterns detected, 6 CRITICAL alerts, 100% detection rate<br>
+    <strong>Runtime:</strong> ~2 minutes &mdash; <span style="color:#00ff88">zero internet required</span>
+  </div>
+</div>
+
+<div class="section">
+  <h2>What Stays On-Premise</h2>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+    <div class="engine-row"><span class="engine-dot"></span><span class="engine-name">All client file data</span></div>
+    <div class="engine-row"><span class="engine-dot"></span><span class="engine-name">Behavioral baselines</span></div>
+    <div class="engine-row"><span class="engine-dot"></span><span class="engine-name">Detection alerts</span></div>
+    <div class="engine-row"><span class="engine-dot"></span><span class="engine-name">User activity logs</span></div>
+    <div class="engine-row"><span class="engine-dot"></span><span class="engine-name">Pattern match results</span></div>
+    <div class="engine-row"><span class="engine-dot"></span><span class="engine-name">Risk scores &amp; profiles</span></div>
+    <div class="engine-row"><span class="engine-dot"></span><span class="engine-name">Timeline analysis</span></div>
+    <div class="engine-row"><span class="engine-dot"></span><span class="engine-name">Attack sequence state</span></div>
+  </div>
+</div>
+
+<div class="section" style="text-align:center; margin-top: 16px;">
+  <span class="no-cloud">&#x2715; No cloud inference</span>&nbsp;&nbsp;
+  <span class="no-cloud">&#x2715; No data exfiltration</span>&nbsp;&nbsp;
+  <span class="no-cloud">&#x2715; No third-party dependencies</span>
+</div>
+
+<div class="bottom-line">
+  <div class="tagline">Your data never leaves the building.</div>
+  <p>AION OS &mdash; Behavioral detection that runs where your data lives.</p>
+</div>
+
+</body>
+</html>

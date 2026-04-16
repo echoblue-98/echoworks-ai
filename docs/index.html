@@ -108,8 +108,7 @@
         .pricing { padding: 100px 0; text-align: center; }
         .pricing-single { max-width: 560px; margin: 0 auto; background: linear-gradient(135deg,rgba(59,130,246,0.1) 0%,rgba(139,92,246,0.05) 100%); border: 1px solid rgba(59,130,246,0.3); border-radius: 32px; padding: 56px 48px; position: relative; overflow: hidden; opacity: 0; transform: translateY(30px); transition: all 0.4s ease; }
         .pricing-single.visible { opacity: 1; transform: translateY(0); }
-        .testimonial-card { opacity: 0; transform: translateY(30px); transition: all 0.4s ease; }
-        .testimonial-card.visible { opacity: 1; transform: translateY(0); }
+        .testimonial-card { opacity: 1; }
         .pricing-single::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg,var(--primary),var(--accent),var(--success)); }
         .pricing-amount { font-size: 3.5rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 4px; }
         .pricing-period { font-size: 1rem; color: var(--text-dim); margin-bottom: 24px; }
@@ -407,9 +406,9 @@
             <h2 class="section-title" style="text-align:center;">What They're Saying</h2>
             <p class="section-desc" style="text-align:center;">Real results from real investigations.</p>
             <div style="max-width:720px;margin:0 auto;">
-                <div class="testimonial-card" style="background:var(--bg-card);border:1px solid var(--border);border-radius:24px;padding:48px 40px;text-align:center;">
+                <div class="testimonial-card" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:48px 40px;text-align:center;">
                     <div style="font-size:3rem;margin-bottom:24px;opacity:0.15;font-family:Georgia,serif;">&ldquo;</div>
-                    <blockquote style="font-size:1.35rem;font-weight:600;line-height:1.7;margin:0 0 32px;letter-spacing:-0.3px;color:var(--text-primary);">
+                    <blockquote style="font-size:1.35rem;font-weight:600;line-height:1.7;margin:0 0 32px;letter-spacing:-0.3px;color:#f1f5f9;">
                         Really amazing this was all done offline!
                     </blockquote>
                     <div style="display:flex;align-items:center;justify-content:center;gap:16px;">

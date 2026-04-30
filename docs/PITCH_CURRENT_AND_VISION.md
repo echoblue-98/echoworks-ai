@@ -3,6 +3,19 @@
 
 ---
 
+## THE STRUCTURAL TRUTH (Lead With This)
+
+**"AION OS inverts the capex. You own the infrastructure. Your data never becomes someone else's training set. Whatever happens to cloud AI — you're not exposed to the outcome."**
+
+This is the one-line moat. It works on three levels:
+- **CFO logic**: predictable depreciation beats unpredictable subscription pricing
+- **CIO/GC logic**: privilege protection + IP protection in one promise
+- **Managing Partner logic**: opt out of having to predict the future of AI at all
+
+Most vendors make the buyer bet on a prediction. AION lets the buyer **opt out of the prediction entirely.** That's the structural truth — and why this is a defensible category, not just a product.
+
+---
+
 ## THE 2-MINUTE PITCH
 
 **"Here's what we built and why it's different..."**

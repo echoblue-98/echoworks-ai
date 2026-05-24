@@ -53,6 +53,10 @@ TIER_ENGINE_LAYERS: Dict[LicenseTier, Set[str]] = {
         "severity_triage",
         "intent_classifier",
         "persistence",
+        # M7 Day-1 principle: every deployment runs feedback_collector from
+        # Day 1 so RSI has signal regardless of tier. Local-only, never leaves
+        # the box. Adds no cloud surface area.
+        "feedback_collector",
     },
     LicenseTier.INTELLIGENCE: {
         # Everything in BASELINE, plus:

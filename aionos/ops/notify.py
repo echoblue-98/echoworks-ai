@@ -14,8 +14,16 @@ Usage:
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
+
+# M7 Day-1 principle: notifications default to zero. Attention is the operator's
+# scarcest resource. Alerts only fire when the operator has explicitly opted in
+# by setting AION_NOTIFICATIONS=1 (or 'on', 'true', 'yes'). Silence is valid.
+_NOTIFICATIONS_OPT_IN = os.environ.get("AION_NOTIFICATIONS", "").strip().lower() in {
+    "1", "on", "true", "yes",
+}
 
 
 def send_notification(
@@ -26,9 +34,14 @@ def send_notification(
     """
     Send a Windows toast notification.
 
-    Falls back gracefully if notifications are unavailable.
-    Returns True if notification was sent.
+    Defaults to zero: returns False without surfacing anything unless the
+    operator has set AION_NOTIFICATIONS=1. Falls back gracefully if the
+    underlying notification stack is unavailable.
+    Returns True only if a notification actually fired.
     """
+    if not _NOTIFICATIONS_OPT_IN:
+        return False
+
     # Map urgency to a simple tag
     tag = {"red": "[URGENT]", "yellow": "[ACTION]", "green": "[OK]"}.get(
         urgency, ""

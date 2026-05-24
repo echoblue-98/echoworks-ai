@@ -267,7 +267,10 @@ class AdversarialEngine:
     
     def _calculate_total_cost(self, attack_chain: List[Dict]) -> float:
         """Calculate total cost from usage tracker"""
-        # Get the most recent cost from usage tracker
+        # Usage tracker is only initialized when the live Anthropic client loads.
+        # In mock mode (no ANTHROPIC_API_KEY), there is no real API spend.
+        if self.usage_tracker is None:
+            return 0.0
         metrics = self.usage_tracker.get_metrics()
         return metrics.get('total_cost', 0.0)
     

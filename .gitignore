@@ -45,13 +45,14 @@ logs/
 *.log
 aion_node.log
 aionos/logs/
+*.jsonl
+aionos/knowledge/improvement/
 
 # -----------------------------------------------------------------------------
 # Reports (May Contain Client Data)
 # -----------------------------------------------------------------------------
 reports/*.pdf
 reports/*.json
-reports/*.html
 
 # -----------------------------------------------------------------------------
 # Python

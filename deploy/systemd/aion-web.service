@@ -1,0 +1,16 @@
+[Unit]
+Description=AION OS SvelteKit dev server
+After=network.target aion-api.service
+Wants=aion-api.service
+
+[Service]
+Type=simple
+User=echoblue
+WorkingDirectory=/home/echoblue/echoworks-ai/aion-sveltekit
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/npm run dev -- --host 0.0.0.0
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

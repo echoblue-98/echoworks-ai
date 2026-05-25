@@ -1,0 +1,17 @@
+[Unit]
+Description=AION OS REST API
+After=network.target ollama.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+User=echoblue
+WorkingDirectory=/home/echoblue/echoworks-ai
+Environment=PATH=/home/echoblue/echoworks-ai/.venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=OLLAMA_URL=http://localhost:11434/api/generate
+ExecStart=/home/echoblue/echoworks-ai/.venv/bin/python -m aionos.api.rest_api
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

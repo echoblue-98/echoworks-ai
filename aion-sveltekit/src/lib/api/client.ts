@@ -130,6 +130,27 @@ export function getAuditLogs(params?: {
 	return api<AuditLogsResponse>(`/api/v1/audit/logs${q ? '?' + q : ''}`);
 }
 
+// ── Sovereign Inference (local LLM, no frontier-lab egress) ─
+export interface ReasonResponse {
+	success: boolean;
+	provider: string;
+	model: string;
+	response: string;
+	tokens: number;
+	latency_ms: number;
+	tokens_per_sec: number;
+	sovereign: boolean;
+	frontier_lab_egress: boolean;
+	timestamp: string;
+}
+
+export function sovereignReason(prompt: string, maxTokens = 256, temperature = 0.2) {
+	return api<ReasonResponse>('/api/v1/reason', {
+		method: 'POST',
+		body: JSON.stringify({ prompt, max_tokens: maxTokens, temperature }),
+	});
+}
+
 // ── SOC ─────────────────────────────────────────────────
 export function getSOCStatus() {
 	return api<SOCStatusResponse>('/api/soc/status');

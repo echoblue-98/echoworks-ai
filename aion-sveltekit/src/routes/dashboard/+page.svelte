@@ -17,6 +17,8 @@
 		getHealth,
 		getImprovementStatus,
 		getAuditLogs,
+		sovereignReason,
+		type ReasonResponse,
 	} from '$lib/api/client';
 	import type {
 		HealthResponse,
@@ -98,6 +100,26 @@
 		if (!a?.logs) return [];
 		return a.logs.slice(0, n);
 	}
+
+	// ── Sovereign inference panel ───────────────────────────────
+	let reasonPrompt = $state('Explain in one sentence why a regulated firm should run AI on-premises.');
+	let reasonResult: ReasonResponse | null = $state(null);
+	let reasonError = $state<string | null>(null);
+	let reasonPending = $state(false);
+
+	async function runReason() {
+		if (reasonPending || !reasonPrompt.trim()) return;
+		reasonPending = true;
+		reasonError = null;
+		reasonResult = null;
+		const res = await sovereignReason(reasonPrompt.trim(), 200, 0.2);
+		if (res.ok) {
+			reasonResult = res.data;
+		} else {
+			reasonError = res.error.message ?? 'Inference failed';
+		}
+		reasonPending = false;
+	}
 </script>
 
 {#if loading}
@@ -149,6 +171,43 @@
 			events recorded · click for full drawer
 		</div>
 	</a>
+</section>
+
+<!-- Sovereign inference proof — type a prompt, get a local model response.
+     No frontier-lab egress. Latency + tokens/sec exposed for verification. -->
+<section class="reason-panel">
+	<div class="drawer-header">
+		<h2>Sovereign inference</h2>
+		<span class="reason-meta-hint">local LLM · no frontier-lab egress</span>
+	</div>
+
+	<div class="reason-input-row">
+		<textarea
+			class="reason-input"
+			bind:value={reasonPrompt}
+			rows="2"
+			placeholder="Ask anything — runs on this box, never leaves."
+			disabled={reasonPending}
+		></textarea>
+		<button class="reason-btn" onclick={runReason} disabled={reasonPending || !reasonPrompt.trim()}>
+			{reasonPending ? 'thinking…' : 'reason'}
+		</button>
+	</div>
+
+	{#if reasonError}
+		<div class="reason-error">{reasonError}</div>
+	{:else if reasonResult}
+		<div class="reason-output">{reasonResult.response}</div>
+		<div class="reason-meta">
+			<span>provider: <strong>{reasonResult.provider}</strong></span>
+			<span>model: <strong>{reasonResult.model}</strong></span>
+			<span>latency: <strong>{reasonResult.latency_ms} ms</strong></span>
+			<span>tokens: <strong>{reasonResult.tokens}</strong> ({reasonResult.tokens_per_sec} tok/s)</span>
+			<span class="reason-sov">sovereign: <strong>{reasonResult.sovereign ? '✓' : '✗'}</strong></span>
+		</div>
+	{:else}
+		<div class="reason-placeholder">Press <em>reason</em> to call the local model. Watch latency and tokens/sec — this is the box, not a cloud API.</div>
+	{/if}
 </section>
 
 <!-- Audit drawer — append-only event stream, the operator's full system memory -->
@@ -308,5 +367,101 @@
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.78rem;
 		color: rgba(255,255,255,0.4);
+	}
+
+	/* ── Sovereign inference panel ────────────────── */
+	.reason-panel {
+		background: #050508;
+		border: 1px solid rgba(255,255,255,0.06);
+		padding: 24px;
+		margin-bottom: 32px;
+	}
+
+	.reason-meta-hint {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.7rem;
+		color: rgba(74, 222, 128, 0.7);
+		letter-spacing: 1px;
+	}
+
+	.reason-input-row {
+		display: flex;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+
+	.reason-input {
+		flex: 1;
+		background: #000;
+		color: #fff;
+		border: 1px solid rgba(255,255,255,0.12);
+		padding: 12px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.82rem;
+		resize: vertical;
+		outline: none;
+	}
+	.reason-input:focus { border-color: #4ade80; }
+	.reason-input:disabled { opacity: 0.5; }
+
+	.reason-btn {
+		background: transparent;
+		color: #4ade80;
+		border: 1px solid #4ade80;
+		padding: 0 24px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.82rem;
+		text-transform: uppercase;
+		letter-spacing: 2px;
+		cursor: pointer;
+		min-width: 120px;
+	}
+	.reason-btn:hover:not(:disabled) { background: rgba(74,222,128,0.1); }
+	.reason-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+	.reason-output {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.85rem;
+		color: #fff;
+		line-height: 1.55;
+		padding: 16px;
+		background: #000;
+		border-left: 2px solid #4ade80;
+		margin-bottom: 12px;
+		white-space: pre-wrap;
+	}
+
+	.reason-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 20px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+		color: rgba(255,255,255,0.55);
+	}
+	.reason-meta strong {
+		color: #fff;
+		font-weight: 600;
+	}
+	.reason-sov strong { color: #4ade80; }
+
+	.reason-error {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.78rem;
+		color: #f87171;
+		padding: 12px;
+		border-left: 2px solid #f87171;
+		background: #000;
+	}
+
+	.reason-placeholder {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.78rem;
+		color: rgba(255,255,255,0.4);
+		padding: 12px 0;
+	}
+	.reason-placeholder em {
+		color: #4ade80;
+		font-style: normal;
 	}
 </style>

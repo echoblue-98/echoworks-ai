@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AION OS — Live Threat Dashboard</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a0a0f;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1a0a0a 0%, #0a0a1a 100%);
+  border-bottom: 1px solid rgba(255,50,50,0.3);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ff4444;
+  letter-spacing: 2px;
+}
+.header h1 span { color: #666; font-weight: 400; font-size: 14px; }
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #888;
+}
+.status-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #333;
+}
+.status-dot.live {
+  background: #ff4444;
+  box-shadow: 0 0 8px rgba(255,68,68,0.6);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: 300px 1fr 320px;
+  grid-template-rows: auto 1fr;
+  gap: 1px;
+  background: #1a1a22;
+  min-height: calc(100vh - 56px);
+}
+
+/* Cards */
+.card {
+  background: #0d0d14;
+  padding: 20px;
+}
+.card-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+/* Stats Panel (left) */
+.stats-panel { grid-row: 1 / 3; }
+.stat-item {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #1a1a22;
+}
+.stat-item:last-child { border-bottom: none; }
+.stat-label {
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.stat-value.red { color: #ff4444; }
+.stat-value.amber { color: #ff8800; }
+.stat-value.green { color: #44ff44; }
+.stat-value.white { color: #ffffff; }
+
+/* Suspect Profile */
+.suspect-card {
+  margin-top: 12px;
+  background: rgba(255,50,50,0.05);
+  border: 1px solid rgba(255,50,50,0.2);
+  border-radius: 8px;
+  padding: 16px;
+}
+.suspect-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff6666;
+  margin-bottom: 2px;
+}
+.suspect-title { font-size: 12px; color: #888; margin-bottom: 12px; }
+.suspect-detail {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.suspect-detail:last-child { border-bottom: none; }
+.suspect-detail .label { color: #666; }
+.suspect-detail .value { color: #ccc; font-weight: 500; }
+.suspect-detail .value.critical { color: #ff4444; font-weight: 700; }
+
+/* Risk Gauge */
+.risk-gauge {
+  text-align: center;
+  margin: 16px 0 8px;
+}
+.gauge-ring {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  position: relative;
+}
+.gauge-ring svg { transform: rotate(-90deg); }
+.gauge-bg { fill: none; stroke: #1a1a22; stroke-width: 8; }
+.gauge-fill {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease, stroke 0.5s ease;
+}
+.gauge-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  font-weight: 700;
+}
+.gauge-label {
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 8px;
+}
+
+/* Event Feed (center top) */
+.event-feed { overflow: hidden; }
+.event-list {
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+.event-row {
+  display: grid;
+  grid-template-columns: 70px 90px 1fr 70px;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-size: 12px;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.event-time { color: #555; font-variant-numeric: tabular-nums; }
+.event-type { color: #888; }
+.event-file { color: #aaa; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.event-sev {
+  text-align: right;
+  font-weight: 600;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+.event-sev.critical { color: #ff4444; }
+.event-sev.high { color: #ff8800; }
+.event-sev.medium { color: #ffcc00; }
+.event-sev.low { color: #44aa44; }
+
+/* Timeline Chart (center bottom) */
+.timeline-chart {
+  grid-column: 2;
+}
+.chart-container {
+  height: 220px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding-top: 20px;
+}
+.chart-bar {
+  flex: 1;
+  background: rgba(255,68,68,0.15);
+  border-top: 2px solid rgba(255,68,68,0.4);
+  min-height: 2px;
+  transition: height 0.5s ease;
+  position: relative;
+}
+.chart-bar:hover {
+  background: rgba(255,68,68,0.3);
+}
+.chart-bar.alert {
+  background: rgba(255,68,68,0.4) !important;
+  border-top-color: #ff4444 !important;
+}
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #444;
+  margin-top: 8px;
+}
+.phase-markers {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.phase-marker {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+.phase-marker.recon { color: #ffcc00; border-color: rgba(255,204,0,0.3); }
+.phase-marker.staging { color: #ff8800; border-color: rgba(255,136,0,0.3); }
+.phase-marker.accel { color: #ff4444; border-color: rgba(255,68,68,0.3); }
+.phase-marker.cover { color: #aa44aa; border-color: rgba(170,68,170,0.3); }
+
+/* Pattern Matches (right panel) */
+.patterns-panel { grid-row: 1 / 3; }
+.pattern-item {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  border-left: 3px solid #333;
+  transition: all 0.5s ease;
+}
+.pattern-item.matched { border-left-color: #ff4444; background: rgba(255,50,50,0.05); }
+.pattern-item.partial { border-left-color: #ff8800; background: rgba(255,136,0,0.03); }
+.pattern-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ccc;
+  margin-bottom: 6px;
+}
+.pattern-bar-track {
+  height: 4px;
+  background: #1a1a22;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.pattern-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 1s ease;
+  background: #333;
+}
+.pattern-bar-fill.critical { background: linear-gradient(90deg, #ff4444, #ff6666); }
+.pattern-bar-fill.high { background: linear-gradient(90deg, #ff8800, #ffaa44); }
+.pattern-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #555;
+}
+.pattern-pct { font-weight: 600; }
+.pattern-pct.critical { color: #ff4444; }
+.pattern-pct.high { color: #ff8800; }
+
+/* Temporal Alert Banner */
+.alert-banner {
+  display: none;
+  background: linear-gradient(90deg, rgba(255,0,0,0.15), rgba(255,0,0,0.05));
+  border: 1px solid rgba(255,0,0,0.3);
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  animation: alertPulse 2s infinite;
+}
+.alert-banner.visible { display: block; }
+@keyframes alertPulse {
+  0%, 100% { border-color: rgba(255,0,0,0.3); }
+  50% { border-color: rgba(255,0,0,0.7); }
+}
+.alert-banner h3 {
+  font-size: 13px;
+  color: #ff4444;
+  margin-bottom: 4px;
+}
+.alert-banner p { font-size: 11px; color: #999; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+/* Not connected overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,15,0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: opacity 0.5s ease;
+}
+.overlay.hidden { opacity: 0; pointer-events: none; }
+.overlay h2 { color: #ff4444; margin-bottom: 8px; font-size: 18px; }
+.overlay p { color: #666; font-size: 13px; }
+.overlay code {
+  background: #1a1a22;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #ff8800;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>AION OS <span>/ INSIDER THREAT DETECTION</span></h1>
+  <div class="status-badge">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">CONNECTING...</span>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- LEFT: Stats + Suspect -->
+  <div class="card stats-panel">
+    <div class="card-title">Detection Engine</div>
+
+    <div class="stat-item">
+      <div class="stat-label">Events Processed</div>
+      <div class="stat-value white" id="eventCount">0</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Patterns Loaded</div>
+      <div class="stat-value green" id="patternCount">—</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Detection Latency</div>
+      <div class="stat-value green" id="latency">—</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Alerts Fired</div>
+      <div class="stat-value" id="alertCount" style="color:#444;">0</div>
+    </div>
+
+    <!-- Risk Gauge -->
+    <div class="risk-gauge">
+      <div class="gauge-ring">
+        <svg viewBox="0 0 100 100">
+          <circle class="gauge-bg" cx="50" cy="50" r="42" />
+          <circle class="gauge-fill" id="gaugeFill" cx="50" cy="50" r="42"
+            stroke="#333" stroke-dasharray="264" stroke-dashoffset="264" />
+        </svg>
+        <div class="gauge-text" id="riskScore">0</div>
+      </div>
+      <div class="gauge-label">Threat Level</div>
+    </div>
+
+    <!-- Suspect -->
+    <div class="suspect-card" id="suspectCard" style="display:none;">
+      <div class="suspect-name">Robert Garcia</div>
+      <div class="suspect-title">Partner — 14 years</div>
+      <div class="suspect-detail"><span class="label">Matters</span><span class="value">3 active ($18.3M)</span></div>
+      <div class="suspect-detail"><span class="label">Risk</span><span class="value critical" id="suspectRisk">MONITORING</span></div>
+      <div class="suspect-detail"><span class="label">Phase</span><span class="value" id="suspectPhase">—</span></div>
+      <div class="suspect-detail"><span class="label">Files Accessed</span><span class="value" id="suspectFiles">0</span></div>
+      <div class="suspect-detail"><span class="label">Data at Risk</span><span class="value" id="suspectData">$0</span></div>
+    </div>
+  </div>
+
+  <!-- CENTER TOP: Live Event Feed -->
+  <div class="card event-feed">
+    <div class="card-title">Live Event Feed</div>
+    <div id="alertBanner" class="alert-banner">
+      <h3 id="alertTitle">⚠ TEMPORAL ALERT</h3>
+      <p id="alertDetail"></p>
+    </div>
+    <div class="event-list" id="eventList">
+      <div style="color:#333; font-size:12px; padding:20px; text-align:center;">
+        Waiting for events...
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER BOTTOM: Timeline Chart -->
+  <div class="card timeline-chart">
+    <div class="card-title">Activity Timeline — 14 Day View</div>
+    <div class="chart-container" id="chartContainer"></div>
+    <div class="chart-labels">
+      <span>Day 1</span><span>Day 4</span><span>Day 8</span><span>Day 12</span><span>Day 14</span>
+    </div>
+    <div class="phase-markers">
+      <span class="phase-marker recon">Recon</span>
+      <span class="phase-marker staging">Staging</span>
+      <span class="phase-marker accel">Acceleration</span>
+      <span class="phase-marker cover">Cover-up</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: Pattern Matches -->
+  <div class="card patterns-panel">
+    <div class="card-title">Attack Pattern Detection</div>
+    <div id="patternList"></div>
+  </div>
+</div>
+
+<!-- Connection overlay -->
+<div class="overlay" id="overlay">
+  <h2>AION OS Dashboard</h2>
+  <p>Start the demo to see live detection</p>
+  <code>python -m aionos.sim.run_demo</code>
+</div>
+
+<script>
+const API = 'http://127.0.0.1:8080';
+const API_KEY_STORAGE = 'aion_api_key';
+
+let connected = false;
+let apiKey = '';
+let eventsSeen = 0;
+let lastEventIds = new Set();
+let riskLevel = 0;
+let alertsFired = 0;
+let garciaEvents = 0;
+let phase = 0;  // 0=none, 1=recon, 2=staging, 3=accel, 4=coverup
+let timelineBins = new Array(14).fill(0);
+let knownPatterns = {};
+
+// Try to read API key from config
+async function fetchApiKey() {
+  try {
+    const r = await fetch(API + '/health');
+    if (r.ok) {
+      // Try common key locations - we'll get it from dashboard stats which doesn't need auth
+      connected = true;
+      return '';
+    }
+  } catch(e) {}
+  return '';
+}
+
+async function fetchStats() {
+  try {
+    const r = await fetch(API + '/api/v1/dashboard/stats');
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+async function fetchEvents() {
+  try {
+    const r = await fetch(API + '/api/v1/dashboard/events?limit=50');
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+async function fetchTimeline() {
+  if (!apiKey) {
+    // Try to get API key from filesystem via a known config endpoint
+    // Dashboard endpoints don't need auth, but timeline does
+    // We'll try to read it
+    try {
+      const r = await fetch(API + '/api/v1/dashboard/stats');
+      if (r.ok) {
+        // We need api key for timeline - try stored
+        const stored = localStorage.getItem(API_KEY_STORAGE);
+        if (stored) apiKey = stored;
+      }
+    } catch(e) {}
+  }
+  if (!apiKey) return null;
+  try {
+    const r = await fetch(API + '/api/v1/timeline/rgarcia@mpg-law.com', {
+      headers: {'X-API-Key': apiKey}
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+// UI Updates
+function updateConnection(online) {
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  const overlay = document.getElementById('overlay');
+
+  if (online) {
+    dot.classList.add('live');
+    text.textContent = 'LIVE — ON-PREMISE';
+    text.style.color = '#ff4444';
+    overlay.classList.add('hidden');
+    connected = true;
+  } else {
+    dot.classList.remove('live');
+    text.textContent = 'CONNECTING...';
+    text.style.color = '#888';
+    overlay.classList.remove('hidden');
+    connected = false;
+  }
+}
+
+function updateStats(stats) {
+  if (!stats) return;
+  document.getElementById('patternCount').textContent = stats.patterns || '—';
+  document.getElementById('latency').textContent = (stats.latency_ms || 0.07) + ' ms';
+
+  const profiles = stats.baseline_profiles || 0;
+  if (profiles > 0) {
+    document.getElementById('suspectCard').style.display = 'block';
+  }
+}
+
+function updateEvents(data) {
+  if (!data || !data.events) return;
+
+  const total = data.total || 0;
+  document.getElementById('eventCount').textContent = total.toLocaleString();
+
+  // Color based on volume
+  const el = document.getElementById('eventCount');
+  if (total > 200) { el.style.color = '#ff4444'; }
+  else if (total > 100) { el.style.color = '#ff8800'; }
+  else if (total > 0) { el.style.color = '#ffffff'; }
+
+  const list = document.getElementById('eventList');
+  const events = data.events;
+
+  // Check for new events
+  let hasNew = false;
+  for (const e of events) {
+    const eid = e.timestamp + e.event_type + (e.user_id || '');
+    if (!lastEventIds.has(eid)) {
+      hasNew = true;
+      lastEventIds.add(eid);
+    }
+  }
+
+  if (!hasNew && eventsSeen > 0) return;
+  eventsSeen = total;
+
+  // Rebuild event list (newest first)
+  const rows = events.slice().reverse().slice(0, 30).map(e => {
+    const time = new Date(e.timestamp * 1000).toLocaleTimeString('en-US',
+      {hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    const type = (e.event_type || 'unknown').replace(/_/g, ' ');
+    const file = e.description || e.resource || e.file_path || '';
+    const sev = (e.severity || 'medium').toLowerCase();
+
+    // Track Garcia events
+    if (e.user_id && e.user_id.includes('garcia')) {
+      garciaEvents++;
+    }
+
+    return `<div class="event-row">
+      <span class="event-time">${time}</span>
+      <span class="event-type">${type}</span>
+      <span class="event-file" title="${file}">${file}</span>
+      <span class="event-sev ${sev}">${sev}</span>
+    </div>`;
+  }).join('');
+
+  if (rows) list.innerHTML = rows;
+}
+
+function updateTimeline(data) {
+  if (!data) return;
+
+  const events = data.events || [];
+  const matches = data.active_pattern_matches || [];
+
+  // Update Garcia file count
+  document.getElementById('suspectFiles').textContent = events.length;
+
+  // Determine phase from event count
+  if (events.length > 200) { phase = 4; }
+  else if (events.length > 120) { phase = 3; }
+  else if (events.length > 40) { phase = 2; }
+  else if (events.length > 5) { phase = 1; }
+
+  const phases = ['—', 'RECONNAISSANCE', 'STAGING', 'ACCELERATION', 'COVER-UP'];
+  const phaseEl = document.getElementById('suspectPhase');
+  phaseEl.textContent = phases[phase];
+  if (phase >= 3) phaseEl.style.color = '#ff4444';
+  else if (phase >= 2) phaseEl.style.color = '#ff8800';
+
+  // Data at risk estimate
+  const dataValues = ['$0', '$2.1M', '$8.4M', '$18.3M', '$18.3M'];
+  document.getElementById('suspectData').textContent = dataValues[phase];
+  if (phase >= 2) document.getElementById('suspectData').classList.add('critical');
+
+  // Risk level for suspect
+  const risks = ['MONITORING', 'ELEVATED', 'HIGH', 'CRITICAL', 'CRITICAL'];
+  const riskEl = document.getElementById('suspectRisk');
+  riskEl.textContent = risks[phase];
+
+  // Build timeline bins (rough distribution by event order)
+  timelineBins = new Array(14).fill(0);
+  events.forEach((e, i) => {
+    const bin = Math.min(13, Math.floor(i / Math.max(1, events.length / 14)));
+    timelineBins[bin]++;
+  });
+
+  const maxBin = Math.max(...timelineBins, 1);
+  const container = document.getElementById('chartContainer');
+  container.innerHTML = timelineBins.map((count, i) => {
+    const height = Math.max(2, (count / maxBin) * 200);
+    const isAlert = (i >= 4 && i <= 5) || (i >= 9 && i <= 11); // Phase 2 & 3 peaks
+    return `<div class="chart-bar ${count > maxBin*0.6 ? 'alert' : ''}" 
+              style="height:${height}px" 
+              title="Day ${i+1}: ${count} events"></div>`;
+  }).join('');
+
+  // Update pattern matches
+  updatePatterns(matches);
+
+  // Risk gauge
+  let maxPct = 0;
+  matches.forEach(m => { if (m.completion_percent > maxPct) maxPct = m.completion_percent; });
+  riskLevel = Math.max(riskLevel, maxPct);
+  updateGauge(riskLevel);
+
+  // Alert count
+  alertsFired = matches.filter(m => m.completion_percent >= 50).length;
+  const alertEl = document.getElementById('alertCount');
+  alertEl.textContent = alertsFired;
+  if (alertsFired > 0) {
+    alertEl.style.color = '#ff4444';
+    alertEl.classList.add('red');
+  }
+
+  // Alert banner
+  const topMatch = matches.find(m => m.pattern === 'pre_departure_exfil');
+  if (topMatch && topMatch.completion_percent >= 50) {
+    const banner = document.getElementById('alertBanner');
+    banner.classList.add('visible');
+    document.getElementById('alertTitle').textContent = 
+      `🚨 TEMPORAL: ${topMatch.pattern} — ${topMatch.completion_percent.toFixed(0)}% MATCH`;
+    document.getElementById('alertDetail').textContent = 
+      `${topMatch.severity} severity | Recommended: ${(topMatch.recommended_actions || []).slice(0,2).join(', ')}`;
+  }
+}
+
+function updatePatterns(matches) {
+  // Merge with known
+  matches.forEach(m => {
+    knownPatterns[m.pattern] = m;
+  });
+
+  const sorted = Object.values(knownPatterns).sort((a,b) => b.completion_percent - a.completion_percent);
+
+  const html = sorted.map(m => {
+    const pct = m.completion_percent;
+    const sev = m.severity.toLowerCase();
+    const cls = pct >= 100 ? 'matched' : pct >= 50 ? 'partial' : '';
+    const barCls = sev === 'critical' ? 'critical' : 'high';
+    const pctCls = sev === 'critical' ? 'critical' : 'high';
+
+    return `<div class="pattern-item ${cls}">
+      <div class="pattern-name">${m.pattern.replace(/_/g, ' ')}</div>
+      <div class="pattern-bar-track">
+        <div class="pattern-bar-fill ${barCls}" style="width:${pct}%"></div>
+      </div>
+      <div class="pattern-meta">
+        <span>${m.severity}</span>
+        <span class="pattern-pct ${pctCls}">${pct.toFixed(0)}%</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('patternList').innerHTML = html || 
+    '<div style="color:#333; font-size:12px; padding:20px; text-align:center;">No patterns matched yet</div>';
+}
+
+function updateGauge(pct) {
+  const circumference = 264;
+  const offset = circumference - (pct / 100) * circumference;
+  const fill = document.getElementById('gaugeFill');
+  fill.style.strokeDashoffset = offset;
+
+  let color = '#44ff44';
+  if (pct >= 80) color = '#ff4444';
+  else if (pct >= 50) color = '#ff8800';
+  else if (pct >= 25) color = '#ffcc00';
+  fill.style.stroke = color;
+
+  const text = document.getElementById('riskScore');
+  text.textContent = Math.round(pct);
+  text.style.color = color;
+}
+
+// Try to discover API key from webhook_auth.json via file system
+// Since dashboard endpoints don't need auth, we'll try timeline separately
+async function discoverApiKey() {
+  // Fetch from localhost-only dashboard endpoint
+  try {
+    const r = await fetch(API + '/api/v1/dashboard/key');
+    if (r.ok) {
+      const data = await r.json();
+      if (data.key) {
+        apiKey = data.key;
+        localStorage.setItem(API_KEY_STORAGE, apiKey);
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // Fallback: check localStorage
+  const stored = localStorage.getItem(API_KEY_STORAGE);
+  if (stored) apiKey = stored;
+}
+
+// Main poll loop
+async function poll() {
+  try {
+    const health = await fetch(API + '/health');
+    if (!health.ok) { updateConnection(false); return; }
+    updateConnection(true);
+
+    // Discover API key on first connect
+    if (!apiKey) await discoverApiKey();
+
+    const [stats, events] = await Promise.all([fetchStats(), fetchEvents()]);
+    updateStats(stats);
+    updateEvents(events);
+
+    // Only poll timeline if we have the API key
+    if (apiKey) {
+      const timeline = await fetchTimeline();
+      updateTimeline(timeline);
+    }
+  } catch(e) {
+    updateConnection(false);
+  }
+}
+
+// Start polling
+setInterval(poll, 1500);
+poll();
+
+// Also allow manual API key entry via console
+window.setApiKey = function(key) {
+  apiKey = key;
+  localStorage.setItem(API_KEY_STORAGE, key);
+  console.log('API key set:', key.substring(0, 12) + '...');
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EchoWorks — Sales Operating System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background particles */
+  .particles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: float linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 60px 20px 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .header h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff4444, #8b5cf6, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+    animation: fadeInDown 1s ease-out;
+  }
+
+  .header .subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 10px;
+    font-weight: 300;
+    animation: fadeInDown 1s ease-out 0.2s both;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Main framework container */
+  .framework {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* The three phases */
+  .phase {
+    position: relative;
+    margin-bottom: 0;
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .phase.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* Connector line between phases */
+  .connector {
+    width: 4px;
+    height: 60px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .connector::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--from-color), var(--to-color));
+    opacity: 0.3;
+  }
+
+  .connector .pulse {
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(to bottom, transparent, var(--to-color), transparent);
+    animation: pulseLine 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseLine {
+    0% { top: -20px; opacity: 0; }
+    50% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* Phase card */
+  .phase-card {
+    background: linear-gradient(135deg, rgba(20,20,20,0.9), rgba(30,30,30,0.9));
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s ease;
+  }
+
+  .phase-card:hover {
+    transform: scale(1.02);
+    border-color: var(--accent);
+    box-shadow: 0 0 40px rgba(var(--accent-rgb), 0.15);
+  }
+
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 4px;
+    background: var(--accent);
+  }
+
+  /* Glow orb */
+  .phase-card .orb {
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(var(--accent-rgb), 0.08), transparent 70%);
+    pointer-events: none;
+    transition: all 0.6s ease;
+  }
+
+  .phase-card:hover .orb {
+    transform: scale(1.3);
+    background: radial-gradient(circle, rgba(var(--accent-rgb), 0.15), transparent 70%);
+  }
+
+  /* Phase number */
+  .phase-num {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--accent);
+    opacity: 0.15;
+    position: absolute;
+    top: 20px; right: 30px;
+    line-height: 1;
+  }
+
+  /* Phase label */
+  .phase-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .phase-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  .phase-tagline {
+    font-size: 1rem;
+    color: #888;
+    font-weight: 300;
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+
+  /* Detail grid */
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    opacity: 0;
+  }
+
+  .phase-card.expanded .detail-grid {
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  .detail-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .detail-item:hover {
+    background: rgba(var(--accent-rgb), 0.05);
+    border-color: rgba(var(--accent-rgb), 0.2);
+  }
+
+  .detail-item .label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .detail-item .value {
+    font-size: 0.9rem;
+    color: #ccc;
+    line-height: 1.5;
+  }
+
+  .expand-hint {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.75rem;
+    color: #444;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.3s;
+  }
+
+  .phase-card:hover .expand-hint { color: var(--accent); }
+  .phase-card.expanded .expand-hint { display: none; }
+
+  /* Phase-specific colors */
+  .phase-pain { --accent: #ff4444; --accent-rgb: 255, 68, 68; }
+  .phase-sovereignty { --accent: #8b5cf6; --accent-rgb: 139, 92, 246; }
+  .phase-compliance { --accent: #3b82f6; --accent-rgb: 59, 130, 246; }
+
+  /* Bottom mantra */
+  .mantra {
+    text-align: center;
+    padding: 60px 20px 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .mantra-text {
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: #444;
+    animation: fadeIn 1s ease-out 2s both;
+  }
+
+  .mantra-text strong {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .mantra-text .red { color: #ff4444; }
+  .mantra-text .purple { color: #8b5cf6; }
+  .mantra-text .blue { color: #3b82f6; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  /* Arrow indicators */
+  .flow-arrow {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #333;
+    margin: 15px 0;
+    animation: arrowPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes arrowPulse {
+    0%, 100% { opacity: 0.3; transform: translateY(0); }
+    50% { opacity: 0.8; transform: translateY(5px); }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .header h1 { font-size: 2rem; }
+    .phase-card { padding: 24px; }
+    .phase-title { font-size: 1.5rem; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .phase-num { font-size: 3rem; }
+  }
+
+  /* Sequence bar */
+  .sequence-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin: 40px auto 10px;
+    max-width: 700px;
+    position: relative;
+    z-index: 2;
+    animation: fadeIn 1s ease-out 0.5s both;
+  }
+
+  .seq-step {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .seq-step::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 3px;
+    background: var(--seq-color);
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+
+  .seq-step:hover::after { opacity: 1; }
+
+  .seq-step .seq-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--seq-color);
+    font-weight: 600;
+  }
+
+  .seq-step .seq-action {
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+  }
+
+  .seq-step:nth-child(1) { --seq-color: #ff4444; }
+  .seq-step:nth-child(2) { --seq-color: #8b5cf6; }
+  .seq-step:nth-child(3) { --seq-color: #3b82f6; }
+
+  .seq-arrow {
+    display: flex;
+    align-items: center;
+    color: #333;
+    font-size: 1.2rem;
+    padding: 0 5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="header">
+  <h1>Sales Operating System</h1>
+  <div class="subtitle">The EchoWorks Framework — How Every Deal Gets Closed</div>
+</div>
+
+<div class="sequence-bar">
+  <div class="seq-step" onclick="scrollToPhase(0)">
+    <div class="seq-label">Opens</div>
+    <div class="seq-action">Gets the meeting</div>
+  </div>
+  <div class="seq-arrow">→</div>
+  <div class="seq-step" onclick="scrollToPhase(1)">
+    <div class="seq-label">Wins</div>
+    <div class="seq-action">Beats competitors</div>
+  </div>
+  <div class="seq-arrow">→</div>
+  <div class="seq-step" onclick="scrollToPhase(2)">
+    <div class="seq-label">Closes</div>
+    <div class="seq-action">Gets the check</div>
+  </div>
+</div>
+
+<div class="framework">
+
+  <!-- PHASE 1: PAIN -->
+  <div class="phase phase-pain" data-delay="300">
+    <div class="phase-card" onclick="toggleExpand(this)">
+      <div class="orb"></div>
+      <div class="phase-num">01</div>
+      <div class="phase-label">Stage One — Cold Outreach & Content</div>
+      <div class="phase-title">Pain Opens the Door</div>
+      <div class="phase-tagline">"A partner left last month and took 340 client files."</div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="label">Trigger</div>
+          <div class="value">Attorney departure with client data — every managing partner has seen it or feared it</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Trigger</div>
+          <div class="value">Cyber insurance renewal — insurers now asking about insider threat monitoring</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Trigger</div>
+          <div class="value">Peer firm breach — 30-day window where every competitor firm pays attention</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Channel</div>
+          <div class="value">Cold email subject lines, LinkedIn DMs, Mon–Fri content pillars (stats, pain, differentiation)</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Goal</div>
+          <div class="value">Get the meeting. Get them to respond. Nothing else matters at this stage.</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Anti-Pattern</div>
+          <div class="value">Don't lead with "we're on-prem" or "you own your data." They don't care yet.</div>
+        </div>
+      </div>
+      <div class="expand-hint">click to expand</div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">▼</div>
+
+  <div class="connector" style="--from-color: #ff4444; --to-color: #8b5cf6;">
+    <div class="pulse"></div>
+  </div>
+
+  <div class="flow-arrow">▼</div>
+
+  <!-- PHASE 2: SOVEREIGNTY -->
+  <div class="phase phase-sovereignty" data-delay="600">
+    <div class="phase-card" onclick="toggleExpand(this)">
+      <div class="orb"></div>
+      <div class="phase-num">02</div>
+      <div class="phase-label">Stage Two — Demo & Sales Call</div>
+      <div class="phase-title">Sovereignty Wins the Deal</div>
+      <div class="phase-tagline">"Every other vendor sends your client data to their cloud. We don't."</div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="label">Differentiator</div>
+          <div class="value">On-premise deployment — their data never leaves their servers. Period.</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Differentiator</div>
+          <div class="value">117 detection patterns built from studying how attorneys actually exfiltrate data</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Differentiator</div>
+          <div class="value">They own the detection logic. No vendor lock-in. No rented intelligence.</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Demo Flow</div>
+          <div class="value">Open with attorney departure simulation → show real-time detection → close with ownership pitch</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Goal</div>
+          <div class="value">Win over the 3 other vendors they're comparing. This is why they pick YOU.</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Key Line</div>
+          <div class="value">"Features get copied. Distribution doesn't. We're building the category."</div>
+        </div>
+      </div>
+      <div class="expand-hint">click to expand</div>
+    </div>
+  </div>
+
+  <div class="flow-arrow">▼</div>
+
+  <div class="connector" style="--from-color: #8b5cf6; --to-color: #3b82f6;">
+    <div class="pulse"></div>
+  </div>
+
+  <div class="flow-arrow">▼</div>
+
+  <!-- PHASE 3: COMPLIANCE -->
+  <div class="phase phase-compliance" data-delay="900">
+    <div class="phase-card" onclick="toggleExpand(this)">
+      <div class="orb"></div>
+      <div class="phase-num">03</div>
+      <div class="phase-label">Stage Three — Proposal & Close</div>
+      <div class="phase-title">Compliance Closes the Budget</div>
+      <div class="phase-tagline">"ABA Model Rules require this. Your cyber insurance will ask."</div>
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="label">Justification</div>
+          <div class="value">ABA Formal Opinion 477R — attorneys must make "reasonable efforts" to protect client data</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Justification</div>
+          <div class="value">State bar ethics rules getting more specific about data protection and monitoring</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Justification</div>
+          <div class="value">Cyber insurance renewals now require insider threat documentation</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Audience</div>
+          <div class="value">Managing partner said yes — now the CFO / finance committee needs a reason to write the check</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Goal</div>
+          <div class="value">Turn "we should do this" into "we have to do this." Compliance removes optionality.</div>
+        </div>
+        <div class="detail-item">
+          <div class="label">Proposal Line</div>
+          <div class="value">$5,000/mo. 90-day guarantee. On-premise. Full ABA compliance documentation included.</div>
+        </div>
+      </div>
+      <div class="expand-hint">click to expand</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="mantra">
+  <div class="mantra-text">
+    <span class="red">Pain</span> gets the meeting.
+    <span class="purple">Sovereignty</span> wins the deal.
+    <span class="blue">Compliance</span> gets the check signed.
+  </div>
+</div>
+
+<script>
+  // Particle system
+  function createParticles() {
+    const container = document.getElementById('particles');
+    const colors = ['#ff4444', '#8b5cf6', '#3b82f6'];
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 4 + 1;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      p.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        left: ${Math.random() * 100}%;
+        background: ${color};
+        animation-duration: ${Math.random() * 15 + 10}s;
+        animation-delay: ${Math.random() * 10}s;
+      `;
+      container.appendChild(p);
+    }
+  }
+
+  // Scroll reveal
+  function revealPhases() {
+    const phases = document.querySelectorAll('.phase');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = entry.target.dataset.delay || 0;
+          setTimeout(() => entry.target.classList.add('visible'), delay);
+        }
+      });
+    }, { threshold: 0.2 });
+    phases.forEach(p => observer.observe(p));
+  }
+
+  // Expand/collapse cards
+  function toggleExpand(card) {
+    card.classList.toggle('expanded');
+  }
+
+  // Scroll to phase
+  function scrollToPhase(index) {
+    const phases = document.querySelectorAll('.phase');
+    if (phases[index]) {
+      phases[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        const card = phases[index].querySelector('.phase-card');
+        if (!card.classList.contains('expanded')) card.classList.add('expanded');
+      }, 600);
+    }
+  }
+
+  // Init
+  createParticles();
+  revealPhases();
+</script>
+
+</body>
+</html>

@@ -12,13 +12,17 @@ Four pillars:
 """
 
 from aionos.agents.workflow import WorkflowEngine, Task, TaskStatus
-from aionos.agents.spawner import AgentSpawner, Agent, AgentState
+from aionos.agents.spawner import AgentSpawner, Agent, AgentState, AgentCapability
 from aionos.agents.trust_gate import TrustGate, TrustLevel
 from aionos.agents.friction import FrictionReducer
+from aionos.agents.tools import (
+    ToolSpec, ToolRegistry, ToolResult, ToolError, ToolErrorCode,
+)
 
 __all__ = [
     "WorkflowEngine", "Task", "TaskStatus",
-    "AgentSpawner", "Agent", "AgentState",
+    "AgentSpawner", "Agent", "AgentState", "AgentCapability",
     "TrustGate", "TrustLevel",
     "FrictionReducer",
+    "ToolSpec", "ToolRegistry", "ToolResult", "ToolError", "ToolErrorCode",
 ]

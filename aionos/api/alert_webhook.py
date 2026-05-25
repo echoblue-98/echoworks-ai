@@ -740,6 +740,20 @@ if FLASK_AVAILABLE:
             # Log successful ingestion
             client_ip = security.get_client_ip(request)
             logger.info(f"Alert ingested from {client_ip}: {alert.get('type')}")
+
+            # Push to dashboard event feed
+            _dashboard_events.append({
+                "timestamp": time.time(),
+                "event_type": alert.get('type', 'unknown'),
+                "user_id": alert.get('user', ''),
+                "description": alert.get('details', {}).get('file_path', '') or alert.get('details', {}).get('description', ''),
+                "severity": temporal_alerts[0].severity if temporal_alerts else ("HIGH" if deviation_alerts else "INFO"),
+                "source": alert.get('source', 'unknown'),
+                "resource": alert.get('details', {}).get('resource', ''),
+                "file_path": alert.get('details', {}).get('file_path', ''),
+            })
+            if len(_dashboard_events) > _max_events:
+                _dashboard_events[:] = _dashboard_events[-_max_events:]
             
             response_data = {
                 "status": "analyzed",
@@ -934,7 +948,22 @@ if FLASK_AVAILABLE:
         except Exception as e:
             logger.error(f"Dashboard events error: {e}")
             return jsonify({"error": "Events unavailable"}), 500
-    
+
+    @app.route('/api/v1/dashboard/key', methods=['GET'])
+    def dashboard_key():
+        """Return API key for localhost dashboard only. No auth."""
+        # Only serve to localhost requests
+        remote = request.remote_addr
+        if remote not in ('127.0.0.1', '::1', 'localhost'):
+            return jsonify({"error": "Forbidden"}), 403
+        try:
+            keys = config.get("api_keys", {})
+            if keys:
+                return jsonify({"key": list(keys.keys())[0]})
+            return jsonify({"error": "No keys"}), 404
+        except Exception:
+            return jsonify({"error": "Unavailable"}), 500
+
     @app.route('/api/v1/dashboard/simulate', methods=['POST'])
     def dashboard_simulate():
         """

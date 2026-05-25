@@ -16,6 +16,75 @@ Most vendors make the buyer bet on a prediction. AION lets the buyer **opt out o
 
 ---
 
+## THE KELLER DOCTRINE (Why We Don't Exit)
+
+**"Vic Keller sold 9 companies, including 3 to Berkshire Hathaway. On the *School of Hard Knocks* podcast (Jan 2026) he said the quiet part out loud: when you sell, you don't just lose the company — you lose every relationship inside it. The trust. The clients who picked you. The team that bled with you. Owned by someone else's spreadsheet."**
+
+That's the entire AI vendor market right now. Harvey, Copilot, ChatGPT Enterprise — all venture-backed, all exit-bound. Whoever buys them rewrites the TOS, the pricing, the data residency, sometimes the country the servers are in. The firm that bought "Harvey" did not buy whatever Harvey becomes after the LBO.
+
+**AION OS has no exit on the roadmap.** That's not a slogan, it's an architectural choice:
+- Software runs on the firm's hardware. There is nothing for an acquirer to seize.
+- No SaaS dependency means no SaaS contract to renegotiate.
+- The relationship between EchoWorks and the firm is not a renewable license — it's a one-time install + a service relationship the firm can terminate at any time without losing the system.
+
+This is the only AI vendor whose business model **matches** the business model of a 100+ year independent law firm. Every other vendor is a build-to-flip operator selling to a forever-firm. The math doesn't work. We're the only honest pitch in the category.
+
+> **Use this when:** the buyer asks "what happens to us if you get acquired?" or "what if you go out of business?" The answer is: *the software keeps running on your hardware regardless. There is no kill switch. There is no remote license check. There is no exit event that takes your AI with it.*
+
+---
+
+## THE AGENT CONSTELLATION (How AION OS Is Actually "Agentic")
+
+**"AION OS doesn't deploy one big agent. It deploys a constellation of small, single-purpose agents — a digital staff, not a digital lawyer."**
+
+This is the architectural answer when a CIO asks the agentic question. Most vendors are selling autonomous-lawyer fantasies that will get firms sanctioned. AION sells the digital version of the org chart firms already trust:
+
+- **Detection agents** — 117+ pattern-matchers watching for insider threat, exfiltration, privilege violations
+- **Triage agents** — NIST 800-61 incident classification + routing
+- **Evidence agents** — chain-of-custody preservation, litigation-ready audit trails
+- **Workflow agents** — read-only connectors to DMS, email, cloud proxy
+- **Orchestration layer** — coordinates the staff, escalates to humans on ambiguity
+
+**Key reframe for the buyer:** the agents do NOT practice law. They protect the firm from the risk lawyers create just by being human with email access. The paralegal about to forward a deposition to her Gmail. The associate accessing files at 11:47 PM on a Saturday. The exit-interview week download spike. Humans can't watch for these at scale. The constellation can.
+
+> **Use this when:** the buyer says "is this agentic?" or "what's the difference between this and Harvey?" Answer: *Harvey is trying to build one agent that replaces a lawyer. AION OS deploys a small staff of specialized agents that protect the firm from the risk a lawyer creates just by being human. Different game. Different category.*
+
+**Three-tier delivery (CIO / Managing Partner / Public):**
+- **CIO version:** "A constellation of small, single-purpose agents — detection, triage, evidence, workflow — coordinated by a local orchestration layer. Nothing leaves the perimeter. Each agent is auditable in isolation. Runs on commodity hardware."
+- **Managing Partner version:** "An always-on staff of digital agents that watch for risk, preserve evidence, and route incidents to humans only when judgment is required. They don't practice law. They protect the firm while your lawyers do."
+- **Public version:** "Most AI vendors are trying to build one agent that replaces a lawyer. AION OS deploys a small staff of specialized agents that protect the firm from the risk a lawyer creates just by being human. Different game."
+
+---
+
+## GOVERNANCE vs. SOVEREIGNTY (The Risk-Practitioner Objection Killer)
+
+**One-liner moat:**
+> *"Governance governs the people inside your firm. Sovereignty governs what happens to your data when the vendor's circumstances change. Both layers matter — most risk programs only address one."*
+
+### When this objection appears
+
+A sophisticated risk practitioner, CISO, or CIO will say something like: *"The landscape has changed. We have AI governance frameworks now — DLP, data classification, controlled enablement. Locking AI down too aggressively creates shadow IT. The right move is governed access, not exclusion."*
+
+**They are not wrong at their layer.** Do not argue against governance. Concede it, then raise the altitude.
+
+### The two risks governance cannot address
+
+**1. Acquisition / TOS-rewrite risk.** Every major AI vendor's contract includes a "we may modify these terms with 30 days notice" clause. When OpenAI, Anthropic, or Harvey gets acquired in the next 24–36 months — and the math says they will — the new owner *legally amends* the data policy. The firm has 30 days to accept or rip out a fully-deployed integration. Historical proof: Slack → Salesforce, GitHub → Microsoft, WhatsApp → Facebook. Every one of those acquisitions came with "nothing will change" — within 18–36 months, everything changed. Governance frameworks at all those customers did not help, because governance does not govern what the vendor's owner does to the contract.
+
+**2. Infrastructure region-shift risk.** Cloud AI vendors rebalance inference regions every quarter. For ITAR clients (foreign-national server prohibition), HIPAA clients (data location rules), EU clients (GDPR jurisdictional restrictions), or sanctions-adjacent matters, the firm cannot tell clients "your file got processed through a different country last week because Microsoft rebalanced." That is unanswerable if the infrastructure is not yours.
+
+### How to deliver this in conversation
+
+> *"Governance frameworks govern behavior inside the firm. They don't govern what the vendor does to the contract after you sign it. Every governance program assumes the vendor's contract, ownership, and infrastructure stay constant for 7+ years. None of those three things ever stay constant for 7 years. AION OS sits underneath the governance layer — we remove the dependencies that make the governance layer fragile."*
+
+### One-liner closer
+
+> *"AION OS is the only AI vendor where the answer to 'what if you get acquired, move regions, change pricing, or change terms' is: there's nothing to change. You own the box."*
+
+> **Use this when:** any risk practitioner, CISO, or CIO raises governance / DLP / controlled-enablement framing as an objection. This is the highest-IQ pushback you will get — and the answer reframes you as solving the layer they don't yet have a tool for.
+
+---
+
 ## THE 2-MINUTE PITCH
 
 **"Here's what we built and why it's different..."**

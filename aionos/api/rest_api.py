@@ -99,6 +99,7 @@ ROLE_PERMISSIONS: Dict[str, set] = {
         "improvement_cycle", "improvement_proposals", "improvement_policies",
         "improvement_policy", "improvement_diff", "improvement_approve",
         "improvement_reject", "improvement_rollback", "improvement_nudges",
+        "reason",
         "root",
     },
     UserRole.ANALYST: {
@@ -106,11 +107,13 @@ ROLE_PERMISSIONS: Dict[str, set] = {
         "soc_status", "soc_ingest", "soc_user_risk", "threat_profile",
         "improvement_status", "improvement_feedback", "improvement_metrics",
         "improvement_proposals", "improvement_nudges",
+        "reason",
         "root",
     },
     UserRole.VIEWER: {
         "health", "stats", "soc_status",
         "improvement_status", "improvement_metrics",
+        "reason",
         "root",
     },
     UserRole.ANONYMOUS: {
@@ -308,6 +311,111 @@ async def get_license_info(auth: tuple = Depends(require_role("stats"))):
         "success": True,
         **tier_config.to_dict(),
         "features": tier_config.features,
+    }
+
+
+# Sovereign inference endpoint — proves local LLM, no frontier-lab egress
+class ReasonRequest(BaseModel):
+    prompt: str = Field(..., min_length=1, max_length=4000)
+    max_tokens: Optional[int] = Field(default=256, ge=1, le=2048)
+    temperature: Optional[float] = Field(default=0.2, ge=0.0, le=2.0)
+
+
+@app.post("/api/v1/reason")
+async def sovereign_reason(
+    request: ReasonRequest,
+    auth: tuple = Depends(require_role("reason")),
+):
+    """
+    Single-turn local inference proof.
+
+    Calls the locally-running LLM (Ollama or LM Studio) with the supplied prompt.
+    Returns model output plus provider, latency, and tokens/sec for demo verification.
+    No frontier-lab egress — fails closed if no local provider is reachable.
+    """
+    import httpx
+    from aionos.core.reasoning_engine import _check_ollama, _check_lmstudio
+
+    started = _time.monotonic()
+    provider = None
+    model = None
+    response_text = ""
+    tokens = 0
+
+    # Prefer LM Studio (OpenAI-compatible) if running
+    if _check_lmstudio():
+        lmstudio_url = os.environ.get(
+            "LMSTUDIO_URL", "http://localhost:1234/v1/chat/completions"
+        )
+        try:
+            resp = httpx.post(
+                lmstudio_url,
+                json={
+                    "messages": [{"role": "user", "content": request.prompt}],
+                    "temperature": request.temperature,
+                    "max_tokens": request.max_tokens,
+                },
+                timeout=120,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                response_text = data["choices"][0]["message"]["content"]
+                usage = data.get("usage") or {}
+                tokens = usage.get("completion_tokens", 0)
+                model = data.get("model", "lmstudio-model")
+                provider = "lmstudio"
+        except Exception:
+            pass
+
+    # Fallback to Ollama
+    if provider is None and _check_ollama():
+        ollama_url = os.environ.get(
+            "OLLAMA_URL", "http://localhost:11434/api/generate"
+        )
+        ollama_model = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
+        try:
+            resp = httpx.post(
+                ollama_url,
+                json={
+                    "model": ollama_model,
+                    "prompt": request.prompt,
+                    "stream": False,
+                    "options": {
+                        "temperature": request.temperature,
+                        "num_predict": request.max_tokens,
+                    },
+                },
+                timeout=120,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                response_text = data.get("response", "")
+                tokens = data.get("eval_count", 0)
+                model = data.get("model", ollama_model)
+                provider = "ollama"
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail=f"Ollama unreachable: {exc}")
+
+    if provider is None:
+        raise HTTPException(
+            status_code=503,
+            detail="No local LLM provider reachable (Ollama on :11434 or LM Studio on :1234).",
+        )
+
+    latency_ms = int((_time.monotonic() - started) * 1000)
+    tokens_per_sec = round(tokens / (latency_ms / 1000), 2) if latency_ms > 0 and tokens else 0.0
+
+    return {
+        "success": True,
+        "provider": provider,
+        "model": model,
+        "response": response_text,
+        "tokens": tokens,
+        "latency_ms": latency_ms,
+        "tokens_per_sec": tokens_per_sec,
+        "sovereign": True,
+        "frontier_lab_egress": False,
+        "timestamp": datetime.utcnow().isoformat(),
     }
 
 

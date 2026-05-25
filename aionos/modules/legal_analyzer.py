@@ -53,11 +53,6 @@ class LegalAnalyzer:
         if self.use_gemini:
             return self.gemini_client.analyze(brief_content, case_context, self.engine.intensity.value)
 
-        perspectives = [
-            AgentPerspective.LEGAL_OPPONENT,
-            AgentPerspective.LEGAL_ADVISOR
-        ]
-        
         result = self.engine.analyze(
             query=brief_content,
             context={
@@ -65,7 +60,7 @@ class LegalAnalyzer:
                 "analysis_type": "legal_brief",
                 "use_case_type": "legal_brief"
             },
-            perspectives=perspectives
+            use_case_type="legal_brief"
         )
         
         self.analysis_history.append({
@@ -165,11 +160,12 @@ SUPPORTING EVIDENCE:
         
         
         result = self.engine.analyze(
-            query=argument_chain,
+            query=target,
             context={
                 "analysis_type": "argument_chain",
                 "use_case_type": "legal_argument"
-            }
+            },
+            use_case_type="legal_argument"
         )
         
         return result

@@ -54,20 +54,15 @@ class SecurityRedTeam:
         if self.use_gemini:
             return self.gemini_client.analyze(infrastructure_config, context, self.engine.intensity.value)
 
-        perspectives = [
-            AgentPerspective.SECURITY_ATTACKER,
-            AgentPerspective.TECHNICAL_FAILURE
-        ]
-        
         result = self.engine.analyze(
             query=infrastructure_config,
-            perspectives=perspectives,
             context={
                 **(context or {}),
                 "analysis_type": "infrastructure_scan",
                 "use_case_type": "security_infrastructure",
                 "authorized_pen_test": True
-            }
+            },
+            use_case_type="security_infrastructure"
         )
         
         self.scan_history.append({

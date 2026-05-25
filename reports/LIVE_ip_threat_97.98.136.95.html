@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AION OS — Live IP Threat Intelligence Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #08080d;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* ===== HEADER ===== */
+        .report-header {
+            text-align: center;
+            padding: 48px 0 40px;
+            border-bottom: 1px solid #1a1a2e;
+            margin-bottom: 36px;
+            position: relative;
+        }
+
+        .header-glow {
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 300px; height: 120px;
+            background: radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .logo {
+            font-size: 13px;
+            letter-spacing: 6px;
+            color: #00d4ff;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .report-title {
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .report-subtitle {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .classification-badge {
+            display: inline-block;
+            background: rgba(231,76,60,0.12);
+            color: #e74c3c;
+            padding: 5px 18px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-top: 18px;
+            border: 1px solid rgba(231,76,60,0.2);
+        }
+
+        .live-badge {
+            display: inline-block;
+            background: rgba(231,76,60,0.9);
+            color: #fff;
+            padding: 3px 14px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            animation: pulse-live 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-live {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* ===== ANSWER BOX ===== */
+        .answer-box {
+            background: linear-gradient(135deg, #0f1a12 0%, #0a1a0e 100%);
+            border: 2px solid #2ecc71;
+            border-radius: 10px;
+            padding: 32px;
+            margin-bottom: 28px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #2ecc71, transparent);
+        }
+
+        .answer-question {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .answer-result {
+            font-size: 36px;
+            font-weight: 800;
+            color: #2ecc71;
+            margin-bottom: 8px;
+        }
+
+        .answer-detail {
+            font-size: 15px;
+            color: #aaa;
+        }
+
+        /* ===== RISK BANNER ===== */
+        .risk-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            background: linear-gradient(135deg, #1a1008 0%, #1a0f08 100%);
+            border: 1px solid rgba(243,156,18,0.3);
+            border-radius: 10px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+        }
+
+        .risk-score-circle {
+            width: 100px; height: 100px;
+            border-radius: 50%;
+            border: 4px solid #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .risk-score-circle::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1px solid rgba(243,156,18,0.15);
+        }
+
+        .risk-number {
+            font-size: 36px;
+            font-weight: 800;
+            color: #f39c12;
+            line-height: 1;
+        }
+
+        .risk-max {
+            font-size: 11px;
+            color: #888;
+        }
+
+        .risk-info { text-align: left; }
+
+        .risk-level {
+            font-size: 22px;
+            font-weight: 700;
+            color: #f39c12;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .risk-sublabel { color: #888; font-size: 12px; margin-top: 2px; }
+
+        .risk-meta {
+            margin-top: 8px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .risk-meta-item {
+            font-size: 11px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .risk-meta-item .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #00d4ff;
+        }
+
+        /* ===== ALERT BOX ===== */
+        .alert-box {
+            display: flex;
+            gap: 16px;
+            padding: 18px 22px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            background: rgba(231,76,60,0.06);
+            border: 1px solid rgba(231,76,60,0.2);
+            border-left: 4px solid #e74c3c;
+        }
+
+        .alert-icon { font-size: 22px; line-height: 1.4; }
+
+        .alert-title {
+            font-weight: 700;
+            color: #e74c3c;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .alert-text { font-size: 13px; color: #bbb; line-height: 1.7; }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            background: #0e0e16;
+            border: 1px solid #1a1a2e;
+            border-radius: 10px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #1a1a2e;
+        }
+
+        /* ===== IP DETAIL GRID ===== */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: #08080d;
+            border-radius: 5px;
+            border: 1px solid #131320;
+        }
+
+        .detail-label {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            color: #e0e0e0;
+            font-weight: 600;
+            font-size: 13px;
+            text-align: right;
+        }
+
+        .detail-value.red { color: #e74c3c; }
+        .detail-value.green { color: #2ecc71; }
+        .detail-value.amber { color: #f39c12; }
+        .detail-value.blue { color: #00d4ff; }
+
+        .detail-row.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* ===== THREAT INDICATORS ===== */
+        .indicator {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: rgba(231,76,60,0.04);
+            border-left: 3px solid #e74c3c;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .indicator-icon {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 1px;
+        }
+
+        .indicator-text { font-size: 13px; color: #ccc; }
+
+        /* ===== ASSESSMENT ===== */
+        .meaning-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #131320;
+        }
+
+        .meaning-item:last-child { border-bottom: none; }
+
+        .meaning-num {
+            width: 28px; height: 28px;
+            min-width: 28px;
+            background: rgba(0,212,255,0.1);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00d4ff;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .meaning-text { font-size: 14px; color: #ccc; line-height: 1.7; }
+        .meaning-text strong { color: #fff; }
+
+        /* ===== RECOMMENDATIONS ===== */
+        .rec {
+            display: flex;
+            gap: 14px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            background: #08080d;
+            border-radius: 6px;
+            border: 1px solid #131320;
+        }
+
+        .rec.urgent {
+            border-left: 3px solid #e74c3c;
+            background: rgba(231,76,60,0.03);
+        }
+
+        .rec-num {
+            color: #00d4ff;
+            font-weight: 800;
+            font-size: 14px;
+            min-width: 20px;
+        }
+
+        .rec-text { font-size: 13px; color: #ccc; line-height: 1.6; }
+        .rec-text strong { color: #e74c3c; }
+
+        /* ===== SUBPOENA BOX ===== */
+        .subpoena-box {
+            background: linear-gradient(135deg, #0d0d1a 0%, #0a0f1a 100%);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 10px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .subpoena-title {
+            font-size: 12px;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .subpoena-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 8px 16px;
+            font-size: 13px;
+        }
+
+        .subpoena-label {
+            color: #666;
+            font-weight: 600;
+            text-align: right;
+            padding: 4px 0;
+        }
+
+        .subpoena-value {
+            color: #e0e0e0;
+            padding: 4px 0;
+            font-family: 'Consolas', 'Fira Code', monospace;
+        }
+
+        /* ===== FOOTER ===== */
+        .report-footer {
+            text-align: center;
+            padding: 36px 0 20px;
+            border-top: 1px solid #1a1a2e;
+            margin-top: 36px;
+        }
+
+        .footer-engine {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #0e0e16;
+            border: 1px solid #1a1a2e;
+            padding: 10px 24px;
+            border-radius: 6px;
+        }
+
+        .footer-engine .engine-name {
+            color: #00d4ff;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 2px;
+        }
+
+        .footer-engine .engine-detail {
+            color: #555;
+            font-size: 11px;
+        }
+
+        .footer-legal {
+            font-size: 10px;
+            color: #444;
+            margin-top: 14px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 700px) {
+            .detail-grid { grid-template-columns: 1fr; }
+            .risk-banner { flex-direction: column; text-align: center; }
+            .risk-info { text-align: center; }
+            .risk-meta { justify-content: center; }
+            .subpoena-grid { grid-template-columns: 1fr; }
+            .subpoena-label { text-align: left; }
+        }
+
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+            body { background: #08080d !important; color: #e0e0e0 !important; -webkit-text-size-adjust: 100%; }
+            .container { padding: 20px 16px; }
+            .section { background: #0e0e16 !important; border-color: #1a1a2e !important; }
+            .answer-box { background: linear-gradient(135deg, #0f1a12 0%, #0a1a0e 100%) !important; border-color: #2ecc71 !important; }
+            .detail-row { background: #08080d !important; border-color: #131320 !important; }
+            .risk-banner { background: linear-gradient(135deg, #1a1008 0%, #1a0f08 100%) !important; }
+            .alert-box { background: rgba(231,76,60,0.06) !important; }
+            .subpoena-box { background: linear-gradient(135deg, #0d0d1a 0%, #0a0f1a 100%) !important; }
+            .rec { background: #08080d !important; }
+            .footer-engine { background: #0e0e16 !important; }
+            .live-badge { animation: none; opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="report-header">
+        <div class="header-glow"></div>
+        <div class="logo">AION OS</div>
+        <div class="report-title">IP Threat Intelligence Report</div>
+        <div class="report-subtitle">Generated April 15, 2026 &mdash; Analysis Engine v1.0.0</div>
+        <div><span class="live-badge">&#9679; LIVE INVESTIGATION</span></div>
+        <div class="classification-badge">Confidential &mdash; Authorized Recipients Only</div>
+    </div>
+
+    <!-- PRIMARY ANSWER -->
+    <div class="answer-box">
+        <div class="answer-question">Is IP 97.98.136.95 a residential geolocation?</div>
+        <div class="answer-result">YES &mdash; CONFIRMED RESIDENTIAL</div>
+        <div class="answer-detail">Charter Communications Inc (Spectrum) &mdash; Fixed Line ISP &mdash; Houston, TX 77250</div>
+    </div>
+
+    <!-- RISK SCORE -->
+    <div class="risk-banner">
+        <div class="risk-score-circle">
+            <div class="risk-number">50</div>
+            <div class="risk-max">/100</div>
+        </div>
+        <div class="risk-info">
+            <div class="risk-level">Medium Risk</div>
+            <div class="risk-sublabel">Overall Threat Assessment</div>
+            <div class="risk-meta">
+                <div class="risk-meta-item"><span class="dot"></span> 0.031ms analysis</div>
+                <div class="risk-meta-item"><span class="dot"></span> 100% offline</div>
+                <div class="risk-meta-item"><span class="dot"></span> 0 API calls</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROXY ALERT -->
+    <div class="alert-box">
+        <div class="alert-icon">&#9888;</div>
+        <div>
+            <div class="alert-title">ANONYMOUS RESIDENTIAL PROXY DETECTED</div>
+            <div class="alert-text">
+                This IP is registered to a residential Spectrum subscriber, but is simultaneously operating as an 
+                <strong style="color:#e74c3c">anonymous proxy</strong>. The actual threat actor may be routing traffic 
+                through this home connection to mask their true location. The residential subscriber may be the 
+                actor or an unknowing victim with a compromised device.
+            </div>
+        </div>
+    </div>
+
+    <!-- IP INTELLIGENCE -->
+    <div class="section">
+        <div class="section-title">IP Intelligence</div>
+        <div class="detail-grid">
+            <div class="detail-row">
+                <span class="detail-label">IP Address</span>
+                <span class="detail-value blue">97.98.136.95</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Country</span>
+                <span class="detail-value">United States</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Region</span>
+                <span class="detail-value">Texas</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">City</span>
+                <span class="detail-value">Houston</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">ZIP Code</span>
+                <span class="detail-value">77250</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Coordinates</span>
+                <span class="detail-value">29.7630&deg;N, 95.3621&deg;W</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">ISP</span>
+                <span class="detail-value">Charter Communications Inc</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">ISP Type</span>
+                <span class="detail-value green">RESIDENTIAL</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Domain</span>
+                <span class="detail-value">spectrum.com</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">ASN</span>
+                <span class="detail-value">AS11427</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Net Speed</span>
+                <span class="detail-value">Broadband / Cable / Fiber</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Area Code</span>
+                <span class="detail-value">281 / 713</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Anonymous Proxy</span>
+                <span class="detail-value red">YES</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Proxy Type</span>
+                <span class="detail-value red">RESIDENTIAL PROXY (RES)</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Fraud Score</span>
+                <span class="detail-value amber">50 / 100</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Last Seen</span>
+                <span class="detail-value">~April 4, 2026 (11 days ago)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- THREAT INDICATORS -->
+    <div class="section">
+        <div class="section-title">Threat Indicators</div>
+        <div class="indicator">
+            <span class="indicator-icon">&#9679;</span>
+            <span class="indicator-text">Residential proxy detected &mdash; likely a compromised device being used as a relay to mask the true origin of traffic</span>
+        </div>
+        <div class="indicator">
+            <span class="indicator-icon">&#9679;</span>
+            <span class="indicator-text">Anonymous proxy flag active &mdash; the connecting party is deliberately hiding their real IP address</span>
+        </div>
+        <div class="indicator">
+            <span class="indicator-icon">&#9679;</span>
+            <span class="indicator-text">Residential ISP operating as proxy &mdash; possible botnet or compromised home device in the Houston, TX area</span>
+        </div>
+        <div class="indicator">
+            <span class="indicator-icon">&#9679;</span>
+            <span class="indicator-text">Last observed approximately April 4, 2026 &mdash; activity is recent</span>
+        </div>
+    </div>
+
+    <!-- ASSESSMENT -->
+    <div class="section">
+        <div class="section-title">Assessment</div>
+        <div class="meaning-item">
+            <div class="meaning-num">1</div>
+            <div class="meaning-text">
+                <strong>Confirmed Residential.</strong> IP 97.98.136.95 is allocated to Charter Communications (Spectrum) 
+                and serves a residential broadband subscriber in the Houston, Texas metropolitan area (ZIP 77250, area codes 281/713).
+            </div>
+        </div>
+        <div class="meaning-item">
+            <div class="meaning-num">2</div>
+            <div class="meaning-text">
+                <strong>Operating as Anonymous Proxy.</strong> Despite being residential, this IP is flagged as an active anonymous 
+                residential proxy. This means external parties can route their traffic through this connection to appear as though 
+                they are located at this Houston address.
+            </div>
+        </div>
+        <div class="meaning-item">
+            <div class="meaning-num">3</div>
+            <div class="meaning-text">
+                <strong>Two Possible Scenarios.</strong> (A) The subscriber at this address is the actual threat actor using their 
+                home connection, OR (B) the subscriber is an unknowing victim whose device has been compromised and enrolled 
+                in a residential proxy network &mdash; the actual attacker is elsewhere.
+            </div>
+        </div>
+        <div class="meaning-item">
+            <div class="meaning-num">4</div>
+            <div class="meaning-text">
+                <strong>Subscriber Identification Requires Subpoena.</strong> The name and physical address of the 
+                Spectrum subscriber is held by Charter Communications and can only be obtained through a legal subpoena. 
+                No external tool can bypass this &mdash; it is ISP privacy law.
+            </div>
+        </div>
+    </div>
+
+    <!-- RECOMMENDATIONS -->
+    <div class="section">
+        <div class="section-title">Recommended Actions</div>
+        <div class="rec urgent">
+            <span class="rec-num">1</span>
+            <span class="rec-text"><strong>IMMEDIATE:</strong> Block IP 97.98.136.95 at the firewall and VPN gateway to prevent further access.</span>
+        </div>
+        <div class="rec urgent">
+            <span class="rec-num">2</span>
+            <span class="rec-text"><strong>IMMEDIATE:</strong> Preserve all logs referencing this IP &mdash; firewall, VPN, application, email &mdash; for evidentiary purposes.</span>
+        </div>
+        <div class="rec">
+            <span class="rec-num">3</span>
+            <span class="rec-text">Review all user sessions and access events originating from this IP in the last 30 days to determine scope of exposure.</span>
+        </div>
+        <div class="rec">
+            <span class="rec-num">4</span>
+            <span class="rec-text">Investigate whether any authorized users have legitimate reasons to route traffic through anonymous residential proxies.</span>
+        </div>
+        <div class="rec">
+            <span class="rec-num">5</span>
+            <span class="rec-text">Consider reporting to Charter/Spectrum abuse department if the subscriber appears to be a compromised device relay.</span>
+        </div>
+        <div class="rec">
+            <span class="rec-num">6</span>
+            <span class="rec-text">If firm access logs are available, AION OS can correlate this IP against internal activity to show exactly what was accessed, by whom, and when.</span>
+        </div>
+    </div>
+
+    <!-- SUBPOENA REFERENCE -->
+    <div class="subpoena-box">
+        <div class="subpoena-title">Subpoena Reference &mdash; Subscriber Identification</div>
+        <div class="subpoena-grid">
+            <span class="subpoena-label">ISP:</span>
+            <span class="subpoena-value">Charter Communications Inc (dba Spectrum)</span>
+            <span class="subpoena-label">ASN:</span>
+            <span class="subpoena-value">AS11427</span>
+            <span class="subpoena-label">Target IP:</span>
+            <span class="subpoena-value">97.98.136.95</span>
+            <span class="subpoena-label">Activity Date:</span>
+            <span class="subpoena-value">~April 4, 2026</span>
+            <span class="subpoena-label">Location:</span>
+            <span class="subpoena-value">Houston, TX 77250 (29.7630&deg;N, 95.3621&deg;W)</span>
+            <span class="subpoena-label">Request:</span>
+            <span class="subpoena-value">Subscriber name and physical address for IP at time of activity</span>
+        </div>
+    </div>
+
+    <!-- IOCs -->
+    <div class="section">
+        <div class="section-title">Indicators of Compromise (IOCs)</div>
+        <div class="detail-grid">
+            <div class="detail-row full-width">
+                <span class="detail-label">IP Address</span>
+                <span class="detail-value" style="font-family: Consolas, monospace;">97.98.136.95</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">ASN</span>
+                <span class="detail-value" style="font-family: Consolas, monospace;">AS11427</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Domain</span>
+                <span class="detail-value" style="font-family: Consolas, monospace;">spectrum.com</span>
+            </div>
+            <div class="detail-row full-width">
+                <span class="detail-label">Proxy Classification</span>
+                <span class="detail-value red" style="font-family: Consolas, monospace;">residential_proxy (anonymous)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="report-footer">
+        <div class="footer-engine">
+            <span class="engine-name">AION OS</span>
+            <span class="engine-detail">IP Intelligence Engine v1.0.0 &nbsp;|&nbsp; 100% Offline &nbsp;|&nbsp; 0 API Calls &nbsp;|&nbsp; 0.031ms</span>
+        </div>
+        <div class="footer-legal">
+            This report was generated entirely offline. No data was transmitted to any external service.<br>
+            All intelligence derived from locally-stored databases and manually-ingested field data.<br>
+            &copy; 2026 EchoWorks AI &mdash; AION OS
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AION OS — IP Threat Intelligence Report: 97.98.136.95</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+        
+        /* Header */
+        .report-header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid #1a1a2e;
+            margin-bottom: 32px;
+        }
+        
+        .logo {
+            font-size: 14px;
+            letter-spacing: 4px;
+            color: #00d4ff;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        .report-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .report-subtitle {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .classification {
+            display: inline-block;
+            background: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+            padding: 4px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 16px;
+        }
+        
+        /* Risk Banner */
+        .risk-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            background: rgba(243,156,18, 0.1);
+            border: 1px solid #f39c1240;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .risk-score {
+            font-size: 64px;
+            font-weight: 800;
+            color: #f39c12;
+            line-height: 1;
+        }
+        
+        .risk-details {
+            text-align: left;
+        }
+        
+        .risk-level {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f39c12;
+            text-transform: uppercase;
+        }
+        
+        .risk-label { color: #888; font-size: 13px; }
+        
+        /* Alert Box */
+        .alert-box {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin-bottom: 24px;
+        }
+        
+        .alert-box.critical {
+            background: rgba(231, 76, 60, 0.1);
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .alert-icon { font-size: 24px; }
+        .alert-content { font-size: 14px; line-height: 1.6; }
+        .alert-content strong { color: #e74c3c; }
+        
+        /* Section */
+        .section {
+            background: #12121a;
+            border: 1px solid #1a1a2e;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .section h3 {
+            font-size: 16px;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #1a1a2e;
+        }
+        
+        /* IP Details Grid */
+        .ip-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .ip-field {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #0a0a0f;
+            border-radius: 4px;
+        }
+        
+        .ip-field-label { color: #888; font-size: 13px; }
+        .ip-field-value { color: #fff; font-weight: 600; font-size: 13px; }
+        .ip-field-value.highlight { color: #e74c3c; }
+        .ip-field-value.safe { color: #2ecc71; }
+        
+        /* Stats Grid */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 16px 8px;
+            background: #0a0a0f;
+            border-radius: 6px;
+            border: 1px solid #1a1a2e;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #00d4ff;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+        
+        /* Tables */
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+        
+        .events-table th {
+            background: #0a0a0f;
+            padding: 10px 12px;
+            text-align: left;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+        
+        .events-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #1a1a2e;
+            color: #ccc;
+        }
+        
+        .events-table tr:hover td {
+            background: rgba(0, 212, 255, 0.05);
+        }
+        
+        /* Lists */
+        .threat-list, .rec-list, .ioc-list, .notes-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .threat-reason, .correlation-note {
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: rgba(231, 76, 60, 0.08);
+            border-left: 3px solid #e74c3c;
+            border-radius: 0 4px 4px 0;
+            font-size: 14px;
+        }
+        
+        .rec-item {
+            padding: 10px 12px 10px 48px;
+            margin-bottom: 8px;
+            background: #0a0a0f;
+            border-radius: 4px;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .rec-item.high {
+            border-left: 3px solid #e74c3c;
+            background: rgba(231, 76, 60, 0.05);
+        }
+        
+        .rec-num {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: #00d4ff;
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .ioc-item {
+            padding: 6px 12px;
+            margin-bottom: 4px;
+        }
+        
+        .ioc-item code {
+            background: #0a0a0f;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            color: #f39c12;
+            font-size: 13px;
+        }
+        
+        .no-data {
+            color: #666;
+            font-style: italic;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .timeline-range {
+            color: #888;
+            font-size: 12px;
+            margin-top: 12px;
+            text-align: right;
+        }
+        
+        /* Summary */
+        .summary-text {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #ccc;
+            padding: 8px 0;
+        }
+        
+        /* Footer */
+        .report-footer {
+            text-align: center;
+            padding: 32px 0;
+            border-top: 1px solid #1a1a2e;
+            margin-top: 32px;
+        }
+        
+        .footer-badge {
+            display: inline-block;
+            background: #12121a;
+            border: 1px solid #1a1a2e;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #888;
+            letter-spacing: 1px;
+        }
+        
+        .footer-badge span { color: #00d4ff; }
+        
+        .footer-meta {
+            font-size: 11px;
+            color: #555;
+            margin-top: 12px;
+        }
+        
+        @media print {
+            body { background: #fff; color: #333; }
+            .section { border-color: #ddd; background: #fafafa; }
+            .risk-banner { border-color: #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="report-header">
+            <div class="logo">AION OS</div>
+            <div class="report-title">IP Threat Intelligence Report</div>
+            <div class="report-subtitle">Target: 97.98.136.95 | Generated: 2026-04-15T15:36:51</div>
+            <div class="classification">CONFIDENTIAL — AUTHORIZED RECIPIENTS ONLY</div>
+        </div>
+        
+        <!-- Risk Banner -->
+        <div class="risk-banner">
+            <div class="risk-score">50</div>
+            <div class="risk-details">
+                <div class="risk-level">MEDIUM RISK</div>
+                <div class="risk-label">Overall Threat Assessment</div>
+            </div>
+        </div>
+        
+        
+            <div class="alert-box critical">
+                <div class="alert-icon">&#9888;</div>
+                <div class="alert-content">
+                    <strong>ANONYMOUS PROXY DETECTED</strong><br>
+                    Type: RESIDENTIAL PROXY<br>
+                    This IP is deliberately obfuscating the true origin of traffic.
+                    Residential proxy pattern suggests a compromised device being used as a relay.
+                </div>
+            </div>
+            
+        
+        <!-- Executive Summary -->
+        <div class="section">
+            <h3>Executive Summary</h3>
+            <p class="summary-text">Analysis of IP 97.98.136.95 — Charter Communications Inc (Houston, Texas, US). This IP is flagged as an ANONYMOUS PROXY (Residential Proxy). Traffic routed through this address is being deliberately obfuscated. The IP belongs to a residential ISP but operates as a proxy, indicating a potentially compromised device being used as a relay. This is a common tactic in advanced persistent threats. Overall risk assessment: 50/100.</p>
+        </div>
+        
+        <!-- IP Details -->
+        <div class="section">
+            <h3>IP Intelligence</h3>
+            <div class="ip-grid">
+                <div class="ip-field">
+                    <span class="ip-field-label">IP Address</span>
+                    <span class="ip-field-value">97.98.136.95</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">Location</span>
+                    <span class="ip-field-value">Houston, Texas (US)</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">ISP</span>
+                    <span class="ip-field-value">Charter Communications Inc</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">ISP Type</span>
+                    <span class="ip-field-value">RESIDENTIAL</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">ASN</span>
+                    <span class="ip-field-value">AS11427</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">Domain</span>
+                    <span class="ip-field-value">spectrum.com</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">Anonymous Proxy</span>
+                    <span class="ip-field-value highlight">YES</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">Proxy Type</span>
+                    <span class="ip-field-value highlight">
+                        RESIDENTIAL PROXY
+                    </span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">Threat Score</span>
+                    <span class="ip-field-value">50/100</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">Threat Category</span>
+                    <span class="ip-field-value" style="color: #2ecc71">CLEAN</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">Net Speed</span>
+                    <span class="ip-field-value">(DSL) Broadband/Cable/Fiber/Mobile</span>
+                </div>
+                <div class="ip-field">
+                    <span class="ip-field-label">ZIP Code</span>
+                    <span class="ip-field-value">77250</span>
+                </div>
+            </div>
+        </div>
+        
+        
+        
+                <div class="section">
+                    <h3>Internal Activity Correlation</h3>
+                    <p class="no-data">No matching events found in ingested firm access logs. 
+                    Ingest VPN, firewall, and application logs to enable correlation.</p>
+                </div>
+                
+        
+            <div class="section">
+                <h3>Recommendations</h3>
+                <ol class="rec-list"><li class="rec-item normal"><span class="rec-num">1</span> Investigate proxy usage — determine if any authorized users have legitimate reasons to route traffic through anonymous proxies</li><li class="rec-item normal"><span class="rec-num">2</span> This residential proxy pattern suggests a compromised device relay. Consider reporting to ISP (Charter/Spectrum) abuse department</li><li class="rec-item normal"><span class="rec-num">3</span> Preserve all logs referencing this IP for potential legal proceedings. A subpoena to the ISP can identify the subscriber</li><li class="rec-item normal"><span class="rec-num">4</span> Add this IP to the permanent watchlist for ongoing monitoring</li><li class="rec-item normal"><span class="rec-num">5</span> Document findings for inclusion in incident response report</li><li class="rec-item normal"><span class="rec-num">6</span> For subscriber identification: Legal team can issue subpoena to Charter Communications Inc (Spectrum) — AS11427. Include IP address, timestamps, and suspected activity in the request</li></ol>
+            </div>
+            
+        
+            <div class="section">
+                <h3>Indicators of Compromise (IOCs)</h3>
+                <ul class="ioc-list"><li class="ioc-item"><code>Domain: spectrum.com</code></li><li class="ioc-item"><code>Proxy Type: residential_proxy</code></li><li class="ioc-item"><code>ASN: AS11427</code></li><li class="ioc-item"><code>IP: 97.98.136.95</code></li></ul>
+            </div>
+            
+        
+        <!-- Footer -->
+        <div class="report-footer">
+            <div class="footer-badge">
+                <span>AION OS</span> — IP Intelligence Engine v1.0.0 | 100% OFFLINE
+            </div>
+            <div class="footer-meta">
+                Analysis completed in 0.0ms | No external API calls | No data transmitted
+            </div>
+        </div>
+    </div>
+</body>
+</html>

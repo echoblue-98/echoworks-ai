@@ -350,6 +350,14 @@ def main():
 
     api_key = api_key or _get_api_key()
 
+    # Open the visual dashboard in browser
+    dashboard_path = Path(__file__).parent / "dashboard.html"
+    if dashboard_path.exists():
+        import webbrowser
+        webbrowser.open(str(dashboard_path))
+        print(f"  🌐 Dashboard opened in browser")
+        print()
+
     # Step 3: Start file watcher
     observer, handler = step_3_start_watcher(api_key)
 

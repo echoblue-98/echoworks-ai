@@ -1,510 +1,312 @@
 <script lang="ts">
+	// ═══════════════════════════════════════════════════════════
+	// AION OS — Sovereign Operator Dashboard (4-tile)
+	// ═══════════════════════════════════════════════════════════
+	// Four tiles. Equal weight. No charts on the main page.
+	// Binary health. Since-visit volume. RSI state. Audit drawer.
+	//
+	// Subtraction as efficiency. Optimize for what does not exist.
+	// The operator surface IS the audit surface.
+	//
+	// Engineer telemetry (precision/recall/F1) lives at /dashboard/metrics
+	// and is reachable from the footer only.
+	// ═══════════════════════════════════════════════════════════
+
 	import { onMount } from 'svelte';
 	import {
 		getHealth,
-		getStats,
-		getSOCStatus,
 		getImprovementStatus,
-		getMetricsJson,
-		getImprovementMetrics,
+		getAuditLogs,
 	} from '$lib/api/client';
 	import type {
 		HealthResponse,
-		StatsResponse,
-		SOCStatusResponse,
 		ImprovementStatus,
-		MetricsJsonResponse,
-		DetectionMetrics,
+		AuditLogsResponse,
 	} from '$lib/api/types';
 
-	// Reactive state
+	const LAST_VISIT_KEY = 'aion_last_visit_iso';
+
+	// Reactive state — only what the four tiles need
 	let health: HealthResponse | null = $state(null);
-	let stats: StatsResponse | null = $state(null);
-	let socStatus: SOCStatusResponse | null = $state(null);
+	let healthOk = $state(false);
 	let improvement: ImprovementStatus | null = $state(null);
-	let metrics: MetricsJsonResponse | null = $state(null);
-	let detectionMetrics: DetectionMetrics | null = $state(null);
+	let audit: AuditLogsResponse | null = $state(null);
+	let lastVisitIso = $state<string | null>(null);
 	let loading = $state(true);
-	let errors: string[] = $state([]);
+
+	// Derived tile values
+	let volumeSinceVisit = $derived(computeVolume(audit, lastVisitIso));
+	let policyVersion = $derived(improvement?.active_policy_version ?? null);
+	let pendingProposals = $derived(improvement?.pending_proposals ?? 0);
+	let totalFeedback = $derived(improvement?.total_feedback ?? 0);
 
 	onMount(() => {
+		// Capture prior visit BEFORE overwriting — that's what "since-visit" is.
+		if (typeof window !== 'undefined') {
+			lastVisitIso = localStorage.getItem(LAST_VISIT_KEY);
+			localStorage.setItem(LAST_VISIT_KEY, new Date().toISOString());
+		}
+
 		fetchAll();
-		const interval = setInterval(fetchAll, 10_000);
+		const interval = setInterval(fetchAll, 15_000);
 		return () => clearInterval(interval);
 	});
 
 	async function fetchAll() {
-		errors = [];
-		const [hRes, sRes, socRes, impRes, mRes, dmRes] = await Promise.all([
+		const [hRes, impRes, audRes] = await Promise.all([
 			getHealth(),
-			getStats(),
-			getSOCStatus(),
 			getImprovementStatus(),
-			getMetricsJson(),
-			getImprovementMetrics(),
+			getAuditLogs({ limit: 200 }),
 		]);
 
-		if (hRes.ok) health = hRes.data; else errors.push(`Health: ${hRes.error.message}`);
-		if (sRes.ok) stats = sRes.data; else errors.push(`Stats: ${sRes.error.message}`);
-		if (socRes.ok) socStatus = socRes.data;
+		if (hRes.ok) {
+			health = hRes.data;
+			healthOk = hRes.data?.status === 'operational';
+		} else {
+			healthOk = false;
+		}
 		if (impRes.ok) improvement = impRes.data;
-		if (mRes.ok) metrics = mRes.data;
-		if (dmRes.ok) detectionMetrics = dmRes.data;
+		if (audRes.ok) audit = audRes.data;
 
 		loading = false;
 	}
 
-	// Helpers
-	function fmtNum(n: number | undefined): string {
-		if (n == null) return '—';
-		return n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n);
+	function computeVolume(
+		a: AuditLogsResponse | null,
+		sinceIso: string | null,
+	): number {
+		if (!a?.logs) return 0;
+		if (!sinceIso) return a.logs.length;
+		const sinceMs = new Date(sinceIso).getTime();
+		if (Number.isNaN(sinceMs)) return a.logs.length;
+		return a.logs.filter((log: any) => {
+			const ts = log?.timestamp ?? log?.ts;
+			if (!ts) return false;
+			const ms = new Date(ts).getTime();
+			return !Number.isNaN(ms) && ms >= sinceMs;
+		}).length;
 	}
 
-	function pct(n: number | undefined): string {
-		if (n == null) return '—';
-		return (n * 100).toFixed(1) + '%';
+	function fmtSinceVisit(iso: string | null): string {
+		if (!iso) return 'first visit';
+		const d = new Date(iso);
+		if (Number.isNaN(d.getTime())) return 'first visit';
+		return d.toLocaleString();
+	}
+
+	function recentEvents(a: AuditLogsResponse | null, n = 5): any[] {
+		if (!a?.logs) return [];
+		return a.logs.slice(0, n);
 	}
 </script>
 
 {#if loading}
 	<div class="loading-state">
-		<div class="spinner"></div>
-		<p>Connecting to AION OS backend…</p>
+		<p>Connecting…</p>
 	</div>
 {:else}
 
-<!-- Error banner -->
-{#if errors.length > 0}
-	<div class="error-banner">
-		<span class="error-icon">⚠</span>
-		<span>{errors.join(' · ')}</span>
-	</div>
-{/if}
+<!-- Four tiles. Equal weight. -->
+<section class="tile-grid">
 
-<!-- ── Row 1: Key Stats ────────────────────────────── -->
-<section class="stat-row">
-	<div class="stat-card">
-		<div class="stat-value" class:success={health?.status === 'operational'}>
-			{health?.status ?? 'unknown'}
+	<!-- ── Tile 1: HEALTH (binary) ─────────────────── -->
+	<a href="/dashboard/improvement" class="tile" class:tile-ok={healthOk} class:tile-bad={!healthOk}>
+		<div class="tile-label">Health</div>
+		<div class="tile-glyph">{healthOk ? '✓' : '✗'}</div>
+		<div class="tile-sub">
+			{healthOk ? 'operational' : 'attention required'}
+			{#if policyVersion !== null}
+				<span class="tile-meta">policy v{policyVersion}</span>
+			{/if}
 		</div>
-		<div class="stat-label">API Status</div>
-	</div>
-	<div class="stat-card">
-		<div class="stat-value primary">{fmtNum(stats?.statistics?.total_analyses)}</div>
-		<div class="stat-label">Analyses Run</div>
-	</div>
-	<div class="stat-card">
-		<div class="stat-value warning">{fmtNum(stats?.statistics?.total_vulnerabilities)}</div>
-		<div class="stat-label">Vulns Found</div>
-	</div>
-	<div class="stat-card">
-		<div class="stat-value primary">{fmtNum(stats?.statistics?.total_critical)}</div>
-		<div class="stat-label">Critical</div>
-	</div>
-	<div class="stat-card">
-		<div class="stat-value">{fmtNum(socStatus?.total_alerts)}</div>
-		<div class="stat-label">SOC Alerts</div>
-	</div>
-	<div class="stat-card">
-		<div class="stat-value">{fmtNum(socStatus?.pattern_detections)}</div>
-		<div class="stat-label">Patterns Hit</div>
-	</div>
+	</a>
+
+	<!-- ── Tile 2: VOLUME (since-visit) ────────────── -->
+	<a href="#audit" class="tile">
+		<div class="tile-label">Volume</div>
+		<div class="tile-glyph">{volumeSinceVisit}</div>
+		<div class="tile-sub">
+			events since your last visit
+			<span class="tile-meta">prior: {fmtSinceVisit(lastVisitIso)}</span>
+		</div>
+	</a>
+
+	<!-- ── Tile 3: RSI (improvement engine) ────────── -->
+	<a href="/dashboard/improvement" class="tile">
+		<div class="tile-label">RSI</div>
+		<div class="tile-glyph">{pendingProposals}</div>
+		<div class="tile-sub">
+			pending proposals for your review
+			<span class="tile-meta">{totalFeedback} feedback items captured</span>
+		</div>
+	</a>
+
+	<!-- ── Tile 4: AUDIT DRAWER (preview) ──────────── -->
+	<a href="/dashboard/soc" class="tile tile-audit" id="audit">
+		<div class="tile-label">Audit</div>
+		<div class="tile-glyph audit-count">{audit?.count ?? 0}</div>
+		<div class="tile-sub">
+			events recorded · click for full drawer
+		</div>
+	</a>
 </section>
 
-<!-- ── Row 2: Detection Quality + SOC Summary ──────── -->
-<section class="grid-2col">
-	<!-- Detection Quality -->
-	<div class="panel">
-		<h2 class="panel-title">Detection Quality</h2>
-		{#if detectionMetrics}
-			<div class="metrics-grid">
-				<div class="metric-item">
-					<div class="metric-val success">{pct(detectionMetrics.metrics?.precision)}</div>
-					<div class="metric-lbl">Precision</div>
-				</div>
-				<div class="metric-item">
-					<div class="metric-val success">{pct(detectionMetrics.metrics?.recall)}</div>
-					<div class="metric-lbl">Recall</div>
-				</div>
-				<div class="metric-item">
-					<div class="metric-val">{pct(detectionMetrics.metrics?.f1_score)}</div>
-					<div class="metric-lbl">F1 Score</div>
-				</div>
-				<div class="metric-item">
-					<div class="metric-val warning">{pct(detectionMetrics.metrics?.noise_ratio)}</div>
-					<div class="metric-lbl">Noise Ratio</div>
-				</div>
-			</div>
-			<div class="composite-score">
-				<span>Composite Score</span>
-				<span class="score-val">{detectionMetrics.score?.toFixed(2) ?? '—'}</span>
-			</div>
-		{:else}
-			<p class="empty-text">No detection metrics available</p>
-		{/if}
+<!-- Audit drawer — append-only event stream, the operator's full system memory -->
+<section class="audit-drawer">
+	<div class="drawer-header">
+		<h2>Audit drawer</h2>
+		<a href="/dashboard/soc" class="drawer-link">open full →</a>
 	</div>
-
-	<!-- SOC Summary -->
-	<div class="panel">
-		<h2 class="panel-title">SOC Status</h2>
-		{#if socStatus}
-			<div class="soc-status-line">
-				Status: <span class="badge" class:badge-ok={socStatus.status === 'active'}>{socStatus.status}</span>
-			</div>
-
-			{#if socStatus.high_risk_users.length > 0}
-				<h3 class="sub-title">High-Risk Users</h3>
-				<div class="risk-user-list">
-					{#each socStatus.high_risk_users.slice(0, 5) as user}
-						<a href="/dashboard/soc/users/{user.user_id}" class="risk-user-row">
-							<span class="user-id">{user.user_id}</span>
-							<span class="risk-badge" class:critical={user.risk_score > 75} class:high={user.risk_score > 50 && user.risk_score <= 75}>
-								{user.risk_score}
-							</span>
-						</a>
-					{/each}
+	{#if recentEvents(audit, 10).length === 0}
+		<p class="empty-text">No events recorded.</p>
+	{:else}
+		<div class="event-list">
+			{#each recentEvents(audit, 10) as evt}
+				<div class="event-row">
+					<span class="event-time">{evt?.timestamp ?? evt?.ts ?? '—'}</span>
+					<span class="event-type">{evt?.event_type ?? evt?.type ?? 'event'}</span>
+					<span class="event-actor">{evt?.user_id ?? evt?.actor ?? 'system'}</span>
 				</div>
-			{:else}
-				<p class="empty-text">No high-risk users</p>
-			{/if}
-
-			{#if socStatus.recent_alerts.length > 0}
-				<h3 class="sub-title">Recent Alerts</h3>
-				<div class="alert-list">
-					{#each socStatus.recent_alerts.slice(0, 4) as alert}
-						<div class="alert-row">
-							<span class="alert-type">{alert.alert_type}</span>
-							<span class="alert-sev sev-{alert.severity}">{alert.severity}</span>
-							<span class="alert-user">{alert.user_id}</span>
-						</div>
-					{/each}
-				</div>
-			{/if}
-
-			<a href="/dashboard/soc" class="panel-link">View Full SOC →</a>
-		{:else}
-			<p class="empty-text">SOC offline or unavailable</p>
-		{/if}
-	</div>
-</section>
-
-<!-- ── Row 3: Improvement Engine + System Metrics ──── -->
-<section class="grid-2col">
-	<!-- Improvement Engine -->
-	<div class="panel">
-		<h2 class="panel-title">Improvement Engine</h2>
-		{#if improvement}
-			<div class="metrics-grid">
-				<div class="metric-item">
-					<div class="metric-val">{improvement.active_policy_version ?? '—'}</div>
-					<div class="metric-lbl">Policy Version</div>
-				</div>
-				<div class="metric-item">
-					<div class="metric-val">{improvement.total_feedback ?? 0}</div>
-					<div class="metric-lbl">Feedback Items</div>
-				</div>
-				<div class="metric-item">
-					<div class="metric-val warning">{improvement.pending_proposals ?? 0}</div>
-					<div class="metric-lbl">Pending Proposals</div>
-				</div>
-				<div class="metric-item">
-					<div class="metric-val">{improvement.cycle_count ?? 0}</div>
-					<div class="metric-lbl">Cycles Run</div>
-				</div>
-			</div>
-			<a href="/dashboard/improvement" class="panel-link">Manage Improvement →</a>
-		{:else}
-			<p class="empty-text">Improvement engine unavailable</p>
-		{/if}
-	</div>
-
-	<!-- System Metrics snapshot -->
-	<div class="panel">
-		<h2 class="panel-title">System Metrics</h2>
-		{#if metrics?.metrics}
-			<div class="metric-table">
-				{#each (metrics.metrics ?? []).slice(0, 8) as m}
-					<div class="metric-row">
-						<span class="metric-name">{m.name}</span>
-						<span class="metric-type">{m.type}</span>
-						<span class="metric-val-sm">{typeof m.value === 'number' ? m.value.toLocaleString() : m.value}</span>
-					</div>
-				{/each}
-			</div>
-			<a href="/dashboard/metrics" class="panel-link">Full Metrics →</a>
-		{:else}
-			<p class="empty-text">Metrics unavailable</p>
-		{/if}
-	</div>
+			{/each}
+		</div>
+	{/if}
 </section>
 
 {/if}
 
 <style>
-	/* ── Loading ────────────────────────────────────────── */
+	/* ── Bloomberg-terminal aesthetic ──────────────────
+	   Black background, monospace, single accent for OK.
+	   No gradients. No animation. No chrome. */
+
 	.loading-state {
+		min-height: 40vh;
 		display: flex;
-		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		min-height: 60vh;
-		gap: 16px;
-		color: var(--text-dim);
-	}
-	.spinner {
-		width: 32px; height: 32px;
-		border: 3px solid rgba(255,255,255,0.1);
-		border-top-color: var(--primary);
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-	}
-	@keyframes spin { to { transform: rotate(360deg); } }
-
-	/* ── Error ──────────────────────────────────────────── */
-	.error-banner {
-		background: rgba(255,59,59,0.1);
-		border: 1px solid rgba(255,59,59,0.25);
-		border-radius: 8px;
-		padding: 12px 16px;
-		margin-bottom: 24px;
+		color: rgba(255,255,255,0.5);
+		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.85rem;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		color: var(--primary);
 	}
-	.error-icon { font-size: 1.1rem; }
 
-	/* ── Stat Row ──────────────────────────────────────── */
-	.stat-row {
+	/* ── Tile grid: 4 equal tiles ──────────────────── */
+	.tile-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-		gap: 16px;
-		margin-bottom: 28px;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1px;
+		background: rgba(255,255,255,0.06);
+		border: 1px solid rgba(255,255,255,0.06);
+		margin-bottom: 32px;
 	}
-	.stat-card {
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 20px;
-		text-align: center;
+	@media (max-width: 1100px) {
+		.tile-grid { grid-template-columns: repeat(2, 1fr); }
 	}
-	.stat-value {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 1.8rem;
-		font-weight: 700;
-		line-height: 1.2;
-		margin-bottom: 4px;
-	}
-	.stat-value.success { color: var(--success); }
-	.stat-value.primary { color: var(--primary); }
-	.stat-value.warning { color: var(--warning); }
-	.stat-label {
-		font-size: 0.75rem;
-		color: var(--text-dim);
-		text-transform: uppercase;
-		letter-spacing: 1px;
+	@media (max-width: 600px) {
+		.tile-grid { grid-template-columns: 1fr; }
 	}
 
-	/* ── Grid Layout ───────────────────────────────────── */
-	.grid-2col {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 24px;
-		margin-bottom: 28px;
-	}
-	@media (max-width: 900px) {
-		.grid-2col { grid-template-columns: 1fr; }
-	}
-
-	/* ── Panels ────────────────────────────────────────── */
-	.panel {
-		background: var(--bg-card);
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		padding: 24px;
-	}
-	.panel-title {
-		font-size: 1rem;
-		font-weight: 600;
-		margin-bottom: 20px;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-	.panel-title::before {
-		content: '';
-		width: 3px;
-		height: 16px;
-		background: var(--primary);
-		border-radius: 2px;
-	}
-	.panel-link {
-		display: inline-block;
-		margin-top: 16px;
-		font-size: 0.82rem;
-		color: var(--primary);
-		text-decoration: none;
-		transition: opacity 0.2s;
-	}
-	.panel-link:hover { opacity: 0.7; }
-
-	.sub-title {
-		font-size: 0.82rem;
-		font-weight: 600;
-		color: var(--text-dim);
-		margin: 16px 0 8px;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-
-	.empty-text {
-		color: rgba(255,255,255,0.3);
-		font-size: 0.85rem;
-		font-style: italic;
-	}
-
-	/* ── Metrics Grid ──────────────────────────────────── */
-	.metrics-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 16px;
-	}
-	.metric-item { text-align: center; }
-	.metric-val {
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 1.6rem;
-		font-weight: 700;
-	}
-	.metric-val.success { color: var(--success); }
-	.metric-val.warning { color: var(--warning); }
-	.metric-lbl {
-		font-size: 0.72rem;
-		color: var(--text-dim);
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		margin-top: 2px;
-	}
-
-	.composite-score {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-top: 16px;
-		padding: 12px 16px;
-		background: rgba(255,255,255,0.03);
-		border-radius: 8px;
-		font-size: 0.88rem;
-	}
-	.score-val {
-		font-family: 'JetBrains Mono', monospace;
-		font-weight: 700;
-		color: var(--success);
-	}
-
-	/* ── SOC items ─────────────────────────────────────── */
-	.soc-status-line {
-		font-size: 0.88rem;
-		margin-bottom: 12px;
-	}
-	.badge {
-		display: inline-block;
-		padding: 2px 10px;
-		border-radius: 12px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		background: rgba(255,170,0,0.15);
-		color: var(--warning);
-	}
-	.badge-ok {
-		background: rgba(0,255,136,0.12);
-		color: var(--success);
-	}
-
-	.risk-user-list {
+	.tile {
+		background: #050508;
+		padding: 28px 24px;
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
-	}
-	.risk-user-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 8px 12px;
-		background: rgba(255,255,255,0.03);
-		border-radius: 6px;
+		gap: 10px;
 		text-decoration: none;
 		color: inherit;
-		font-size: 0.85rem;
-		transition: background 0.15s;
+		min-height: 180px;
 	}
-	.risk-user-row:hover { background: rgba(255,255,255,0.06); }
-	.user-id { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
-	.risk-badge {
+	.tile:hover { background: #0a0a10; }
+
+	.tile-label {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 2px;
+		color: rgba(255,255,255,0.5);
+	}
+
+	.tile-glyph {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 3.2rem;
+		font-weight: 600;
+		line-height: 1;
+		color: #fff;
+	}
+
+	.tile-ok .tile-glyph { color: #4ade80; }
+	.tile-bad .tile-glyph { color: #f87171; }
+
+	.tile-sub {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.78rem;
-		font-weight: 700;
-		color: var(--warning);
-	}
-	.risk-badge.critical { color: var(--primary); }
-	.risk-badge.high { color: var(--warning); }
-
-	.alert-list { display: flex; flex-direction: column; gap: 6px; }
-	.alert-row {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 6px 10px;
-		background: rgba(255,255,255,0.02);
-		border-radius: 6px;
-		font-size: 0.8rem;
-	}
-	.alert-type { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
-	.alert-sev {
-		padding: 1px 8px;
-		border-radius: 8px;
-		font-size: 0.7rem;
-		font-weight: 600;
-	}
-	.sev-critical { background: rgba(255,59,59,0.2); color: var(--primary); }
-	.sev-high { background: rgba(255,170,0,0.2); color: var(--warning); }
-	.sev-medium { background: rgba(255,255,255,0.08); color: var(--text-dim); }
-	.sev-low { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); }
-	.alert-user { color: var(--text-dim); font-size: 0.78rem; }
-
-	/* ── Metric Table ──────────────────────────────────── */
-	.metric-table {
+		color: rgba(255,255,255,0.65);
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
+		margin-top: auto;
 	}
-	.metric-row {
+
+	.tile-meta {
+		font-size: 0.7rem;
+		color: rgba(255,255,255,0.4);
+	}
+
+	/* ── Audit drawer (append-only event stream) ───── */
+	.audit-drawer {
+		background: #050508;
+		border: 1px solid rgba(255,255,255,0.06);
+		padding: 24px;
+	}
+
+	.drawer-header {
 		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 6px 10px;
-		border-radius: 6px;
-		font-size: 0.8rem;
+		align-items: baseline;
+		justify-content: space-between;
+		margin-bottom: 16px;
 	}
-	.metric-row:nth-child(odd) { background: rgba(255,255,255,0.02); }
-	.metric-name {
-		flex: 1;
+
+	.drawer-header h2 {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.78rem;
+		text-transform: uppercase;
+		letter-spacing: 2px;
+		color: rgba(255,255,255,0.5);
+		margin: 0;
+		font-weight: 600;
+	}
+
+	.drawer-link {
 		font-family: 'JetBrains Mono', monospace;
 		font-size: 0.75rem;
-		color: var(--text-dim);
+		color: rgba(255,255,255,0.6);
+		text-decoration: none;
 	}
-	.metric-type {
-		font-size: 0.65rem;
-		color: rgba(255,255,255,0.3);
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		width: 60px;
+	.drawer-link:hover { color: #fff; }
+
+	.event-list {
+		display: flex;
+		flex-direction: column;
 	}
-	.metric-val-sm {
+
+	.event-row {
+		display: grid;
+		grid-template-columns: 200px 1fr 1fr;
+		gap: 16px;
+		padding: 10px 0;
+		border-bottom: 1px solid rgba(255,255,255,0.04);
 		font-family: 'JetBrains Mono', monospace;
-		font-weight: 600;
-		font-size: 0.82rem;
-		min-width: 60px;
-		text-align: right;
+		font-size: 0.78rem;
+		color: rgba(255,255,255,0.75);
+	}
+	.event-row:last-child { border-bottom: none; }
+
+	.event-time { color: rgba(255,255,255,0.45); }
+	.event-type { color: rgba(255,255,255,0.85); }
+	.event-actor { color: rgba(255,255,255,0.55); text-align: right; }
+
+	.empty-text {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.78rem;
+		color: rgba(255,255,255,0.4);
 	}
 </style>

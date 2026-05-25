@@ -12,11 +12,12 @@
 	let sidebarCollapsed = $state(false);
 	let currentPath = $derived($page.url.pathname);
 
+	// Primary nav = three operator surfaces. Metrics is engineer telemetry —
+	// demoted to footer so it stops competing for attention with the audit drawer.
 	const navItems = [
 		{ href: '/dashboard', label: 'Overview', icon: '◉' },
 		{ href: '/dashboard/soc', label: 'SOC Center', icon: '⚡' },
 		{ href: '/dashboard/improvement', label: 'Improvement', icon: '⟳' },
-		{ href: '/dashboard/metrics', label: 'Metrics', icon: '▦' },
 	];
 
 	onMount(() => {
@@ -81,6 +82,9 @@
 			</div>
 			{#if !sidebarCollapsed && health}
 				<div class="version-text">v{health.version}</div>
+			{/if}
+			{#if !sidebarCollapsed}
+				<a href="/dashboard/metrics" class="footer-link">metrics ▦</a>
 			{/if}
 		</div>
 	</aside>
@@ -243,6 +247,17 @@
 		margin-top: 6px;
 		font-family: 'JetBrains Mono', monospace;
 	}
+
+	.footer-link {
+		display: block;
+		margin-top: 10px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.65rem;
+		color: rgba(255,255,255,0.3);
+		text-decoration: none;
+		letter-spacing: 1px;
+	}
+	.footer-link:hover { color: rgba(255,255,255,0.7); }
 
 	/* ── Main Area ─────────────────────────────────────── */
 	.dash-main {

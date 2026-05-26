@@ -153,7 +153,7 @@
 			(tok) => { streamingText += tok; },
 			(meta) => { reasonResult = meta; },
 			(msg) => { reasonError = msg; },
-			600,
+			2000,
 			0.2,
 		);
 		await handle.done;
@@ -166,6 +166,33 @@
 		<p>Connecting…</p>
 	</div>
 {:else}
+
+<!-- Sovereign brand header — identity + live sovereignty status before any click -->
+<header class="sov-header">
+	<div class="sov-brand">
+		<span class="sov-mark">◈</span>
+		<span class="sov-title">AION OS</span>
+		<span class="sov-sub">Sovereign Console</span>
+	</div>
+	<div class="sov-status">
+		<span class="sov-pill sov-pill-ok">
+			<span class="sov-dot"></span>
+			provider: <strong>{reasonResult?.provider ?? 'ollama'}</strong>
+		</span>
+		<span class="sov-pill sov-pill-ok">
+			<span class="sov-dot"></span>
+			model: <strong>{reasonResult?.model ?? 'qwen2.5:7b'}</strong>
+		</span>
+		<span class="sov-pill sov-pill-block">
+			<span class="sov-dot"></span>
+			frontier-lab egress: <strong>BLOCKED</strong>
+		</span>
+		<span class="sov-pill sov-pill-sov">
+			<span class="sov-dot"></span>
+			sovereign: <strong>✓</strong>
+		</span>
+	</div>
+</header>
 
 <!-- Four tiles. Equal weight. -->
 <section class="tile-grid">
@@ -565,5 +592,107 @@
 		color: rgba(74, 222, 128, 0.7);
 		font-style: italic;
 		letter-spacing: 0.5px;
+	}
+
+	/* ── Sovereign brand header ──────────────────────── */
+	.sov-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 16px;
+		padding: 16px 20px;
+		margin-bottom: 24px;
+		background: linear-gradient(180deg, rgba(74,222,128,0.04) 0%, rgba(0,0,0,0) 100%);
+		border: 1px solid rgba(74,222,128,0.18);
+		border-left: 3px solid #4ade80;
+		position: relative;
+	}
+	.sov-header::before {
+		content: '';
+		position: absolute;
+		top: 0; left: 0; right: 0; bottom: 0;
+		background: repeating-linear-gradient(
+			0deg,
+			rgba(74,222,128,0.015) 0px,
+			rgba(74,222,128,0.015) 1px,
+			transparent 1px,
+			transparent 3px
+		);
+		pointer-events: none;
+	}
+
+	.sov-brand {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		position: relative;
+	}
+	.sov-mark {
+		color: #4ade80;
+		font-size: 1.4rem;
+		line-height: 1;
+	}
+	.sov-title {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 1.1rem;
+		font-weight: 700;
+		letter-spacing: 2px;
+		color: #fff;
+	}
+	.sov-sub {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.72rem;
+		color: rgba(74,222,128,0.7);
+		text-transform: uppercase;
+		letter-spacing: 3px;
+	}
+
+	.sov-status {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		position: relative;
+	}
+	.sov-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 5px 10px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.7rem;
+		border: 1px solid;
+		background: #000;
+		color: rgba(255,255,255,0.78);
+		text-transform: lowercase;
+		letter-spacing: 0.5px;
+	}
+	.sov-pill strong { color: #fff; font-weight: 600; }
+	.sov-dot {
+		width: 6px; height: 6px; border-radius: 50%;
+		display: inline-block;
+	}
+	.sov-pill-ok { border-color: rgba(74,222,128,0.4); }
+	.sov-pill-ok .sov-dot {
+		background: #4ade80;
+		box-shadow: 0 0 6px #4ade80;
+		animation: sov-pulse 2.4s ease-in-out infinite;
+	}
+	.sov-pill-block { border-color: rgba(248,113,113,0.4); }
+	.sov-pill-block .sov-dot {
+		background: #f87171;
+		box-shadow: 0 0 6px #f87171;
+	}
+	.sov-pill-block strong { color: #f87171; }
+	.sov-pill-sov { border-color: rgba(74,222,128,0.6); background: rgba(74,222,128,0.06); }
+	.sov-pill-sov .sov-dot {
+		background: #4ade80;
+		box-shadow: 0 0 10px #4ade80;
+	}
+	.sov-pill-sov strong { color: #4ade80; }
+
+	@keyframes sov-pulse {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.45; }
 	}
 </style>

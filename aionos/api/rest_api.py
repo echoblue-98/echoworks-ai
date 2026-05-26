@@ -268,7 +268,7 @@ async def prewarm_local_model() -> None:
                     "model": ollama_model,
                     "prompt": "ok",
                     "stream": False,
-                    "keep_alive": -1,
+                    "keep_alive": "-1",
                     "options": {"num_predict": 1},
                 },
             )
@@ -418,7 +418,7 @@ async def sovereign_reason(
                     "model": ollama_model,
                     "prompt": request.prompt,
                     "stream": False,
-                    "keep_alive": -1,  # pin model in VRAM — eliminates cold-start on subsequent calls
+                    "keep_alive": "-1",  # pin model in VRAM — eliminates cold-start on subsequent calls
                     "options": {
                         "temperature": request.temperature,
                         "num_predict": request.max_tokens,
@@ -503,7 +503,7 @@ async def sovereign_reason_stream(
                         "model": ollama_model,
                         "prompt": request.prompt,
                         "stream": True,
-                        "keep_alive": -1,  # pin model in VRAM — eliminates cold-start on subsequent calls
+                        "keep_alive": "-1",  # pin model in VRAM — eliminates cold-start on subsequent calls
                         "options": {
                             "temperature": request.temperature,
                             "num_predict": request.max_tokens,

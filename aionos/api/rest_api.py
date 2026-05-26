@@ -240,6 +240,42 @@ app.add_middleware(
 audit_logger = AuditLogger()
 ethics_layer = EthicsLayer()
 
+
+@app.on_event("startup")
+async def prewarm_local_model() -> None:
+    """
+    Pre-warm the local LLM into VRAM on API startup so the first demo call
+    has zero model-load latency. Combined with keep_alive=-1 on /reason calls,
+    qwen stays resident until the API process is restarted.
+
+    Fails silently if Ollama isn't reachable (sovereign-mode dev without LLM).
+    """
+    import httpx
+    from aionos.core.reasoning_engine import _check_ollama
+
+    if os.environ.get("AION_SKIP_PREWARM", "").lower() in ("1", "true", "yes"):
+        return
+    if not _check_ollama():
+        return
+
+    ollama_url = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate")
+    ollama_model = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            await client.post(
+                ollama_url,
+                json={
+                    "model": ollama_model,
+                    "prompt": "ok",
+                    "stream": False,
+                    "keep_alive": -1,
+                    "options": {"num_predict": 1},
+                },
+            )
+    except Exception:
+        # Best-effort — don't block startup if prewarm fails
+        pass
+
 # Initialize Improvement Engine (lazy — full init on first use)
 _improvement_engine = None
 
@@ -319,7 +355,7 @@ async def get_license_info(auth: tuple = Depends(require_role("stats"))):
 # Sovereign inference endpoint — proves local LLM, no frontier-lab egress
 class ReasonRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=4000)
-    max_tokens: Optional[int] = Field(default=256, ge=1, le=2048)
+    max_tokens: Optional[int] = Field(default=256, ge=1, le=4096)
     temperature: Optional[float] = Field(default=0.2, ge=0.0, le=2.0)
 
 
@@ -382,6 +418,7 @@ async def sovereign_reason(
                     "model": ollama_model,
                     "prompt": request.prompt,
                     "stream": False,
+                    "keep_alive": -1,  # pin model in VRAM — eliminates cold-start on subsequent calls
                     "options": {
                         "temperature": request.temperature,
                         "num_predict": request.max_tokens,
@@ -466,6 +503,7 @@ async def sovereign_reason_stream(
                         "model": ollama_model,
                         "prompt": request.prompt,
                         "stream": True,
+                        "keep_alive": -1,  # pin model in VRAM — eliminates cold-start on subsequent calls
                         "options": {
                             "temperature": request.temperature,
                             "num_predict": request.max_tokens,

@@ -9,7 +9,9 @@ import time as _time
 
 from fastapi import FastAPI, HTTPException, Depends, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+import json as _json
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
@@ -417,6 +419,118 @@ async def sovereign_reason(
         "frontier_lab_egress": False,
         "timestamp": datetime.utcnow().isoformat(),
     }
+
+
+# Sovereign inference STREAMING endpoint — same proof, dramatically better perceived latency.
+# Emits NDJSON: one JSON object per line. Each chunk is either {"token": "..."} or a final
+# {"done": true, ...metadata}. Browser reads via fetch + ReadableStream and renders tokens live.
+# Ollama-only for now (M7's production provider). LM Studio path stays on the non-streaming endpoint.
+@app.post("/api/v1/reason/stream")
+async def sovereign_reason_stream(
+    request: ReasonRequest,
+    auth: tuple = Depends(require_role("reason")),
+):
+    """
+    Streaming local inference proof.
+
+    Returns NDJSON chunks as the local model generates tokens. Final line contains
+    full metadata (provider, model, latency, tokens, tokens_per_sec, sovereign flag).
+    No frontier-lab egress — fails closed if Ollama is unreachable.
+    """
+    import httpx
+    from aionos.core.reasoning_engine import _check_ollama
+
+    if not _check_ollama():
+        raise HTTPException(
+            status_code=503,
+            detail="Ollama unreachable on :11434 — streaming endpoint requires Ollama.",
+        )
+
+    ollama_url = os.environ.get(
+        "OLLAMA_URL", "http://localhost:11434/api/generate"
+    )
+    ollama_model = os.environ.get("OLLAMA_MODEL", "qwen2.5:7b")
+
+    async def event_stream():
+        started = _time.monotonic()
+        tokens = 0
+        accumulated = []
+        model_name = ollama_model
+
+        try:
+            async with httpx.AsyncClient(timeout=120) as client:
+                async with client.stream(
+                    "POST",
+                    ollama_url,
+                    json={
+                        "model": ollama_model,
+                        "prompt": request.prompt,
+                        "stream": True,
+                        "options": {
+                            "temperature": request.temperature,
+                            "num_predict": request.max_tokens,
+                        },
+                    },
+                ) as resp:
+                    if resp.status_code != 200:
+                        yield _json.dumps({
+                            "error": f"Ollama returned status {resp.status_code}",
+                            "done": True,
+                        }) + "\n"
+                        return
+
+                    async for line in resp.aiter_lines():
+                        if not line.strip():
+                            continue
+                        try:
+                            chunk = _json.loads(line)
+                        except _json.JSONDecodeError:
+                            continue
+
+                        piece = chunk.get("response", "")
+                        if piece:
+                            accumulated.append(piece)
+                            yield _json.dumps({"token": piece, "done": False}) + "\n"
+
+                        if chunk.get("done"):
+                            tokens = chunk.get("eval_count", 0)
+                            model_name = chunk.get("model", ollama_model)
+                            break
+        except Exception as exc:
+            yield _json.dumps({
+                "error": f"Stream interrupted: {exc}",
+                "done": True,
+            }) + "\n"
+            return
+
+        latency_ms = int((_time.monotonic() - started) * 1000)
+        tokens_per_sec = (
+            round(tokens / (latency_ms / 1000), 2) if latency_ms > 0 and tokens else 0.0
+        )
+
+        yield _json.dumps({
+            "done": True,
+            "success": True,
+            "provider": "ollama",
+            "model": model_name,
+            "response": "".join(accumulated),
+            "tokens": tokens,
+            "latency_ms": latency_ms,
+            "tokens_per_sec": tokens_per_sec,
+            "sovereign": True,
+            "frontier_lab_egress": False,
+            "timestamp": datetime.utcnow().isoformat(),
+        }) + "\n"
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="application/x-ndjson",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Sovereign": "true",
+            "X-Frontier-Lab-Egress": "false",
+        },
+    )
 
 
 # Invariants endpoint — show the 9 immutable safety rules

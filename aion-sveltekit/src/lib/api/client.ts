@@ -151,6 +151,81 @@ export function sovereignReason(prompt: string, maxTokens = 256, temperature = 0
 	});
 }
 
+// Streaming variant — tokens land live, final metadata arrives in onDone.
+// Returns an abort handle so the caller can cancel mid-stream if needed.
+export interface ReasonStreamHandle {
+	abort: () => void;
+	done: Promise<void>;
+}
+
+export function sovereignReasonStream(
+	prompt: string,
+	onToken: (token: string) => void,
+	onDone: (meta: ReasonResponse) => void,
+	onError: (message: string) => void,
+	maxTokens = 600,
+	temperature = 0.2,
+): ReasonStreamHandle {
+	const controller = new AbortController();
+	const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+	if (_apiKey) headers['X-API-Key'] = _apiKey;
+
+	const done = (async () => {
+		try {
+			const res = await fetch(`${BASE_URL}/api/v1/reason/stream`, {
+				method: 'POST',
+				headers,
+				body: JSON.stringify({ prompt, max_tokens: maxTokens, temperature }),
+				signal: controller.signal,
+			});
+
+			if (!res.ok || !res.body) {
+				const body = await res.json().catch(() => ({}));
+				onError(body.detail ?? `Stream failed (${res.status})`);
+				return;
+			}
+
+			const reader = res.body.getReader();
+			const decoder = new TextDecoder();
+			let buffer = '';
+
+			while (true) {
+				const { value, done: streamDone } = await reader.read();
+				if (streamDone) break;
+				buffer += decoder.decode(value, { stream: true });
+
+				// NDJSON: split on newlines, keep trailing partial line in buffer
+				const lines = buffer.split('\n');
+				buffer = lines.pop() ?? '';
+
+				for (const line of lines) {
+					const trimmed = line.trim();
+					if (!trimmed) continue;
+					try {
+						const chunk = JSON.parse(trimmed);
+						if (chunk.error) {
+							onError(chunk.error);
+							return;
+						}
+						if (chunk.done) {
+							onDone(chunk as ReasonResponse);
+						} else if (chunk.token) {
+							onToken(chunk.token);
+						}
+					} catch {
+						// ignore malformed chunk
+					}
+				}
+			}
+		} catch (err) {
+			if ((err as Error).name === 'AbortError') return;
+			onError(err instanceof Error ? err.message : 'Stream error');
+		}
+	})();
+
+	return { abort: () => controller.abort(), done };
+}
+
 // ── SOC ─────────────────────────────────────────────────
 export function getSOCStatus() {
 	return api<SOCStatusResponse>('/api/soc/status');

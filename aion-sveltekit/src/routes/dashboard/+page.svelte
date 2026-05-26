@@ -18,6 +18,7 @@
 		getImprovementStatus,
 		getAuditLogs,
 		sovereignReason,
+		sovereignReasonStream,
 		type ReasonResponse,
 	} from '$lib/api/client';
 	import type {
@@ -130,12 +131,14 @@
 	let reasonResult: ReasonResponse | null = $state(null);
 	let reasonError = $state<string | null>(null);
 	let reasonPending = $state(false);
+	let streamingText = $state(''); // tokens render here as they arrive
 
 	function applyPreset(idx: number) {
 		selectedPreset = idx;
 		reasonPrompt = presetPrompts[idx].prompt;
 		reasonResult = null;
 		reasonError = null;
+		streamingText = '';
 	}
 
 	async function runReason() {
@@ -143,12 +146,17 @@
 		reasonPending = true;
 		reasonError = null;
 		reasonResult = null;
-		const res = await sovereignReason(reasonPrompt.trim(), 600, 0.2);
-		if (res.ok) {
-			reasonResult = res.data;
-		} else {
-			reasonError = res.error.message ?? 'Inference failed';
-		}
+		streamingText = '';
+
+		const handle = sovereignReasonStream(
+			reasonPrompt.trim(),
+			(tok) => { streamingText += tok; },
+			(meta) => { reasonResult = meta; },
+			(msg) => { reasonError = msg; },
+			600,
+			0.2,
+		);
+		await handle.done;
 		reasonPending = false;
 	}
 </script>
@@ -242,17 +250,21 @@
 
 	{#if reasonError}
 		<div class="reason-error">{reasonError}</div>
-	{:else if reasonResult}
-		<div class="reason-output">{reasonResult.response}</div>
-		<div class="reason-meta">
-			<span>provider: <strong>{reasonResult.provider}</strong></span>
-			<span>model: <strong>{reasonResult.model}</strong></span>
-			<span>latency: <strong>{reasonResult.latency_ms} ms</strong></span>
-			<span>tokens: <strong>{reasonResult.tokens}</strong> ({reasonResult.tokens_per_sec} tok/s)</span>
-			<span class="reason-sov">sovereign: <strong>{reasonResult.sovereign ? '✓' : '✗'}</strong></span>
-		</div>
+	{:else if streamingText || reasonResult}
+		<div class="reason-output">{reasonResult?.response ?? streamingText}{#if reasonPending}<span class="reason-cursor">█</span>{/if}</div>
+		{#if reasonResult}
+			<div class="reason-meta">
+				<span>provider: <strong>{reasonResult.provider}</strong></span>
+				<span>model: <strong>{reasonResult.model}</strong></span>
+				<span>latency: <strong>{reasonResult.latency_ms} ms</strong></span>
+				<span>tokens: <strong>{reasonResult.tokens}</strong> ({reasonResult.tokens_per_sec} tok/s)</span>
+				<span class="reason-sov">sovereign: <strong>{reasonResult.sovereign ? '✓' : '✗'}</strong></span>
+			</div>
+		{:else}
+			<div class="reason-meta"><span class="reason-streaming-hint">streaming from local model…</span></div>
+		{/if}
 	{:else}
-		<div class="reason-placeholder">Press <em>reason</em> to call the local model. Watch latency and tokens/sec — this is the box, not a cloud API.</div>
+		<div class="reason-placeholder">Press <em>reason</em> to call the local model. Watch tokens stream live — this is the box, not a cloud API.</div>
 	{/if}
 </section>
 
@@ -537,5 +549,21 @@
 	.reason-placeholder em {
 		color: #4ade80;
 		font-style: normal;
+	}
+
+	.reason-cursor {
+		display: inline-block;
+		color: #4ade80;
+		animation: cursor-blink 1s steps(2, start) infinite;
+		margin-left: 2px;
+	}
+	@keyframes cursor-blink {
+		to { visibility: hidden; }
+	}
+
+	.reason-streaming-hint {
+		color: rgba(74, 222, 128, 0.7);
+		font-style: italic;
+		letter-spacing: 0.5px;
 	}
 </style>

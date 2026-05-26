@@ -102,17 +102,48 @@
 	}
 
 	// ── Sovereign inference panel ───────────────────────────────
-	let reasonPrompt = $state('Explain in one sentence why a regulated firm should run AI on-premises.');
+	// ICP demo presets — pick once, demo cleanly. Default is the sovereign-architecture one-liner.
+	const presetPrompts: { label: string; prompt: string }[] = [
+		{
+			label: 'Default — why sovereign AI',
+			prompt: 'Explain in one sentence why a regulated firm should run AI on-premises.'
+		},
+		{
+			label: 'Legal — departing associate exfiltration',
+			prompt: "An associate accessed the client list, downloaded 4GB from our document system after hours, and updated their LinkedIn profile this week. What's the partner-level response sequence?"
+		},
+		{
+			label: 'Legal — conflict-of-interest check',
+			prompt: 'A prospective client wants to retain us against a counterparty we represented in an unrelated matter eighteen months ago. Walk through the conflict-of-interest analysis a partner should run before accepting the engagement.'
+		},
+		{
+			label: 'Legal — privilege review checklist',
+			prompt: 'Give me a privilege-review checklist a senior associate should apply to a deposition transcript before producing it in discovery.'
+		},
+		{
+			label: 'Healthcare — HIPAA vendor breach',
+			prompt: 'A third-party billing vendor just notified us they suffered a ransomware incident affecting systems that held PHI for our patients. What is the partner-level response sequence in the first 72 hours?'
+		}
+	];
+	let selectedPreset = $state(0);
+	let reasonPrompt = $state(presetPrompts[0].prompt);
 	let reasonResult: ReasonResponse | null = $state(null);
 	let reasonError = $state<string | null>(null);
 	let reasonPending = $state(false);
+
+	function applyPreset(idx: number) {
+		selectedPreset = idx;
+		reasonPrompt = presetPrompts[idx].prompt;
+		reasonResult = null;
+		reasonError = null;
+	}
 
 	async function runReason() {
 		if (reasonPending || !reasonPrompt.trim()) return;
 		reasonPending = true;
 		reasonError = null;
 		reasonResult = null;
-		const res = await sovereignReason(reasonPrompt.trim(), 200, 0.2);
+		const res = await sovereignReason(reasonPrompt.trim(), 600, 0.2);
 		if (res.ok) {
 			reasonResult = res.data;
 		} else {
@@ -181,11 +212,26 @@
 		<span class="reason-meta-hint">local LLM · no frontier-lab egress</span>
 	</div>
 
+	<div class="reason-preset-row">
+		<label class="reason-preset-label" for="reason-preset">demo scenario</label>
+		<select
+			id="reason-preset"
+			class="reason-preset"
+			value={selectedPreset}
+			onchange={(e) => applyPreset(Number((e.target as HTMLSelectElement).value))}
+			disabled={reasonPending}
+		>
+			{#each presetPrompts as p, i}
+				<option value={i}>{p.label}</option>
+			{/each}
+		</select>
+	</div>
+
 	<div class="reason-input-row">
 		<textarea
 			class="reason-input"
 			bind:value={reasonPrompt}
-			rows="2"
+			rows="3"
 			placeholder="Ask anything — runs on this box, never leaves."
 			disabled={reasonPending}
 		></textarea>
@@ -383,6 +429,34 @@
 		color: rgba(74, 222, 128, 0.7);
 		letter-spacing: 1px;
 	}
+
+	.reason-preset-row {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 12px;
+	}
+	.reason-preset-label {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.7rem;
+		color: rgba(255,255,255,0.5);
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		min-width: 110px;
+	}
+	.reason-preset {
+		flex: 1;
+		background: #000;
+		color: #4ade80;
+		border: 1px solid rgba(74,222,128,0.4);
+		padding: 8px 12px;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.8rem;
+		outline: none;
+		cursor: pointer;
+	}
+	.reason-preset:focus { border-color: #4ade80; }
+	.reason-preset:disabled { opacity: 0.5; cursor: not-allowed; }
 
 	.reason-input-row {
 		display: flex;

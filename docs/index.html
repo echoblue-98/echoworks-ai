@@ -364,10 +364,10 @@
                         <div style="display:flex;align-items:center;gap:12px;">
                             <span style="color:#10b981;font-size:0.7rem;" id="engine-status">&#x25CF; ENGINE ONLINE</span>
                             <span style="color:rgba(255,255,255,0.2);">|</span>
-                            <span style="color:rgba(255,255,255,0.3);font-size:0.7rem;">117 PATTERNS LOADED</span>
+                            <span style="color:rgba(255,255,255,0.3);font-size:0.7rem;" id="patterns-loaded">69 SEQUENCES &#183; 7 CASES</span>
                         </div>
                         <div style="display:flex;align-items:center;gap:12px;">
-                            <span style="color:rgba(255,255,255,0.3);font-size:0.7rem;">LATENCY: 0.04ms</span>
+                            <span style="color:rgba(255,255,255,0.3);font-size:0.7rem;" id="latency-readout">LATENCY: &lt;0.1ms</span>
                             <span style="color:rgba(255,255,255,0.2);">|</span>
                             <span style="color:rgba(255,255,255,0.3);font-size:0.7rem;">ON-PREMISE</span>
                         </div>
@@ -390,7 +390,7 @@
 
                 <div class="demo-footer">
                     <div class="demo-stats">
-                        <span><span class="demo-stat-val">117+</span> Patterns</span>
+                        <span><span class="demo-stat-val">69</span> Sequences</span>
                         <span><span class="demo-stat-val">&lt;3s</span> Detection</span>
                         <span><span class="demo-stat-val">100%</span> On-Premise</span>
                         <span><span class="demo-stat-val">&lt;2%</span> False Positives</span>
@@ -454,7 +454,7 @@
                 <p class="pricing-desc">Attorney departure detection deployed on your infrastructure. Real-time monitoring. Litigation-ready evidence. Deployed in 48 hours.</p>
                 <ul class="pricing-features">
                     <li><span class="pricing-check">&#10003;</span> Full exfiltration chain detection (iManage/NetDocs + Email + Cloud)</li>
-                    <li><span class="pricing-check">&#10003;</span> 117+ behavioral pattern library</li>
+                    <li><span class="pricing-check">&#10003;</span> 69 attack-sequence patterns + 7 validated case patterns</li>
                     <li><span class="pricing-check">&#10003;</span> NIST 800-61 automated incident response</li>
                     <li><span class="pricing-check">&#10003;</span> Litigation-ready PDF + JSONL audit trails</li>
                     <li><span class="pricing-check">&#10003;</span> 100% on-premise &#8212; zero data egress</li>
@@ -605,33 +605,96 @@
         }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
         document.querySelectorAll('.problem-card, .solution-box, .step, .pricing-single, .demo-container, .testimonial-card').forEach(el => { observer.observe(el); });
 
-        /* ── SOC COMMAND CONSOLE ── */
-        const events = [
-            { time: 0, type: 'INGEST', sev: 'INFO', color: 'rgba(255,255,255,0.4)', text: 'Event stream connected \u2014 iManage DMS + Email Gateway + Cloud Proxy', trust: 100 },
-            { time: 1200, type: 'EVENT', sev: 'LOW', color: '#60a5fa', text: '\u250C\u2500 matter_access | att_jchen_042 | iManage', trust: 92 },
-            { time: 1400, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  34 file accesses on Apex Capital matter M-2024-1847 \u2014 after hours', trust: 92 },
-            { time: 1600, type: 'ENGINE', sev: '', color: '#8b5cf6', text: '\u2514\u2500 ProximityEngine: single-entity cluster forming | TrustScore: 92', trust: 92 },
-            { time: 3000, type: 'EVENT', sev: 'MEDIUM', color: '#f59e0b', text: '\u250C\u2500 dms_bulk_export | att_jchen_042 | iManage', trust: 68 },
-            { time: 3200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  218 files / 890 MB across 2 matters [M-2024-1847, M-2024-1901]', trust: 68 },
-            { time: 3400, type: 'ENGINE', sev: '', color: '#f59e0b', text: '\u2514\u2500 PhaseEngine: departure_staging phase detected | TrustScore: 68 \u2193', trust: 68 },
-            { time: 5000, type: 'EVENT', sev: 'HIGH', color: '#ef4444', text: '\u250C\u2500 email_forward | att_jchen_042 | Exchange Gateway', trust: 35 },
-            { time: 5200, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  5 attachments (42 MB) \u2192 jchen.personal@gmail.com', trust: 35 },
-            { time: 5400, type: 'PATTERN', sev: '', color: '#ef4444', text: '\u2514\u2500 \u26A0 PATTERN MATCH: departure_theft [matter+export+personal_email] confidence: 0.87', trust: 35 },
-            { time: 5600, type: 'ENGINE', sev: '', color: '#8b5cf6', text: '   LLM BYPASSED \u2014 pure pattern match \u2014 0.04ms', trust: 35 },
-            { time: 7200, type: 'EVENT', sev: 'CRITICAL', color: '#ff3b3b', text: '\u250C\u2500 cloud_upload | att_jchen_042 | Cloud Proxy', trust: 8 },
-            { time: 7400, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  890 MB \u2192 dropbox.com via split-tunnel VPN', trust: 8 },
-            { time: 7600, type: 'CRITICAL', sev: '', color: '#ff3b3b', text: '\u2514\u2500 \u2588\u2588 CRITICAL: Full exfiltration chain confirmed', trust: 8 },
-            { time: 7800, type: 'CHAIN', sev: '', color: '#ff6b6b', text: '   Chain: matter_access \u2192 bulk_export \u2192 email_forward \u2192 cloud_upload', trust: 8 },
-            { time: 9000, type: 'NIST', sev: '', color: '#8b5cf6', text: '\u2500\u2500\u2500 NIST 800-61 INCIDENT RESPONSE \u2500\u2500\u2500', trust: 8 },
-            { time: 9300, type: 'ACTION', sev: '', color: '#10b981', text: '  [CONTAIN] Revoke iManage session tokens for att_jchen_042', trust: 8 },
-            { time: 9500, type: 'ACTION', sev: '', color: '#10b981', text: '  [CONTAIN] Suspend split-tunnel VPN access', trust: 8 },
-            { time: 9700, type: 'ACTION', sev: '', color: '#10b981', text: '  [PRESERVE] Email evidence quarantined \u2014 litigation hold applied', trust: 8 },
-            { time: 9900, type: 'ACTION', sev: '', color: '#10b981', text: '  [NOTIFY] Ethics partner alert dispatched', trust: 8 },
-            { time: 10200, type: 'REPORT', sev: '', color: '#60a5fa', text: '  \u2714 Incident report generated \u2014 PDF + JSONL audit trail', trust: 8 },
-            { time: 10800, type: 'DONE', sev: '', color: 'rgba(255,255,255,0.3)', text: '\u2500\u2500\u2500 Detection complete \u2014 3.2s from first event to containment \u2500\u2500\u2500', trust: 8 },
-        ];
+        /* ── SOC COMMAND CONSOLE ──
+           Data-driven from real AION OS engine output.
+           Baked fallback below === scripts/capture_soc_demo.py output;
+           the live page also fetches docs/soc_demo_data.json so every number
+           shown is reproducible. Nothing here is hand-tuned for drama. */
+        let REAL_DATA = {
+            engine: { validated_case_patterns: 7, attack_sequences_loaded: 69, trust_latency_us: 17.3 },
+            events: [
+                { type: 'after_hours_access', system: 'iManage DMS', label: 'matter_access \u00B7 att_jchen_042', detail: '34 file accesses on Apex Capital matter M-2024-1847 \u2014 after hours', decay: 0.15, trust: 85 },
+                { type: 'bulk_operation', system: 'iManage DMS', label: 'dms_bulk_export \u00B7 att_jchen_042', detail: '218 files / 890 MB across 2 matters [M-2024-1847, M-2024-1901]', decay: 0.20, trust: 65 },
+                { type: 'file_download', system: 'Endpoint Agent', label: 'local_download \u00B7 att_jchen_042', detail: 'Exported matter set staged to local disk', decay: 0.10, trust: 55 },
+                { type: 'email_forward', system: 'Exchange Gateway', label: 'email_forward \u00B7 att_jchen_042', detail: '5 attachments (42 MB) \u2192 jchen.personal@gmail.com', decay: 0.10, trust: 45 },
+                { type: 'cloud_sync', system: 'Cloud Proxy', label: 'cloud_upload \u00B7 att_jchen_042', detail: '890 MB \u2192 dropbox.com via split-tunnel VPN', decay: 0.15, trust: 30 }
+            ],
+            final_trust: 30,
+            threat: { type: 'Pre-Departure Data Exfiltration', severity: 'HIGH', confidence: 0.89 },
+            containment: {
+                immediate_actions: [
+                    'MONITOR: Place user on enhanced monitoring watchlist',
+                    'AUDIT: Review all file access for past 60 days',
+                    'RESTRICT: Limit access to sensitive client data',
+                    'DISABLE: Remove bulk download capabilities',
+                    'ALERT: Set up real-time alerts for any large file operations'
+                ],
+                notifications: [
+                    'IMMEDIATE: IT Security team',
+                    'WITHIN 4 HOURS: HR Department (potential departure indicator)',
+                    'WITHIN 24 HOURS: Direct supervisor (discretely)'
+                ]
+            }
+        };
+
+        function sevFromTrust(t) { return t > 70 ? 'LOW' : t > 40 ? 'MEDIUM' : t > 15 ? 'HIGH' : 'CRITICAL'; }
+        const SEV_COLOR = { LOW: '#60a5fa', MEDIUM: '#f59e0b', HIGH: '#ef4444', CRITICAL: '#ff3b3b' };
+
+        function buildFeed(d) {
+            const feed = [];
+            const ft = d.final_trust;
+            feed.push({ time: 0, type: 'INGEST', sev: 'INFO', color: 'rgba(255,255,255,0.4)', text: 'Event stream connected \u2014 iManage DMS + Email Gateway + Cloud Proxy', trust: 100 });
+            d.events.forEach((ev, i) => {
+                const base = 1200 + i * 1900;
+                const sev = sevFromTrust(ev.trust);
+                feed.push({ time: base, type: 'EVENT', sev: sev, color: SEV_COLOR[sev], text: '\u250C\u2500 ' + ev.label + '  \u2502  ' + ev.system, trust: ev.trust });
+                feed.push({ time: base + 220, type: 'DETAIL', sev: '', color: 'rgba(255,255,255,0.35)', text: '\u2502  ' + ev.detail, trust: ev.trust });
+                feed.push({ time: base + 440, type: 'ENGINE', sev: '', color: '#8b5cf6', text: '\u2514\u2500 TrustEngine: ' + ev.type + ' \u2192 trust ' + (ev.trust / 100).toFixed(2) + '  (\u2212' + ev.decay.toFixed(2) + ')', trust: ev.trust });
+            });
+            const tEnd = 1200 + d.events.length * 1900;
+            feed.push({ time: tEnd + 200, type: 'PATTERN', sev: '', color: '#ef4444', text: '\u26A0 PATTERN MATCH: ' + d.threat.type + ' \u2014 confidence ' + d.threat.confidence.toFixed(2), trust: ft });
+            feed.push({ time: tEnd + 450, type: 'ENGINE', sev: '', color: '#8b5cf6', text: '   LLM BYPASSED \u2014 pure pattern match \u2014 ' + (d.engine.trust_latency_us / 1000).toFixed(2) + 'ms', trust: ft });
+            feed.push({ time: tEnd + 700, type: 'CHAIN', sev: '', color: '#ff6b6b', text: '   Chain: matter_access \u2192 bulk_export \u2192 email_forward \u2192 cloud_upload', trust: ft });
+            feed.push({ time: tEnd + 1100, type: 'NIST', sev: '', color: '#8b5cf6', text: '\u2500\u2500\u2500 NIST 800-61 INCIDENT RESPONSE \u2500\u2500\u2500', trust: ft });
+            let at = tEnd + 1400;
+            d.containment.immediate_actions.forEach(a => {
+                const m = a.match(/^([A-Z]+):\s*(.*)$/);
+                const tag = m ? m[1] : 'ACTION';
+                const rest = m ? m[2] : a;
+                feed.push({ time: at, type: 'ACTION', sev: '', color: tag === 'CRITICAL' ? '#ff3b3b' : '#10b981', text: '  [' + tag + '] ' + rest, trust: ft });
+                at += 250;
+            });
+            const notify = d.containment.notifications.map(n => n.replace(/^[A-Z0-9 ]+:\s*/, '')).join(' \u00B7 ');
+            feed.push({ time: at, type: 'ACTION', sev: '', color: '#10b981', text: '  [NOTIFY] ' + notify, trust: ft }); at += 300;
+            feed.push({ time: at, type: 'REPORT', sev: '', color: '#60a5fa', text: '  \u2714 Audit trail written \u2014 hash-chained JSONL (verify: scripts/verify_audit_chain.py)', trust: ft }); at += 500;
+            feed.push({ time: at, type: 'DONE', sev: '', color: 'rgba(255,255,255,0.3)', text: '\u2500\u2500\u2500 Detection complete \u2014 ' + d.engine.validated_case_patterns + ' validated patterns \u00B7 ' + d.engine.attack_sequences_loaded + ' sequences \u00B7 trust 100\u2192' + ft + ' \u2500\u2500\u2500', trust: ft });
+            return feed;
+        }
+
+        function applyHeader(d) {
+            const pl = document.getElementById('patterns-loaded');
+            if (pl) pl.textContent = d.engine.attack_sequences_loaded + ' SEQUENCES \u00B7 ' + d.engine.validated_case_patterns + ' CASES';
+            const lr = document.getElementById('latency-readout');
+            if (lr) lr.textContent = 'LATENCY: ' + (d.engine.trust_latency_us / 1000).toFixed(2) + 'ms';
+        }
+
+        let events = buildFeed(REAL_DATA);
+        applyHeader(REAL_DATA);
+
+        // Live page: render the actual capture file so the demo is auditable.
+        fetch('soc_demo_data.json', { cache: 'no-store' })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => {
+                if (!d || !d.events) return;
+                REAL_DATA = d;
+                events = buildFeed(d);
+                applyHeader(d);
+                if (simStarted) runScenario();
+            })
+            .catch(() => {});
 
         let animationTimers = [];
+
         let simStarted = false;
 
         function clearTimers() {

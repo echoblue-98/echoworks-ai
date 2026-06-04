@@ -17,7 +17,6 @@ from ..core.pattern_matcher import PatternMatcher
 from ..core.roi_calculator import ROICalculator
 from ..core.timeline_analyzer import TimelineAnalyzer
 from .quantum_adversarial import QuantumInspiredOptimizer
-from ..api.gemini_client import GeminiClient
 from datetime import datetime, timedelta
 
 # Try to import Llama client (optional - for self-hosted deployment)
@@ -33,27 +32,32 @@ class HeistPlanner:
     Orchestrates the 5-stage "Heist Crew" analysis for attorney departure.
     Now enhanced with pattern matching, ROI calculation, and timeline analysis.
     
-    Supports multiple AI backends:
-    - Claude (Anthropic) - Default, best quality
-    - Gemini (Google) - Free tier available
-    - Llama (Self-hosted) - Maximum privacy, 100% local
+    Sovereign backends only:
+    - AdversarialEngine (local, default)
+    - Llama (self-hosted, optional) — 100% local
     """
     def __init__(self, intensity: IntensityLevel = IntensityLevel.LEVEL_4_REDTEAM, 
                  use_gemini: bool = False, use_llama: bool = False):
+        # AION OS is sovereign-only. Reject any frontier provider kwarg.
+        if use_gemini:
+            raise ValueError(
+                "AION OS is sovereign-only: Gemini and other frontier providers are not supported. "
+                "Use the local AdversarialEngine or self-hosted Llama."
+            )
         self.engine = AdversarialEngine(intensity=intensity)
         self.optimizer = QuantumInspiredOptimizer()
-        self.use_gemini = use_gemini
+        self.use_gemini = False
         self.use_llama = use_llama
-        self.gemini_client = GeminiClient() if use_gemini else None
+        self.gemini_client = None
         self.llama_client = None
         
-        # Initialize Llama if requested
+        # Initialize Llama if requested (local / self-hosted, sovereign)
         if use_llama:
             if LLAMA_AVAILABLE and check_llama_available():
                 self.llama_client = LlamaClient()
                 print("[OK] Llama (Self-Hosted) connected - 100% local privacy mode")
             else:
-                print("[WARN] Llama not available, falling back to Claude")
+                print("[WARN] Llama not available, falling back to local AdversarialEngine")
                 self.use_llama = False
         
         # Initialize moat modules
@@ -96,8 +100,6 @@ class HeistPlanner:
         # 3. Run the 5-stage adversarial analysis with real-time progress
         if self.use_llama and self.llama_client:
             analysis_result = self.llama_client.analyze(heist_brief, {}, self.engine.intensity.value)
-        elif self.use_gemini:
-            analysis_result = self.gemini_client.analyze(heist_brief, {}, self.engine.intensity.value)
         else:
             analysis_result = self.engine.analyze(heist_brief, {}, progress_callback=progress_callback)
         

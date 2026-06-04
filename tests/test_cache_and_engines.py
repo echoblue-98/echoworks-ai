@@ -329,59 +329,10 @@ class TestPrecomputeDaemon:
 
 
 # =============================================================================
-# HYBRID ENGINE INTEGRATION
+# HYBRID ENGINE INTEGRATION  (REMOVED 2026-05-31)
 # =============================================================================
-
-class TestHybridWithCache:
-
-    def test_hybrid_initializes_with_cache(self):
-        from aionos.core.hybrid_engine import HybridDetectionEngine
-        engine = HybridDetectionEngine(enable_gemini=False, enable_cache=True)
-        assert engine.cache is not None
-        assert engine.pattern_pipeline is not None
-        engine.shutdown()
-
-    def test_hybrid_cache_disabled(self):
-        from aionos.core.hybrid_engine import HybridDetectionEngine
-        engine = HybridDetectionEngine(enable_gemini=False, enable_cache=False)
-        assert engine.cache is None
-        engine.shutdown()
-
-    def test_ingest_feeds_user_store(self):
-        from aionos.core.hybrid_engine import HybridDetectionEngine
-        from aionos.core.temporal_engine import SecurityEvent, EventType
-        engine = HybridDetectionEngine(enable_gemini=False, enable_cache=True)
-        event = SecurityEvent(
-            event_id="e1", user_id="alice@firm.com",
-            event_type=EventType.VPN_ACCESS,
-            timestamp=datetime.utcnow(), source_system="test",
-        )
-        engine.ingest_event(event)
-        user = engine.user_store.get_user("alice@firm.com")
-        assert user is not None
-        assert user["event_counts"]["vpn_access"] == 1
-        engine.shutdown()
-
-    def test_stats_include_cache(self):
-        from aionos.core.hybrid_engine import HybridDetectionEngine
-        engine = HybridDetectionEngine(enable_gemini=False, enable_cache=True)
-        s = engine.stats
-        assert "cache" in s
-        assert "hit_rate" in s["cache"]
-        engine.shutdown()
-
-    def test_pattern_engine_eval_counted(self):
-        from aionos.core.hybrid_engine import HybridDetectionEngine
-        from aionos.core.temporal_engine import SecurityEvent, EventType
-        engine = HybridDetectionEngine(enable_gemini=False, enable_cache=True)
-        event = SecurityEvent(
-            event_id="e1", user_id="bob@firm.com",
-            event_type=EventType.FILE_DOWNLOAD,
-            timestamp=datetime.utcnow(), source_system="test",
-        )
-        engine.ingest_event(event)
-        assert engine.stats["pattern_engine_evals"] >= 1
-        engine.shutdown()
+# Hybrid engine deleted from codebase. AION OS is sovereign-only: no frontier
+# API calls. Tests for HybridDetectionEngine removed alongside the module.
 
 
 # =============================================================================

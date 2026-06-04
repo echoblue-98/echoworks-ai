@@ -14,7 +14,6 @@ from ..core.adversarial_engine import (
     IntensityLevel
 )
 from ..core.severity_triage import Vulnerability, Severity
-from ..api.gemini_client import GeminiClient
 
 
 class SecurityRedTeam:
@@ -29,12 +28,16 @@ class SecurityRedTeam:
     - Privilege escalation opportunities
     """
     
-    def __init__(self, intensity: IntensityLevel = IntensityLevel.LEVEL_4_REDTEAM, use_gemini: bool = False):
+    def __init__(self, intensity: IntensityLevel = IntensityLevel.LEVEL_4_REDTEAM, use_gemini: bool = False, gemini_api_key: str = None):
+        # AION OS is sovereign-only. Reject any frontier provider kwarg.
+        if use_gemini or gemini_api_key:
+            raise ValueError(
+                "AION OS is sovereign-only: frontier LLM providers (Gemini/Claude/OpenAI) "
+                "are not supported. Use the local AdversarialEngine."
+            )
         # Security analysis defaults to red team intensity
         self.engine = AdversarialEngine(intensity=intensity)
         self.scan_history = []
-        self.use_gemini = use_gemini
-        self.gemini_client = GeminiClient() if use_gemini else None
 
     def scan_infrastructure(
         self,
@@ -51,9 +54,6 @@ class SecurityRedTeam:
         Returns:
             A dictionary containing the analysis results.
         """
-        if self.use_gemini:
-            return self.gemini_client.analyze(infrastructure_config, context, self.engine.intensity.value)
-
         result = self.engine.analyze(
             query=infrastructure_config,
             context={

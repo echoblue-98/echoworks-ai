@@ -14,7 +14,6 @@ from ..core.adversarial_engine import (
     IntensityLevel
 )
 from ..core.severity_triage import Vulnerability, Severity
-from ..api.gemini_client import GeminiClient
 
 
 class LegalAnalyzer:
@@ -29,11 +28,16 @@ class LegalAnalyzer:
     - Procedural vulnerabilities
     """
     
-    def __init__(self, intensity: IntensityLevel = IntensityLevel.LEVEL_3_HOSTILE, use_gemini: bool = False):
+    def __init__(self, intensity: IntensityLevel = IntensityLevel.LEVEL_3_HOSTILE, use_gemini: bool = False, gemini_api_key=None):
+        # AION OS is sovereign-only. Frontier LLM kwargs are accepted for API
+        # backward-compatibility but MUST be falsy. Any truthy value is rejected.
+        if use_gemini or gemini_api_key:
+            raise ValueError(
+                "AION OS is sovereign-only: frontier LLM providers (Gemini/Claude/OpenAI) "
+                "are not supported. Use the local AdversarialEngine."
+            )
         self.engine = AdversarialEngine(intensity=intensity)
         self.analysis_history = []
-        self.use_gemini = use_gemini
-        self.gemini_client = GeminiClient() if use_gemini else None
 
     def analyze_brief(
         self,
@@ -50,9 +54,6 @@ class LegalAnalyzer:
         Returns:
             A dictionary containing the analysis results.
         """
-        if self.use_gemini:
-            return self.gemini_client.analyze(brief_content, case_context, self.engine.intensity.value)
-
         result = self.engine.analyze(
             query=brief_content,
             context={

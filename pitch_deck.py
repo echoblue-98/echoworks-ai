@@ -20,7 +20,6 @@ from aionos.core.temporal_engine import (
     TemporalCorrelationEngine, SecurityEvent, EventType, AttackSequence, CorrelationAlert,
 )
 from aionos.core.baseline_engine import BehavioralBaselineEngine, DeviationType
-from aionos.core.hybrid_engine import HybridDetectionEngine
 from aionos.improvement import ImprovementEngine
 from aionos.improvement.policy_store import (
     PolicyStore, IMMUTABLE_INVARIANTS, DetectionThresholds, PolicyVersion,
@@ -182,14 +181,6 @@ def get_baseline_engine():
         return BehavioralBaselineEngine(fast_mode=True)
     except Exception as e:
         st.error(f"Baseline engine init failed: {e}")
-        return None
-
-@st.cache_resource
-def get_hybrid_engine():
-    try:
-        return HybridDetectionEngine(enable_gemini=False, fast_mode=True)
-    except Exception as e:
-        st.error(f"Hybrid engine init failed: {e}")
         return None
 
 @st.cache_resource
